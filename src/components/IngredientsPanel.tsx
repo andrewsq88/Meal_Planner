@@ -1,4 +1,4 @@
-import { X, Heart, ShoppingBag, CheckSquare, Square } from 'lucide-react';
+import { X, Heart, ShoppingBag, CheckSquare, Square, ChefHat } from 'lucide-react';
 import { useState } from 'react';
 import type { MenuItem, MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
@@ -40,6 +40,12 @@ export function IngredientsPanel({ item, isFavorited, onClose, onAddFavorite }: 
             </h3>
             {item.description && (
               <p className="text-xs text-stone-500 mt-1 leading-relaxed">{item.description}</p>
+            )}
+            {item.cook && (
+              <p className="flex items-center gap-1.5 text-xs text-stone-400 mt-1.5 font-medium">
+                <ChefHat className="w-3.5 h-3.5 flex-shrink-0" />
+                {item.cook}
+              </p>
             )}
           </div>
           <button

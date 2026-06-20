@@ -8,6 +8,7 @@ export interface MenuItem {
   name: string;
   description: string;
   ingredients: string[];
+  cook: string;
   created_at: string;
   updated_at: string;
 }

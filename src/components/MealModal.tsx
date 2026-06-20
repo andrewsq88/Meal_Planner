@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Sparkles } from 'lucide-react';
+import { X, Plus, Trash2, Sparkles, ChefHat } from 'lucide-react';
 import type { MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
 import { supabase } from '../lib/supabase';
@@ -7,19 +7,21 @@ import { supabase } from '../lib/supabase';
 interface MealModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string, description: string, ingredients: string[]) => Promise<void>;
+  onSave: (name: string, description: string, ingredients: string[], cook: string) => Promise<void>;
   dayIndex: number;
   mealType: MealType;
   initialName?: string;
   initialDescription?: string;
   initialIngredients?: string[];
+  initialCook?: string;
 }
 
 export function MealModal({
   isOpen, onClose, onSave, dayIndex, mealType,
-  initialName = '', initialDescription = '', initialIngredients = [],
+  initialName = '', initialDescription = '', initialIngredients = [], initialCook = '',
 }: MealModalProps) {
   const [name, setName] = useState(initialName);
+  const [cook, setCook] = useState(initialCook);
   const [description, setDescription] = useState(initialDescription);
   const [ingredients, setIngredients] = useState<string[]>(initialIngredients.length ? initialIngredients : ['']);
   const [saving, setSaving] = useState(false);
@@ -33,6 +35,7 @@ export function MealModal({
   useEffect(() => {
     if (isOpen) {
       setName(initialName);
+      setCook(initialCook);
       setDescription(initialDescription);
       setIngredients(initialIngredients.length ? initialIngredients : ['']);
       setAiSuggested(false);
@@ -92,7 +95,7 @@ export function MealModal({
   const handleSave = async () => {
     if (!name.trim()) return;
     setSaving(true);
-    await onSave(name.trim(), description.trim(), ingredients.filter(i => i.trim()));
+    await onSave(name.trim(), description.trim(), ingredients.filter(i => i.trim()), cook.trim());
     setSaving(false);
     onClose();
   };
@@ -154,6 +157,23 @@ export function MealModal({
               autoFocus
               className="w-full rounded-xl border border-stone-200 px-4 py-2.5 text-stone-800 font-semibold placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all"
             />
+          </div>
+
+          {/* Chef / Cook */}
+          <div>
+            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">
+              Chef / Cook
+            </label>
+            <div className="relative">
+              <ChefHat className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
+              <input
+                type="text"
+                value={cook}
+                onChange={e => setCook(e.target.value)}
+                placeholder="Who's cooking this?"
+                className="w-full rounded-xl border border-stone-200 pl-9 pr-4 py-2.5 text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all"
+              />
+            </div>
           </div>
 
           {/* Description */}

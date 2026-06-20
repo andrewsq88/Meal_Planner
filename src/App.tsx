@@ -22,6 +22,7 @@ export default function App() {
     initialName?: string;
     initialDescription?: string;
     initialIngredients?: string[];
+    initialCook?: string;
   } | null>(null);
 
   const [addToMenuTarget, setAddToMenuTarget] = useState<{
@@ -44,12 +45,13 @@ export default function App() {
       initialName: existing?.name,
       initialDescription: existing?.description,
       initialIngredients: existing?.ingredients,
+      initialCook: existing?.cook,
     });
   };
 
-  const handleSaveMeal = async (name: string, description: string, ingredients: string[]) => {
+  const handleSaveMeal = async (name: string, description: string, ingredients: string[], cook: string) => {
     if (!editModal) return;
-    const saved = await upsertItem(editModal.dayIndex, mealType, name, description, ingredients);
+    const saved = await upsertItem(editModal.dayIndex, mealType, name, description, ingredients, cook);
     if (saved) setSelectedItem(saved);
   };
 
@@ -150,6 +152,7 @@ export default function App() {
           initialName={editModal.initialName}
           initialDescription={editModal.initialDescription}
           initialIngredients={editModal.initialIngredients}
+          initialCook={editModal.initialCook}
         />
       )}
 

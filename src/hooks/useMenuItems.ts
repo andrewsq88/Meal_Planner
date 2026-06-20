@@ -31,6 +31,7 @@ export function useMenuItems(weekStart: string) {
     name: string,
     description: string,
     ingredients: string[],
+    cook: string = '',
   ): Promise<MenuItem | null> => {
     const existing = items.find(
       i => i.day_of_week === dayOfWeek && i.meal_type === mealType,
@@ -38,7 +39,7 @@ export function useMenuItems(weekStart: string) {
     if (existing) {
       const { data, error: err } = await supabase
         .from('menu_items')
-        .update({ name, description, ingredients, updated_at: new Date().toISOString() })
+        .update({ name, description, ingredients, cook, updated_at: new Date().toISOString() })
         .eq('id', existing.id)
         .select()
         .single();
@@ -48,7 +49,7 @@ export function useMenuItems(weekStart: string) {
     }
     const { data, error: err } = await supabase
       .from('menu_items')
-      .insert({ week_start: weekStart, day_of_week: dayOfWeek, meal_type: mealType, name, description, ingredients })
+      .insert({ week_start: weekStart, day_of_week: dayOfWeek, meal_type: mealType, name, description, ingredients, cook })
       .select()
       .single();
     if (err) return null;
