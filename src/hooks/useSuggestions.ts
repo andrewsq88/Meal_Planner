@@ -1,0 +1,42 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { supabase } from '../lib/supabase';
+import type { MealSuggestion, MealType } from '../types';
+
+export function useSuggestions(query: string, mealTypeFilter: MealType | 'all') {
+  const [suggestions, setSuggestions] = useState<MealSuggestion[]>([]);
+  const [loading, setLoading] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const search = useCallback(async (q: string, typeFilter: MealType | 'all') => {
+    if (!q.trim()) {
+      setSuggestions([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const term = q.trim().toLowerCase();
+    let queryBuilder = supabase
+      .from('meal_suggestions')
+      .select('*')
+      .or(`name.ilike.%${term}%,description.ilike.%${term}%,tags.cs.{${term}}`)
+      .limit(12);
+
+    if (typeFilter !== 'all') {
+      queryBuilder = queryBuilder.eq('meal_type', typeFilter);
+    }
+
+    const { data } = await queryBuilder.order('name');
+    setSuggestions(data ?? []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => search(query, mealTypeFilter), 300);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [query, mealTypeFilter, search]);
+
+  return { suggestions, loading };
+}
