@@ -99,7 +99,7 @@ export default function App() {
         <div className="flex items-center justify-between flex-wrap gap-3">
           <MealTypeNav selected={mealType} onChange={type => { setMealType(type); setSelectedItem(null); }} />
           <p className="text-sm text-stone-400 font-medium hidden sm:block">
-            Click a meal to view its ingredients
+            Click a meal to edit it
           </p>
         </div>
 

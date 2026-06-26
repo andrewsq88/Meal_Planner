@@ -47,8 +47,9 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
             <div className="px-3 pb-3 min-h-[80px]">
               {item ? (
                 <button
-                  onClick={() => onSelect(isSelected ? null : item)}
+                  onClick={() => onAdd(idx)}
                   className={`w-full text-left group`}
+                  title="Edit meal"
                 >
                   <p className={`text-sm font-semibold leading-snug transition-colors ${
                     isSelected ? cfg.color : 'text-stone-700 group-hover:' + cfg.color
@@ -74,11 +75,13 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
 
             {/* Action buttons */}
             {item && (
-              <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 hover:opacity-100 focus-within:opacity-100">
+              <div className="absolute top-2 right-2 flex gap-1">
                 <button
-                  onClick={e => { e.stopPropagation(); onAdd(idx); }}
-                  className="w-6 h-6 rounded-lg bg-white shadow border border-stone-100 flex items-center justify-center text-stone-400 hover:text-amber-600 hover:border-amber-200 transition-all"
-                  title="Edit meal"
+                  onClick={e => { e.stopPropagation(); onSelect(isSelected ? null : item); }}
+                  className={`w-6 h-6 rounded-lg bg-white shadow border flex items-center justify-center transition-all ${
+                    isSelected ? `${cfg.border} ${cfg.color}` : 'border-stone-100 text-stone-400 hover:text-amber-600 hover:border-amber-200'
+                  }`}
+                  title="View ingredients"
                 >
                   <Pencil className="w-3 h-3" />
                 </button>
