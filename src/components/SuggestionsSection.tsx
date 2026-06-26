@@ -158,22 +158,16 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
         {/* ── LIBRARY TAB ── */}
         {activeTab === 'library' && (
           <>
-            {!query.trim() ? (
-              <div className="text-center py-8">
-                <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-3">
-                  <Sparkles className="w-7 h-7 text-amber-400" />
-                </div>
-                <p className="text-stone-500 font-medium text-sm">Type to get meal ideas</p>
-                <p className="text-stone-400 text-xs mt-1">Try "quick", "pasta", "healthy", or any ingredient</p>
-              </div>
-            ) : loading ? (
+            {loading ? (
               <div className="text-center py-8">
                 <Loader2 className="w-8 h-8 text-amber-400 animate-spin mx-auto" />
                 <p className="text-stone-400 text-sm mt-2">Looking for ideas…</p>
               </div>
             ) : suggestions.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-stone-500 font-medium text-sm">No results for "{query}"</p>
+                <p className="text-stone-500 font-medium text-sm">
+                  {query.trim() ? `No results for "${query}"` : 'No suggestions available'}
+                </p>
                 <p className="text-stone-400 text-xs mt-1">Try the Live Feed tab for fresh recipes from the web</p>
               </div>
             ) : (

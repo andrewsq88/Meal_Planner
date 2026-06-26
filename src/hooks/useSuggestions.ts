@@ -8,18 +8,16 @@ export function useSuggestions(query: string, mealTypeFilter: MealType | 'all') 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const search = useCallback(async (q: string, typeFilter: MealType | 'all') => {
-    if (!q.trim()) {
-      setSuggestions([]);
-      setLoading(false);
-      return;
-    }
     setLoading(true);
     const term = q.trim().toLowerCase();
     let queryBuilder = supabase
       .from('meal_suggestions')
       .select('*')
-      .or(`name.ilike.%${term}%,description.ilike.%${term}%,tags.cs.{${term}}`)
       .limit(12);
+
+    if (term) {
+      queryBuilder = queryBuilder.or(`name.ilike.%${term}%,description.ilike.%${term}%,tags.cs.{${term}}`);
+    }
 
     if (typeFilter !== 'all') {
       queryBuilder = queryBuilder.eq('meal_type', typeFilter);
