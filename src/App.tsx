@@ -7,12 +7,37 @@ import { IngredientsPanel } from './components/IngredientsPanel';
 import { FavoritesSection } from './components/FavoritesSection';
 import { SuggestionsSection } from './components/SuggestionsSection';
 import { AddToMenuModal } from './components/AddToMenuModal';
+import { AuthPage } from './components/AuthPage';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { useMenuItems } from './hooks/useMenuItems';
 import { useFavorites } from './hooks/useFavorites';
 import { getWeekStart, addDays } from './types';
 import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './types';
+import { UtensilsCrossed } from 'lucide-react';
 
-export default function App() {
+function AppContent() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-pulse">
+            <UtensilsCrossed className="w-7 h-7 text-white" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
+
+  return <Planner />;
+}
+
+function Planner() {
   const [weekStart, setWeekStart] = useState(() => getWeekStart());
   const [mealType, setMealType] = useState<MealType>('dinner');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
@@ -166,5 +191,13 @@ export default function App() {
         />
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

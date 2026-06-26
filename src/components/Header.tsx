@@ -1,5 +1,7 @@
-import { ChevronLeft, ChevronRight, UtensilsCrossed } from 'lucide-react';
+import { ChevronLeft, ChevronRight, UtensilsCrossed, LogOut } from 'lucide-react';
 import { formatWeekRange } from '../types';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
   weekStart: string;
@@ -8,6 +10,13 @@ interface HeaderProps {
 }
 
 export function Header({ weekStart, onPrevWeek, onNextWeek }: HeaderProps) {
+  const { user } = useAuth();
+  const initial = user?.email?.[0]?.toUpperCase() ?? '?';
+
+  async function handleSignOut() {
+    await supabase.auth.signOut();
+  }
+
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-amber-100 sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
@@ -22,24 +31,44 @@ export function Header({ weekStart, onPrevWeek, onNextWeek }: HeaderProps) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 bg-amber-50 rounded-2xl px-3 py-2 border border-amber-100">
-            <button
-              onClick={onPrevWeek}
-              className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-500 hover:bg-amber-200 hover:text-amber-800 transition-all"
-              aria-label="Previous week"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-sm font-semibold text-stone-700 min-w-[160px] text-center">
-              {formatWeekRange(weekStart)}
-            </span>
-            <button
-              onClick={onNextWeek}
-              className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-500 hover:bg-amber-200 hover:text-amber-800 transition-all"
-              aria-label="Next week"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-amber-50 rounded-2xl px-3 py-2 border border-amber-100">
+              <button
+                onClick={onPrevWeek}
+                className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-500 hover:bg-amber-200 hover:text-amber-800 transition-all"
+                aria-label="Previous week"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="text-sm font-semibold text-stone-700 min-w-[160px] text-center">
+                {formatWeekRange(weekStart)}
+              </span>
+              <button
+                onClick={onNextWeek}
+                className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-500 hover:bg-amber-200 hover:text-amber-800 transition-all"
+                aria-label="Next week"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* User avatar + sign-out */}
+            <div className="flex items-center gap-2">
+              <div
+                className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                title={user?.email ?? ''}
+              >
+                {initial}
+              </div>
+              <button
+                onClick={handleSignOut}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-stone-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
+                title="Sign out"
+                aria-label="Sign out"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
