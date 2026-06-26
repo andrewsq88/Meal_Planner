@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { X, Plus, Trash2, Sparkles, ChefHat, Loader2 } from 'lucide-react';
 import type { MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
-import { supabase } from '../lib/supabase';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 type Phase = 'idle' | 'debouncing' | 'loading' | 'suggested' | 'error';
 
@@ -79,19 +80,27 @@ export function MealModal({
       setPhase('loading');
 
       try {
-        const { data, error } = await supabase.functions.invoke('suggest-meal-details', {
-          body: { name: trimmed, mealType },
-        });
+        const res = await fetch(
+          `${SUPABASE_URL}/functions/v1/suggest-meal-details`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ name: trimmed, mealType }),
+            signal: ctrl.signal,
+          },
+        );
 
-        if (ctrl.signal.aborted) return;
-
-        if (error) {
+        if (!res.ok) {
           setPhase('error');
           return;
         }
 
-        const desc: string = data?.description ?? '';
-        const ings: string[] = Array.isArray(data?.ingredients) ? data.ingredients : [];
+        const payload = await res.json();
+        const desc: string = payload?.description ?? '';
+        const ings: string[] = Array.isArray(payload?.ingredients) ? payload.ingredients : [];
 
         if (desc && !descEditedRef.current) setDescription(desc);
         if (ings.length > 0 && !ingEditedRef.current) setIngredients(ings);
