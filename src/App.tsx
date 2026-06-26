@@ -8,9 +8,10 @@ import { FavoritesSection } from './components/FavoritesSection';
 import { SuggestionsSection } from './components/SuggestionsSection';
 import { AddToMenuModal } from './components/AddToMenuModal';
 import { AuthModal } from './components/AuthModal';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { useMenuItems } from './hooks/useMenuItems';
 import { useFavorites } from './hooks/useFavorites';
+import { useAuth } from './context/AuthContext';
 import { getWeekStart, addDays } from './types';
 import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './types';
 import { UtensilsCrossed } from 'lucide-react';
@@ -52,6 +53,7 @@ interface PlannerProps {
 }
 
 function Planner({ onAuthRequired }: PlannerProps) {
+  const { user } = useAuth();
   const [weekStart, setWeekStart] = useState(() => getWeekStart());
   const [mealType, setMealType] = useState<MealType>('dinner');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
@@ -91,19 +93,11 @@ function Planner({ onAuthRequired }: PlannerProps) {
   const handleSaveMeal = async (name: string, description: string, ingredients: string[], cook: string) => {
     if (!editModal) return;
     const result = await upsertItem(editModal.dayIndex, mealType, name, description, ingredients, cook);
-    if (result === 'auth_required') {
-      onAuthRequired('Sign in to save meals to your weekly menu.');
-      return;
-    }
     if (result) setSelectedItem(result);
   };
 
   const handleDeleteItem = async (item: MenuItem) => {
-    const result = await deleteItem(item.id);
-    if (result === 'auth_required') {
-      onAuthRequired('Sign in to manage your weekly menu.');
-      return;
-    }
+    await deleteItem(item.id);
     if (selectedItem?.id === item.id) setSelectedItem(null);
   };
 
@@ -143,11 +137,7 @@ function Planner({ onAuthRequired }: PlannerProps) {
 
   const handleConfirmAddToMenu = async (dayIndex: number, targetMealType: MealType) => {
     if (!addToMenuTarget) return;
-    const result = await upsertItem(dayIndex, targetMealType, addToMenuTarget.name, addToMenuTarget.description, addToMenuTarget.ingredients);
-    if (result === 'auth_required') {
-      onAuthRequired('Sign in to save meals to your weekly menu.');
-      return;
-    }
+    await upsertItem(dayIndex, targetMealType, addToMenuTarget.name, addToMenuTarget.description, addToMenuTarget.ingredients);
     setAddToMenuTarget(null);
   };
 
@@ -161,7 +151,12 @@ function Planner({ onAuthRequired }: PlannerProps) {
         weekStart={weekStart}
         onPrevWeek={goToPrevWeek}
         onNextWeek={goToNextWeek}
-        onSignInClick={() => onAuthRequired()}
+        onSignInClick={() => onAuthRequired(
+          !user && items.length > 0
+            ? 'Sign in to save your meal plan to your account.'
+            : undefined
+        )}
+        guestMealCount={!user ? items.length : 0}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
@@ -192,9 +187,7 @@ function Planner({ onAuthRequired }: PlannerProps) {
                 onClose={() => setSelectedItem(null)}
                 onAddFavorite={handleAddToFavorite}
                 onAddToDay={(dayIndex, type) => {
-                  upsertItem(dayIndex, type, selectedItem.name, selectedItem.description, selectedItem.ingredients).then(result => {
-                    if (result === 'auth_required') onAuthRequired('Sign in to save meals to your weekly menu.');
-                  });
+                  upsertItem(dayIndex, type, selectedItem.name, selectedItem.description, selectedItem.ingredients);
                 }}
               />
             </div>

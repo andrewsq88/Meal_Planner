@@ -1,22 +1,27 @@
-import { ChevronLeft, ChevronRight, UtensilsCrossed, LogOut, LogIn } from 'lucide-react';
+import { ChevronLeft, ChevronRight, UtensilsCrossed, LogOut, LogIn, Save } from 'lucide-react';
 import { formatWeekRange } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { clearGuestItems } from '../hooks/useMenuItems';
 
 interface HeaderProps {
   weekStart: string;
   onPrevWeek: () => void;
   onNextWeek: () => void;
   onSignInClick: () => void;
+  guestMealCount: number;
 }
 
-export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick }: HeaderProps) {
+export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guestMealCount }: HeaderProps) {
   const { user } = useAuth();
   const initial = user?.email?.[0]?.toUpperCase() ?? '?';
 
   async function handleSignOut() {
+    clearGuestItems();
     await supabase.auth.signOut();
   }
+
+  const hasUnsaved = !user && guestMealCount > 0;
 
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-amber-100 sticky top-0 z-30">
@@ -71,6 +76,17 @@ export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick }: Hea
                   <LogOut className="w-4 h-4" />
                 </button>
               </div>
+            ) : hasUnsaved ? (
+              <button
+                onClick={onSignInClick}
+                className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-bold shadow-md shadow-amber-200 transition-all duration-200"
+              >
+                <Save className="w-4 h-4" />
+                <span className="hidden sm:inline">Save your plan</span>
+                <span className="flex items-center justify-center w-5 h-5 rounded-full bg-white/30 text-white text-xs font-bold sm:flex">
+                  {guestMealCount}
+                </span>
+              </button>
             ) : (
               <button
                 onClick={onSignInClick}
