@@ -2,7 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from recipe_scrapers import scrape_me, WebsiteNotImplementedError, NoSchemaFoundInWildMode
+from recipe_scrapers import scrape_me
 
 app = FastAPI(title="Recipe Scraper Service", version="1.0.0")
 
@@ -25,10 +25,9 @@ class ScrapeResponse(BaseModel):
     image: str = ""
     total_time: int = 0
     servings: str = ""
-    supported: bool = True
 
 
-def _safe(fn, default=""):
+def _safe(fn, default=None):
     try:
         result = fn()
         return result if result is not None else default
@@ -49,23 +48,27 @@ async def scrape_recipe(body: ScrapeRequest):
 
     try:
         scraper = scrape_me(url, wild_mode=True)
-    except (WebsiteNotImplementedError, NoSchemaFoundInWildMode) as exc:
-        raise HTTPException(status_code=422, detail=f"Site not supported: {exc}")
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Failed to fetch URL: {exc}")
+        # recipe-scrapers raises various exceptions for unsupported / unreachable sites;
+        # return 422 so the edge function knows to skip this path gracefully.
+        raise HTTPException(status_code=422, detail=f"Could not scrape recipe: {exc}")
 
-    title = _safe(scraper.title)
-    description = _safe(scraper.description)
-    ingredients = _safe(scraper.ingredients, default=[])
-    image = _safe(scraper.image)
-    total_time_raw = _safe(scraper.total_time, default=0)
-    servings_raw = _safe(scraper.yields, default="")
+    title = _safe(scraper.title, "")
+    description = _safe(scraper.description, "")
+    raw_ingredients = _safe(scraper.ingredients, [])
+    image = _safe(scraper.image, "")
+    total_time_raw = _safe(scraper.total_time, 0)
+    servings_raw = _safe(scraper.yields, "")
+
+    # Guard against None coming back from _safe despite the default
+    ingredients = [str(i) for i in (raw_ingredients or [])[:24]]
+    total_time = int(total_time_raw) if total_time_raw else 0
 
     return ScrapeResponse(
-        title=str(title)[:200],
-        description=str(description)[:400] if description else "",
-        ingredients=[str(i) for i in ingredients[:24]],
-        image=str(image) if image else "",
-        total_time=int(total_time_raw) if total_time_raw else 0,
-        servings=str(servings_raw) if servings_raw else "",
+        title=str(title or "")[:200],
+        description=str(description or "")[:400],
+        ingredients=ingredients,
+        image=str(image or ""),
+        total_time=total_time,
+        servings=str(servings_raw or ""),
     )
