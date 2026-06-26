@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, UtensilsCrossed, LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, UtensilsCrossed, LogOut, LogIn } from 'lucide-react';
 import { formatWeekRange } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -7,9 +7,10 @@ interface HeaderProps {
   weekStart: string;
   onPrevWeek: () => void;
   onNextWeek: () => void;
+  onSignInClick: () => void;
 }
 
-export function Header({ weekStart, onPrevWeek, onNextWeek }: HeaderProps) {
+export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick }: HeaderProps) {
   const { user } = useAuth();
   const initial = user?.email?.[0]?.toUpperCase() ?? '?';
 
@@ -52,23 +53,33 @@ export function Header({ weekStart, onPrevWeek, onNextWeek }: HeaderProps) {
               </button>
             </div>
 
-            {/* User avatar + sign-out */}
-            <div className="flex items-center gap-2">
-              <div
-                className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shadow-sm"
-                title={user?.email ?? ''}
-              >
-                {initial}
+            {/* Auth controls */}
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                  title={user.email ?? ''}
+                >
+                  {initial}
+                </div>
+                <button
+                  onClick={handleSignOut}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-stone-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
+                  title="Sign out"
+                  aria-label="Sign out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
               </div>
+            ) : (
               <button
-                onClick={handleSignOut}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-stone-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
-                title="Sign out"
-                aria-label="Sign out"
+                onClick={onSignInClick}
+                className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-bold shadow-md shadow-amber-200 transition-all duration-200"
               >
-                <LogOut className="w-4 h-4" />
+                <LogIn className="w-4 h-4" />
+                <span className="hidden sm:inline">Sign In</span>
               </button>
-            </div>
+            )}
           </div>
         </div>
       </div>

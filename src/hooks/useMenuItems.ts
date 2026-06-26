@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 import type { MenuItem, MealType } from '../types';
 
 export function useMenuItems(weekStart: string) {
+  const { user } = useAuth();
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,9 @@ export function useMenuItems(weekStart: string) {
     setLoading(false);
   }, [weekStart]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  // Re-fetch when the week changes or when auth state changes (sign in/out)
+  const userId = user?.id;
+  useEffect(() => { fetch(); }, [fetch, userId]);
 
   const upsertItem = useCallback(async (
     dayOfWeek: number,
@@ -32,7 +36,8 @@ export function useMenuItems(weekStart: string) {
     description: string,
     ingredients: string[],
     cook: string = '',
-  ): Promise<MenuItem | null> => {
+  ): Promise<MenuItem | null | 'auth_required'> => {
+    if (!user) return 'auth_required';
     const existing = items.find(
       i => i.day_of_week === dayOfWeek && i.meal_type === mealType,
     );
@@ -55,12 +60,13 @@ export function useMenuItems(weekStart: string) {
     if (err) return null;
     setItems(prev => [...prev, data]);
     return data;
-  }, [items, weekStart]);
+  }, [items, weekStart, user]);
 
-  const deleteItem = useCallback(async (id: string) => {
+  const deleteItem = useCallback(async (id: string): Promise<'auth_required' | void> => {
+    if (!user) return 'auth_required';
     const { error: err } = await supabase.from('menu_items').delete().eq('id', id);
     if (!err) setItems(prev => prev.filter(i => i.id !== id));
-  }, []);
+  }, [user]);
 
   return { items, loading, error, upsertItem, deleteItem, refetch: fetch };
 }

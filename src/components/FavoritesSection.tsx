@@ -1,12 +1,14 @@
-import { Heart, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, Trash2, ChevronDown, ChevronUp, LogIn } from 'lucide-react';
 import { useState } from 'react';
 import type { Favorite, MealType } from '../types';
 import { MEAL_TYPE_CONFIG } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface FavoritesSectionProps {
   favorites: Favorite[];
   onRemove: (id: string) => void;
   onAddToMenu: (fav: Favorite) => void;
+  onSignIn: () => void;
 }
 
 const BADGE_COLORS: Record<MealType, string> = {
@@ -15,9 +17,37 @@ const BADGE_COLORS: Record<MealType, string> = {
   dinner: 'bg-rose-100 text-rose-700',
 };
 
-export function FavoritesSection({ favorites, onRemove, onAddToMenu }: FavoritesSectionProps) {
+export function FavoritesSection({ favorites, onRemove, onAddToMenu, onSignIn }: FavoritesSectionProps) {
+  const { user } = useAuth();
   const [expanded, setExpanded] = useState(true);
   const [expandedFav, setExpandedFav] = useState<string | null>(null);
+
+  if (!user) {
+    return (
+      <section className="bg-white rounded-3xl border border-stone-100 shadow-sm p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Heart className="w-5 h-5 text-rose-400" />
+          <h2 className="text-lg font-extrabold text-stone-800">Favorites</h2>
+        </div>
+        <div className="text-center py-8">
+          <div className="w-14 h-14 rounded-full bg-rose-50 flex items-center justify-center mx-auto mb-3">
+            <Heart className="w-7 h-7 text-rose-300" />
+          </div>
+          <p className="text-stone-600 font-semibold text-sm">Save your favorite meals</p>
+          <p className="text-stone-400 text-xs mt-1 max-w-xs mx-auto">
+            Create a free account to build your personal collection of go-to recipes.
+          </p>
+          <button
+            onClick={onSignIn}
+            className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-bold shadow-md shadow-amber-200 transition-all duration-200"
+          >
+            <LogIn className="w-4 h-4" />
+            Sign In to Save Favorites
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   if (favorites.length === 0) {
     return (
