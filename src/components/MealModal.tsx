@@ -41,7 +41,7 @@ export function MealModal({
       setAiSuggested(false);
       setSuggesting(false);
       descEditedRef.current = false;
-      ingEditedRef.current = false;
+      ingEditedRef.current = initialIngredients.length > 0;
     }
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 

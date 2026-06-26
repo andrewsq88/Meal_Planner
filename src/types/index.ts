@@ -73,6 +73,7 @@ export interface RssRecipe {
   pubDate: string;
   imageUrl: string;
   meal_type: MealType;
+  ingredients?: string[];
 }
 
 export const MEAL_TYPE_CONFIG: Record<MealType, { label: string; emoji: string; color: string; bg: string; border: string; activeBg: string; activeText: string }> = {
