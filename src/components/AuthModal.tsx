@@ -94,11 +94,11 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
       />
 
       {/* Card */}
-      <div className="relative w-full max-w-[420px] bg-white rounded-3xl shadow-2xl shadow-stone-300/40 overflow-hidden">
+      <div className="relative w-full max-w-[420px] bg-white dark:bg-stone-800 rounded-3xl shadow-2xl shadow-stone-300/40 overflow-hidden">
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition-all z-10"
+          className="absolute top-4 right-4 w-8 h-8 rounded-xl flex items-center justify-center text-stone-400 hover:text-stone-600 hover:bg-stone-100 dark:hover:bg-stone-700 transition-all z-10"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
@@ -124,11 +124,13 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
 
         <div className="px-7 py-6">
           {/* Tabs */}
-          <div className="flex bg-stone-100 rounded-2xl p-1 mb-5">
+          <div className="flex bg-stone-100 dark:bg-stone-700 rounded-2xl p-1 mb-5">
             <button
               onClick={() => switchMode('signin')}
               className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all duration-200 ${
-                mode === 'signin' ? 'bg-white text-stone-800 shadow-sm' : 'text-stone-500 hover:text-stone-700'
+                mode === 'signin'
+                  ? 'bg-white dark:bg-stone-600 text-stone-800 dark:text-stone-100 shadow-sm'
+                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
               }`}
             >
               Sign In
@@ -136,7 +138,9 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
             <button
               onClick={() => switchMode('signup')}
               className={`flex-1 py-2 text-sm font-semibold rounded-xl transition-all duration-200 ${
-                mode === 'signup' ? 'bg-white text-stone-800 shadow-sm' : 'text-stone-500 hover:text-stone-700'
+                mode === 'signup'
+                  ? 'bg-white dark:bg-stone-600 text-stone-800 dark:text-stone-100 shadow-sm'
+                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
               }`}
             >
               Create Account
@@ -147,7 +151,7 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
           <button
             onClick={handleGoogle}
             disabled={googleLoading || loading}
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-2xl border-2 border-stone-200 bg-white hover:bg-stone-50 hover:border-stone-300 text-stone-700 font-semibold text-sm transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mb-4"
+            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-2xl border-2 border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 hover:bg-stone-50 dark:hover:bg-stone-600 hover:border-stone-300 dark:hover:border-stone-500 text-stone-700 dark:text-stone-200 font-semibold text-sm transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed mb-4"
           >
             {googleLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -159,32 +163,32 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px bg-stone-200" />
-            <span className="text-xs text-stone-400 font-medium">or</span>
-            <div className="flex-1 h-px bg-stone-200" />
+            <div className="flex-1 h-px bg-stone-200 dark:bg-stone-600" />
+            <span className="text-xs text-stone-400 dark:text-stone-500 font-medium">or</span>
+            <div className="flex-1 h-px bg-stone-200 dark:bg-stone-600" />
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1.5 uppercase tracking-wide">Email</label>
+              <label className="block text-xs font-semibold text-stone-600 dark:text-stone-400 mb-1.5 uppercase tracking-wide">Email</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" />
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-600 mb-1.5 uppercase tracking-wide">Password</label>
+              <label className="block text-xs font-semibold text-stone-600 dark:text-stone-400 mb-1.5 uppercase tracking-wide">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 dark:text-stone-500" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
@@ -192,12 +196,12 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
                   required
                   placeholder={mode === 'signup' ? 'At least 6 characters' : '••••••••'}
                   minLength={6}
-                  className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-stone-800 placeholder-stone-400 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all"
+                  className="w-full pl-10 pr-11 py-2.5 rounded-xl border border-stone-200 dark:border-stone-600 bg-stone-50 dark:bg-stone-700 text-stone-800 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(v => !v)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -205,7 +209,7 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
             </div>
 
             {error && (
-              <div className="bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 text-xs text-rose-700">
+              <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/30 rounded-xl px-4 py-3 text-xs text-rose-700 dark:text-rose-400">
                 {error}
               </div>
             )}
@@ -220,7 +224,7 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
             </button>
           </form>
 
-          <p className="text-center text-xs text-stone-400 mt-5">
+          <p className="text-center text-xs text-stone-400 dark:text-stone-500 mt-5">
             {mode === 'signin' ? (
               <>No account?{' '}
                 <button onClick={() => switchMode('signup')} className="text-amber-600 font-semibold hover:underline">

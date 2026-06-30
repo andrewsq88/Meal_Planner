@@ -24,20 +24,20 @@ export function AddToMenuModal({ isOpen, onClose, onConfirm, defaultMealType, me
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
-        <div className="bg-amber-50 border-b border-amber-100 px-6 py-4 flex items-center justify-between">
+      <div className="bg-white dark:bg-stone-800 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+        <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-100 dark:border-amber-800/30 px-6 py-4 flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Add to Weekly Menu</p>
-            <h2 className="text-base font-extrabold text-stone-800 mt-0.5">{mealName}</h2>
+            <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide">Add to Weekly Menu</p>
+            <h2 className="text-base font-extrabold text-stone-800 dark:text-stone-100 mt-0.5">{mealName}</h2>
           </div>
-          <button onClick={onClose} className="w-7 h-7 rounded-full bg-white/70 flex items-center justify-center text-stone-400 hover:text-stone-600 transition-colors">
+          <button onClick={onClose} className="w-7 h-7 rounded-full bg-white/70 dark:bg-stone-700/70 flex items-center justify-center text-stone-400 hover:text-stone-600 transition-colors">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
 
         <div className="p-6 space-y-5">
           <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-2">Day</label>
+            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-2">Day</label>
             <div className="grid grid-cols-4 gap-1.5">
               {DAYS.map((day, idx) => (
                 <button
@@ -46,7 +46,7 @@ export function AddToMenuModal({ isOpen, onClose, onConfirm, defaultMealType, me
                   className={`py-2 rounded-xl text-xs font-bold transition-all ${
                     dayIndex === idx
                       ? 'bg-amber-500 text-white shadow-md'
-                      : 'bg-stone-100 text-stone-500 hover:bg-amber-50 hover:text-amber-700'
+                      : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:text-amber-700 dark:hover:text-amber-400'
                   }`}
                 >
                   {day.slice(0, 3)}
@@ -56,7 +56,7 @@ export function AddToMenuModal({ isOpen, onClose, onConfirm, defaultMealType, me
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-2">Meal</label>
+            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-2">Meal</label>
             <div className="flex gap-2">
               {mealTypes.map(type => {
                 const cfg = MEAL_TYPE_CONFIG[type];
@@ -67,7 +67,7 @@ export function AddToMenuModal({ isOpen, onClose, onConfirm, defaultMealType, me
                     className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 ${
                       mealType === type
                         ? `${cfg.activeBg} text-white shadow-md`
-                        : `bg-stone-100 text-stone-500 hover:${cfg.bg}`
+                        : `bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:${cfg.bg} dark:hover:bg-opacity-20`
                     }`}
                   >
                     <span>{cfg.emoji}</span>
@@ -79,8 +79,8 @@ export function AddToMenuModal({ isOpen, onClose, onConfirm, defaultMealType, me
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-stone-100 flex gap-3 justify-end">
-          <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-semibold text-stone-500 hover:bg-stone-100 transition-colors">
+        <div className="px-6 py-4 border-t border-stone-100 dark:border-stone-700 flex gap-3 justify-end">
+          <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm font-semibold text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors">
             Cancel
           </button>
           <button
