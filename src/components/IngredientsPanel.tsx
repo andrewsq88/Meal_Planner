@@ -1,4 +1,4 @@
-import { X, Heart, ShoppingBag, CheckSquare, Square, ChefHat } from 'lucide-react';
+import { X, Heart, ShoppingBag, CheckSquare, Square, ChefHat, Clock } from 'lucide-react';
 import { useState } from 'react';
 import type { MenuItem, MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
@@ -41,8 +41,14 @@ export function IngredientsPanel({ item, isFavorited, onClose, onAddFavorite }: 
             {item.description && (
               <p className="text-xs text-stone-500 mt-1 leading-relaxed">{item.description}</p>
             )}
-            {item.cook && (
+            {item.time_slot && (
               <p className="flex items-center gap-1.5 text-xs text-stone-400 mt-1.5 font-medium">
+                <Clock className="w-3.5 h-3.5 flex-shrink-0" />
+                {item.time_slot}
+              </p>
+            )}
+            {item.cook && (
+              <p className="flex items-center gap-1.5 text-xs text-stone-400 mt-1 font-medium">
                 <ChefHat className="w-3.5 h-3.5 flex-shrink-0" />
                 {item.cook}
               </p>

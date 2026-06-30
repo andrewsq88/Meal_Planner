@@ -1,4 +1,4 @@
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Clock } from 'lucide-react';
 import type { MenuItem, MealType } from '../types';
 import { DAYS, DAYS_SHORT, MEAL_TYPE_CONFIG, formatDisplayDate } from '../types';
 
@@ -56,6 +56,12 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
                   }`}>
                     {item.name}
                   </p>
+                  {item.time_slot && (
+                    <p className="flex items-center gap-1 text-xs text-stone-400 mt-0.5 font-medium">
+                      <Clock className="w-3 h-3 flex-shrink-0" />
+                      {item.time_slot}
+                    </p>
+                  )}
                   {item.ingredients.length > 0 && (
                     <p className="text-xs text-stone-400 mt-1">
                       {item.ingredients.length} ingredient{item.ingredients.length !== 1 ? 's' : ''}

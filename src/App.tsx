@@ -64,6 +64,7 @@ function Planner({ onAuthRequired }: PlannerProps) {
     initialDescription?: string;
     initialIngredients?: string[];
     initialCook?: string;
+    initialTimeSlot?: string;
   } | null>(null);
 
   const [addToMenuTarget, setAddToMenuTarget] = useState<{
@@ -87,12 +88,13 @@ function Planner({ onAuthRequired }: PlannerProps) {
       initialDescription: existing?.description,
       initialIngredients: existing?.ingredients,
       initialCook: existing?.cook,
+      initialTimeSlot: existing?.time_slot ?? '',
     });
   };
 
-  const handleSaveMeal = async (name: string, description: string, ingredients: string[], cook: string) => {
+  const handleSaveMeal = async (name: string, description: string, ingredients: string[], cook: string, timeSlot: string) => {
     if (!editModal) return;
-    const result = await upsertItem(editModal.dayIndex, mealType, name, description, ingredients, cook);
+    const result = await upsertItem(editModal.dayIndex, mealType, name, description, ingredients, cook, timeSlot);
     if (result) setSelectedItem(result);
   };
 
@@ -218,6 +220,7 @@ function Planner({ onAuthRequired }: PlannerProps) {
           initialDescription={editModal.initialDescription}
           initialIngredients={editModal.initialIngredients}
           initialCook={editModal.initialCook}
+          initialTimeSlot={editModal.initialTimeSlot}
         />
       )}
 

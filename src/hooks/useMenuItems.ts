@@ -107,6 +107,7 @@ export function useMenuItems(weekStart: string) {
     description: string,
     ingredients: string[],
     cook: string = '',
+    timeSlot: string = '',
   ): Promise<MenuItem | null> => {
     if (!user) {
       // Guest: write to local storage
@@ -117,7 +118,7 @@ export function useMenuItems(weekStart: string) {
       );
       let updated: MenuItem;
       if (existingIdx >= 0) {
-        updated = { ...all[existingIdx], name, description, ingredients, cook, updated_at: now };
+        updated = { ...all[existingIdx], name, description, ingredients, cook, time_slot: timeSlot || null, updated_at: now };
         all[existingIdx] = updated;
       } else {
         updated = {
@@ -129,6 +130,7 @@ export function useMenuItems(weekStart: string) {
           description,
           ingredients,
           cook,
+          time_slot: timeSlot || null,
           created_at: now,
           updated_at: now,
         };
@@ -145,7 +147,7 @@ export function useMenuItems(weekStart: string) {
     if (existing) {
       const { data, error: err } = await supabase
         .from('menu_items')
-        .update({ name, description, ingredients, cook, updated_at: new Date().toISOString() })
+        .update({ name, description, ingredients, cook, time_slot: timeSlot || null, updated_at: new Date().toISOString() })
         .eq('id', existing.id)
         .select()
         .single();
@@ -155,7 +157,7 @@ export function useMenuItems(weekStart: string) {
     }
     const { data, error: err } = await supabase
       .from('menu_items')
-      .insert({ week_start: weekStart, day_of_week: dayOfWeek, meal_type: mealType, name, description, ingredients, cook })
+      .insert({ week_start: weekStart, day_of_week: dayOfWeek, meal_type: mealType, name, description, ingredients, cook, time_slot: timeSlot || null })
       .select()
       .single();
     if (err) return null;

@@ -9,6 +9,7 @@ export interface MenuItem {
   description: string;
   ingredients: string[];
   cook: string;
+  time_slot: string | null;
   created_at: string;
   updated_at: string;
 }

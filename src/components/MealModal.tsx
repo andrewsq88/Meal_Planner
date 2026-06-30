@@ -1,29 +1,45 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Sparkles, ChefHat } from 'lucide-react';
+import { X, Plus, Trash2, Sparkles, ChefHat, Clock } from 'lucide-react';
 import type { MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
 import { supabase } from '../lib/supabase';
 
+// Generate all 15-minute timeslots for a 12-hour clock
+const TIME_SLOTS: string[] = (() => {
+  const slots: string[] = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const period = h < 12 ? 'AM' : 'PM';
+      const displayHour = h % 12 === 0 ? 12 : h % 12;
+      const displayMin = m.toString().padStart(2, '0');
+      slots.push(`${displayHour}:${displayMin} ${period}`);
+    }
+  }
+  return slots;
+})();
+
 interface MealModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string, description: string, ingredients: string[], cook: string) => Promise<void>;
+  onSave: (name: string, description: string, ingredients: string[], cook: string, timeSlot: string) => Promise<void>;
   dayIndex: number;
   mealType: MealType;
   initialName?: string;
   initialDescription?: string;
   initialIngredients?: string[];
   initialCook?: string;
+  initialTimeSlot?: string;
 }
 
 export function MealModal({
   isOpen, onClose, onSave, dayIndex, mealType,
-  initialName = '', initialDescription = '', initialIngredients = [], initialCook = '',
+  initialName = '', initialDescription = '', initialIngredients = [], initialCook = '', initialTimeSlot = '',
 }: MealModalProps) {
   const [name, setName] = useState(initialName);
   const [cook, setCook] = useState(initialCook);
   const [description, setDescription] = useState(initialDescription);
   const [ingredients, setIngredients] = useState<string[]>(initialIngredients.length ? initialIngredients : ['']);
+  const [timeSlot, setTimeSlot] = useState(initialTimeSlot);
   const [saving, setSaving] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [aiSuggested, setAiSuggested] = useState(false);
@@ -38,6 +54,7 @@ export function MealModal({
       setCook(initialCook);
       setDescription(initialDescription);
       setIngredients(initialIngredients.length ? initialIngredients : ['']);
+      setTimeSlot(initialTimeSlot);
       setAiSuggested(false);
       setSuggesting(false);
       descEditedRef.current = false;
@@ -95,7 +112,7 @@ export function MealModal({
   const handleSave = async () => {
     if (!name.trim()) return;
     setSaving(true);
-    await onSave(name.trim(), description.trim(), ingredients.filter(i => i.trim()), cook.trim());
+    await onSave(name.trim(), description.trim(), ingredients.filter(i => i.trim()), cook.trim(), timeSlot);
     setSaving(false);
     onClose();
   };
@@ -159,20 +176,43 @@ export function MealModal({
             />
           </div>
 
-          {/* Chef / Cook */}
-          <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">
-              Chef / Cook
-            </label>
-            <div className="relative">
-              <ChefHat className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
-              <input
-                type="text"
-                value={cook}
-                onChange={e => setCook(e.target.value)}
-                placeholder="Who's cooking this?"
-                className="w-full rounded-xl border border-stone-200 pl-9 pr-4 py-2.5 text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all"
-              />
+          {/* Time slot + Chef row */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Time Slot */}
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">
+                Time
+              </label>
+              <div className="relative">
+                <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
+                <select
+                  value={timeSlot}
+                  onChange={e => setTimeSlot(e.target.value)}
+                  className="w-full rounded-xl border border-stone-200 pl-9 pr-3 py-2.5 text-stone-700 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all text-sm cursor-pointer"
+                >
+                  <option value="">No time</option>
+                  {TIME_SLOTS.map(slot => (
+                    <option key={slot} value={slot}>{slot}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Chef / Cook */}
+            <div>
+              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">
+                Chef / Cook
+              </label>
+              <div className="relative">
+                <ChefHat className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
+                <input
+                  type="text"
+                  value={cook}
+                  onChange={e => setCook(e.target.value)}
+                  placeholder="Who's cooking?"
+                  className="w-full rounded-xl border border-stone-200 pl-9 pr-4 py-2.5 text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all text-sm"
+                />
+              </div>
             </div>
           </div>
 
@@ -274,3 +314,4 @@ export function MealModal({
     </div>
   );
 }
+
