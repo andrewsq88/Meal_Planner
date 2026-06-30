@@ -15,10 +15,10 @@ const QUICK_TAGS = ['quick', 'healthy', 'vegan', 'italian', 'comfort', 'kids', '
 type TabId = 'library' | 'live';
 
 const SOURCE_COLORS: Record<string, string> = {
-  'Smitten Kitchen': 'bg-rose-100 text-rose-700',
-  'The Kitchn': 'bg-orange-100 text-orange-700',
-  'Serious Eats': 'bg-amber-100 text-amber-700',
-  'Simply Recipes': 'bg-emerald-100 text-emerald-700',
+  'Smitten Kitchen': 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400',
+  'The Kitchn': 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
+  'Serious Eats': 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+  'Simply Recipes': 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400',
 };
 
 function formatRelativeDate(dateStr: string): string {
@@ -55,23 +55,23 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
   ];
 
   return (
-    <section className="bg-white rounded-3xl border border-stone-100 shadow-sm overflow-hidden">
+    <section className="bg-white dark:bg-stone-800 rounded-3xl border border-stone-100 dark:border-stone-700 shadow-sm overflow-hidden transition-colors duration-300">
       {/* Header */}
-      <div className="px-6 pt-5 pb-4 border-b border-stone-100">
+      <div className="px-6 pt-5 pb-4 border-b border-stone-100 dark:border-stone-700">
         <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-amber-500" />
-            <h2 className="text-lg font-extrabold text-stone-800">Meal Suggestions</h2>
+            <h2 className="text-lg font-extrabold text-stone-800 dark:text-stone-100">Meal Suggestions</h2>
           </div>
 
           {/* Tab switcher */}
-          <div className="flex gap-1 p-1 bg-stone-100 rounded-2xl">
+          <div className="flex gap-1 p-1 bg-stone-100 dark:bg-stone-700 rounded-2xl">
             <button
               onClick={() => setActiveTab('library')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'library'
-                  ? 'bg-white text-stone-800 shadow-sm'
-                  : 'text-stone-500 hover:text-stone-700'
+                  ? 'bg-white dark:bg-stone-600 text-stone-800 dark:text-stone-100 shadow-sm'
+                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -81,8 +81,8 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
               onClick={() => setActiveTab('live')}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'live'
-                  ? 'bg-white text-stone-800 shadow-sm'
-                  : 'text-stone-500 hover:text-stone-700'
+                  ? 'bg-white dark:bg-stone-600 text-stone-800 dark:text-stone-100 shadow-sm'
+                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
               }`}
             >
               <Rss className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
           <p className="text-xs text-stone-400 mb-3 leading-relaxed">
             Fresh recipes from{' '}
             {['Smitten Kitchen', 'The Kitchn', 'Serious Eats', 'Simply Recipes'].map((src, i, arr) => (
-              <span key={src} className="font-semibold text-stone-500">
+              <span key={src} className="font-semibold text-stone-500 dark:text-stone-400">
                 {src}{i < arr.length - 1 ? ', ' : ''}
               </span>
             ))}
@@ -112,7 +112,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder={activeTab === 'library' ? 'Search by ingredient, cuisine, style…' : 'Filter live recipes…'}
-            className="w-full pl-10 pr-4 py-3 rounded-2xl border border-stone-200 text-sm text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all font-medium"
+            className="w-full pl-10 pr-4 py-3 rounded-2xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-sm text-stone-700 dark:text-stone-200 placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all font-medium"
           />
           {loading && (
             <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500 animate-spin" />
@@ -128,7 +128,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 mealFilter === value
                   ? 'bg-amber-500 text-white shadow-md'
-                  : 'bg-stone-100 text-stone-500 hover:bg-amber-50 hover:text-amber-700'
+                  : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:text-amber-700'
               }`}
             >
               <span>{emoji}</span>
@@ -144,7 +144,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
               <button
                 key={tag}
                 onClick={() => setQuery(tag)}
-                className="px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-100 text-xs font-semibold text-amber-700 hover:bg-amber-100 transition-colors"
+                className="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
               >
                 {tag}
               </button>
@@ -165,28 +165,28 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
               </div>
             ) : suggestions.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-stone-500 font-medium text-sm">
+                <p className="text-stone-500 dark:text-stone-400 font-medium text-sm">
                   {query.trim() ? `No results for "${query}"` : 'No suggestions available'}
                 </p>
-                <p className="text-stone-400 text-xs mt-1">Try the Live Feed tab for fresh recipes from the web</p>
+                <p className="text-stone-400 dark:text-stone-500 text-xs mt-1">Try the Live Feed tab for fresh recipes from the web</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {suggestions.map(sug => {
                   const cfg = MEAL_TYPE_CONFIG[sug.meal_type];
                   return (
-                    <div key={sug.id} className={`rounded-2xl border ${cfg.border} ${cfg.bg} p-4 flex flex-col gap-2`}>
+                    <div key={sug.id} className={`rounded-2xl border ${cfg.border} ${cfg.bg} dark:bg-opacity-10 dark:border-opacity-30 p-4 flex flex-col gap-2`}>
                       <div className="flex-1">
                         <span className={`text-xs font-bold ${cfg.color}`}>{cfg.emoji} {cfg.label}</span>
-                        <h4 className="text-sm font-extrabold text-stone-800 mt-0.5 leading-snug">{sug.name}</h4>
+                        <h4 className="text-sm font-extrabold text-stone-800 dark:text-stone-100 mt-0.5 leading-snug">{sug.name}</h4>
                         {sug.description && (
-                          <p className="text-xs text-stone-500 mt-1 leading-relaxed">{sug.description}</p>
+                          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{sug.description}</p>
                         )}
                       </div>
                       {sug.ingredients.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {sug.ingredients.slice(0, 4).map((ing, i) => (
-                            <span key={i} className="text-xs bg-white/70 border border-stone-200 text-stone-500 px-2 py-0.5 rounded-lg">
+                            <span key={i} className="text-xs bg-white/70 dark:bg-stone-700/70 border border-stone-200 dark:border-stone-600 text-stone-500 dark:text-stone-400 px-2 py-0.5 rounded-lg">
                               {ing.replace(/^\d+\s*(cup|tbsp|tsp|g|kg|oz|lb)?\s*/i, '').split(',')[0].trim()}
                             </span>
                           ))}
@@ -205,7 +205,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                         </button>
                         <button
                           onClick={() => onAddToFavorites(sug)}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-500 bg-rose-50 hover:bg-rose-100 transition-colors"
+                          className="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
                         >
                           ♥ Save
                         </button>
@@ -223,11 +223,11 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
           <>
             {rssError ? (
               <div className="text-center py-8">
-                <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center mx-auto mb-3">
                   <AlertCircle className="w-6 h-6 text-rose-400" />
                 </div>
-                <p className="text-stone-500 font-medium text-sm">Couldn't load live recipes</p>
-                <p className="text-stone-400 text-xs mt-1">{rssError}</p>
+                <p className="text-stone-500 dark:text-stone-400 font-medium text-sm">Couldn't load live recipes</p>
+                <p className="text-stone-400 dark:text-stone-500 text-xs mt-1">{rssError}</p>
               </div>
             ) : loading && rssRecipes.length === 0 ? (
               <div className="text-center py-8">
@@ -237,19 +237,19 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
             ) : rssRecipes.length === 0 ? (
               <div className="text-center py-8">
                 <Rss className="w-8 h-8 text-stone-300 mx-auto mb-2" />
-                <p className="text-stone-500 font-medium text-sm">No recipes found</p>
-                <p className="text-stone-400 text-xs mt-1">Try clearing the filter or search term</p>
+                <p className="text-stone-500 dark:text-stone-400 font-medium text-sm">No recipes found</p>
+                <p className="text-stone-400 dark:text-stone-500 text-xs mt-1">Try clearing the filter or search term</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {rssRecipes.map(recipe => {
                   const cfg = MEAL_TYPE_CONFIG[recipe.meal_type];
-                  const sourceBadge = SOURCE_COLORS[recipe.source] ?? 'bg-stone-100 text-stone-600';
+                  const sourceBadge = SOURCE_COLORS[recipe.source] ?? 'bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-400';
                   return (
-                    <div key={recipe.id} className="rounded-2xl border border-stone-100 bg-white overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                    <div key={recipe.id} className="rounded-2xl border border-stone-100 dark:border-stone-700 bg-white dark:bg-stone-750 overflow-hidden flex flex-col hover:shadow-md transition-shadow" style={{backgroundColor: 'var(--card-bg, transparent)'}}>
                       {/* Thumbnail */}
                       {recipe.imageUrl && (
-                        <div className="h-36 overflow-hidden bg-stone-100 flex-shrink-0">
+                        <div className="h-36 overflow-hidden bg-stone-100 dark:bg-stone-700 flex-shrink-0">
                           <img
                             src={recipe.imageUrl}
                             alt={recipe.title}
@@ -259,7 +259,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                         </div>
                       )}
 
-                      <div className="p-4 flex flex-col gap-2 flex-1">
+                      <div className="p-4 flex flex-col gap-2 flex-1 bg-white dark:bg-stone-800">
                         {/* Badges row */}
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${sourceBadge}`}>
@@ -271,10 +271,10 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                           )}
                         </div>
 
-                        <h4 className="text-sm font-extrabold text-stone-800 leading-snug">{recipe.title}</h4>
+                        <h4 className="text-sm font-extrabold text-stone-800 dark:text-stone-100 leading-snug">{recipe.title}</h4>
 
                         {recipe.description && (
-                          <p className="text-xs text-stone-500 leading-relaxed line-clamp-2">{recipe.description}</p>
+                          <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed line-clamp-2">{recipe.description}</p>
                         )}
 
                         {/* Actions */}
@@ -288,7 +288,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                           </button>
                           <button
                             onClick={() => onAddToFavorites(recipe)}
-                            className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-500 bg-rose-50 hover:bg-rose-100 transition-colors"
+                            className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
                           >
                             ♥
                           </button>
@@ -296,7 +296,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                             href={recipe.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 bg-stone-50 hover:bg-stone-100 hover:text-stone-600 transition-colors flex items-center"
+                            className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-stone-400 bg-stone-50 dark:bg-stone-700 hover:bg-stone-100 dark:hover:bg-stone-600 hover:text-stone-600 transition-colors flex items-center"
                             title="View recipe"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />

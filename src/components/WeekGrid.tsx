@@ -29,16 +29,16 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
             className={`relative rounded-2xl border-2 transition-all duration-200 overflow-hidden ${
               isSelected
                 ? `${cfg.border} shadow-lg scale-[1.02]`
-                : 'border-stone-100 hover:border-stone-200 hover:shadow-md'
-            } ${isWeekend ? 'bg-amber-50/40' : 'bg-white'}`}
+                : 'border-stone-100 dark:border-stone-700 hover:border-stone-200 dark:hover:border-stone-600 hover:shadow-md'
+            } ${isWeekend ? 'bg-amber-50/40 dark:bg-amber-900/10' : 'bg-white dark:bg-stone-800'}`}
           >
             {/* Day header */}
             <div className={`px-3 pt-3 pb-2 flex items-center justify-between`}>
               <div>
-                <span className={`text-xs font-bold uppercase tracking-wide ${isWeekend ? 'text-amber-600' : 'text-stone-400'}`}>
+                <span className={`text-xs font-bold uppercase tracking-wide ${isWeekend ? 'text-amber-600 dark:text-amber-400' : 'text-stone-400 dark:text-stone-500'}`}>
                   {DAYS_SHORT[idx]}
                 </span>
-                <p className="text-xs text-stone-400 leading-none mt-0.5">{dateLabel}</p>
+                <p className="text-xs text-stone-400 dark:text-stone-500 leading-none mt-0.5">{dateLabel}</p>
               </div>
               {isWeekend && <span className="text-xs">🌟</span>}
             </div>
@@ -52,18 +52,18 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
                   title="Edit meal"
                 >
                   <p className={`text-sm font-semibold leading-snug transition-colors ${
-                    isSelected ? cfg.color : 'text-stone-700 group-hover:' + cfg.color
+                    isSelected ? cfg.color : 'text-stone-700 dark:text-stone-200 group-hover:' + cfg.color
                   }`}>
                     {item.name}
                   </p>
                   {item.time_slot && (
-                    <p className="flex items-center gap-1 text-xs text-stone-400 mt-0.5 font-medium">
+                    <p className="flex items-center gap-1 text-xs text-stone-400 dark:text-stone-500 mt-0.5 font-medium">
                       <Clock className="w-3 h-3 flex-shrink-0" />
                       {item.time_slot}
                     </p>
                   )}
                   {item.ingredients.length > 0 && (
-                    <p className="text-xs text-stone-400 mt-1">
+                    <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
                       {item.ingredients.length} ingredient{item.ingredients.length !== 1 ? 's' : ''}
                     </p>
                   )}
@@ -71,7 +71,7 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
               ) : (
                 <button
                   onClick={() => onAdd(idx)}
-                  className="w-full h-full min-h-[64px] flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-stone-200 text-stone-300 hover:border-amber-300 hover:text-amber-400 transition-all group"
+                  className="w-full h-full min-h-[64px] flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-600 text-stone-300 dark:text-stone-600 hover:border-amber-300 hover:text-amber-400 transition-all group"
                 >
                   <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   <span className="text-xs font-medium">Add meal</span>
@@ -84,8 +84,8 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
               <div className="absolute top-2 right-2 flex gap-1">
                 <button
                   onClick={e => { e.stopPropagation(); onSelect(isSelected ? null : item); }}
-                  className={`w-6 h-6 rounded-lg bg-white shadow border flex items-center justify-center transition-all ${
-                    isSelected ? `${cfg.border} ${cfg.color}` : 'border-stone-100 text-stone-400 hover:text-amber-600 hover:border-amber-200'
+                  className={`w-6 h-6 rounded-lg bg-white dark:bg-stone-700 shadow border flex items-center justify-center transition-all ${
+                    isSelected ? `${cfg.border} ${cfg.color}` : 'border-stone-100 dark:border-stone-600 text-stone-400 hover:text-amber-600 hover:border-amber-200'
                   }`}
                   title="View ingredients"
                 >
@@ -93,7 +93,7 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
                 </button>
                 <button
                   onClick={e => { e.stopPropagation(); onDelete(item); }}
-                  className="w-6 h-6 rounded-lg bg-white shadow border border-stone-100 flex items-center justify-center text-stone-400 hover:text-rose-500 hover:border-rose-200 transition-all"
+                  className="w-6 h-6 rounded-lg bg-white dark:bg-stone-700 shadow border border-stone-100 dark:border-stone-600 flex items-center justify-center text-stone-400 hover:text-rose-500 hover:border-rose-200 transition-all"
                   title="Remove meal"
                 >
                   <Trash2 className="w-3 h-3" />

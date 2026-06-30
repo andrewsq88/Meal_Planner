@@ -11,6 +11,7 @@ import { AuthModal } from './components/AuthModal';
 import { AuthProvider } from './context/AuthContext';
 import { useMenuItems } from './hooks/useMenuItems';
 import { useFavorites } from './hooks/useFavorites';
+import { useDarkMode } from './hooks/useDarkMode';
 import { useAuth } from './context/AuthContext';
 import { getWeekStart, addDays } from './types';
 import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './types';
@@ -18,6 +19,7 @@ import { UtensilsCrossed } from 'lucide-react';
 
 function AppContent() {
   const { loading } = useAuth();
+  const { dark, toggle: toggleDark } = useDarkMode();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState<string | undefined>(undefined);
 
@@ -28,7 +30,7 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 flex items-center justify-center">
         <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-pulse">
           <UtensilsCrossed className="w-7 h-7 text-white" />
         </div>
@@ -38,7 +40,7 @@ function AppContent() {
 
   return (
     <>
-      <Planner onAuthRequired={requireAuth} />
+      <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} />
       <AuthModal
         open={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
@@ -50,9 +52,11 @@ function AppContent() {
 
 interface PlannerProps {
   onAuthRequired: (prompt?: string) => void;
+  dark: boolean;
+  toggleDark: () => void;
 }
 
-function Planner({ onAuthRequired }: PlannerProps) {
+function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
   const { user } = useAuth();
   const [weekStart, setWeekStart] = useState(() => getWeekStart());
   const [mealType, setMealType] = useState<MealType>('dinner');
@@ -148,7 +152,7 @@ function Planner({ onAuthRequired }: PlannerProps) {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-rose-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-rose-50/20 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 transition-colors duration-300">
       <Header
         weekStart={weekStart}
         onPrevWeek={goToPrevWeek}
@@ -159,6 +163,8 @@ function Planner({ onAuthRequired }: PlannerProps) {
             : undefined
         )}
         guestMealCount={!user ? items.length : 0}
+        dark={dark}
+        onToggleDark={toggleDark}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">

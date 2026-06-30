@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, UtensilsCrossed, LogOut, LogIn, Save } from 'lucide-react';
+import { ChevronLeft, ChevronRight, UtensilsCrossed, LogOut, LogIn, Save, Sun, Moon } from 'lucide-react';
 import { formatWeekRange } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
@@ -10,9 +10,11 @@ interface HeaderProps {
   onNextWeek: () => void;
   onSignInClick: () => void;
   guestMealCount: number;
+  dark: boolean;
+  onToggleDark: () => void;
 }
 
-export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guestMealCount }: HeaderProps) {
+export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guestMealCount, dark, onToggleDark }: HeaderProps) {
   const { user } = useAuth();
   const initial = user?.email?.[0]?.toUpperCase() ?? '?';
 
@@ -24,7 +26,7 @@ export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guest
   const hasUnsaved = !user && guestMealCount > 0;
 
   return (
-    <header className="bg-white/80 backdrop-blur-sm border-b border-amber-100 sticky top-0 z-30">
+    <header className="bg-white/80 dark:bg-stone-900/90 backdrop-blur-sm border-b border-amber-100 dark:border-stone-700 sticky top-0 z-30 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -32,31 +34,44 @@ export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guest
               <UtensilsCrossed className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-stone-800 leading-tight">Family Menu</h1>
-              <p className="text-xs text-stone-400 font-medium">Weekly meal planner</p>
+              <h1 className="text-xl font-extrabold text-stone-800 dark:text-stone-100 leading-tight">Family Menu</h1>
+              <p className="text-xs text-stone-400 dark:text-stone-500 font-medium">Weekly meal planner</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-amber-50 rounded-2xl px-3 py-2 border border-amber-100">
+            <div className="flex items-center gap-2 bg-amber-50 dark:bg-stone-800 rounded-2xl px-3 py-2 border border-amber-100 dark:border-stone-700 transition-colors duration-300">
               <button
                 onClick={onPrevWeek}
-                className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-500 hover:bg-amber-200 hover:text-amber-800 transition-all"
+                className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-500 dark:text-stone-400 hover:bg-amber-200 dark:hover:bg-stone-700 hover:text-amber-800 dark:hover:text-amber-400 transition-all"
                 aria-label="Previous week"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-sm font-semibold text-stone-700 min-w-[160px] text-center">
+              <span className="text-sm font-semibold text-stone-700 dark:text-stone-200 min-w-[160px] text-center">
                 {formatWeekRange(weekStart)}
               </span>
               <button
                 onClick={onNextWeek}
-                className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-500 hover:bg-amber-200 hover:text-amber-800 transition-all"
+                className="w-7 h-7 rounded-xl flex items-center justify-center text-stone-500 dark:text-stone-400 hover:bg-amber-200 dark:hover:bg-stone-700 hover:text-amber-800 dark:hover:text-amber-400 transition-all"
                 aria-label="Next week"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Dark mode toggle */}
+            <button
+              onClick={onToggleDark}
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-stone-500 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-stone-700 border border-amber-100 dark:border-stone-700 bg-amber-50 dark:bg-stone-800 transition-all duration-200"
+              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={dark ? 'Light mode' : 'Dark mode'}
+            >
+              {dark
+                ? <Sun className="w-4 h-4" />
+                : <Moon className="w-4 h-4" />
+              }
+            </button>
 
             {/* Auth controls */}
             {user ? (
@@ -69,7 +84,7 @@ export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guest
                 </div>
                 <button
                   onClick={handleSignOut}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center text-stone-400 hover:text-rose-500 hover:bg-rose-50 transition-all"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-stone-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-all"
                   title="Sign out"
                   aria-label="Sign out"
                 >

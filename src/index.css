@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply antialiased;
+    @apply antialiased bg-white dark:bg-stone-900 transition-colors duration-300;
     -webkit-font-smoothing: antialiased;
   }
 }

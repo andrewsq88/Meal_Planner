@@ -141,20 +141,20 @@ export function MealModal({
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in">
+      <div className="bg-white dark:bg-stone-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in">
         {/* Header */}
-        <div className={`${cfg.bg} border-b ${cfg.border} px-6 py-4 flex items-center justify-between`}>
+        <div className={`${cfg.bg} dark:bg-opacity-20 border-b ${cfg.border} dark:border-opacity-30 px-6 py-4 flex items-center justify-between`}>
           <div>
-            <p className="text-xs font-semibold text-stone-500 uppercase tracking-wide">
+            <p className="text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wide">
               {cfg.emoji} {cfg.label} · {DAYS[dayIndex]}
             </p>
-            <h2 className="text-lg font-extrabold text-stone-800 mt-0.5">
+            <h2 className="text-lg font-extrabold text-stone-800 dark:text-stone-100 mt-0.5">
               {isEditing ? 'Edit Meal' : 'Add a Meal'}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/70 flex items-center justify-center text-stone-400 hover:text-stone-600 transition-colors"
+            className="w-8 h-8 rounded-full bg-white/70 dark:bg-stone-700/70 flex items-center justify-center text-stone-400 hover:text-stone-600 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -163,7 +163,7 @@ export function MealModal({
         <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
           {/* Meal name */}
           <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">
+            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-1.5">
               Meal Name *
             </label>
             <input
@@ -172,7 +172,7 @@ export function MealModal({
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Spaghetti Bolognese"
               autoFocus
-              className="w-full rounded-xl border border-stone-200 px-4 py-2.5 text-stone-800 font-semibold placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all"
+              className="w-full rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 px-4 py-2.5 text-stone-800 dark:text-stone-100 font-semibold placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all"
             />
           </div>
 
@@ -180,15 +180,15 @@ export function MealModal({
           <div className="grid grid-cols-2 gap-3">
             {/* Time Slot */}
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-1.5">
                 Time
               </label>
               <div className="relative">
-                <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
+                <Clock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 dark:text-stone-500 pointer-events-none" />
                 <select
                   value={timeSlot}
                   onChange={e => setTimeSlot(e.target.value)}
-                  className="w-full rounded-xl border border-stone-200 pl-9 pr-3 py-2.5 text-stone-700 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all text-sm cursor-pointer"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 pl-9 pr-3 py-2.5 text-stone-700 dark:text-stone-200 appearance-none focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all text-sm cursor-pointer"
                 >
                   <option value="">No time</option>
                   {TIME_SLOTS.map(slot => (
@@ -200,17 +200,17 @@ export function MealModal({
 
             {/* Chef / Cook */}
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">
+              <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-1.5">
                 Chef / Cook
               </label>
               <div className="relative">
-                <ChefHat className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
+                <ChefHat className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 dark:text-stone-500 pointer-events-none" />
                 <input
                   type="text"
                   value={cook}
                   onChange={e => setCook(e.target.value)}
                   placeholder="Who's cooking?"
-                  className="w-full rounded-xl border border-stone-200 pl-9 pr-4 py-2.5 text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all text-sm"
+                  className="w-full rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 pl-9 pr-4 py-2.5 text-stone-700 dark:text-stone-200 placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all text-sm"
                 />
               </div>
             </div>
@@ -219,7 +219,7 @@ export function MealModal({
           {/* Description */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide">
+              <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide">
                 Description
               </label>
               {suggesting && (
@@ -239,8 +239,8 @@ export function MealModal({
                 onChange={e => handleDescriptionChange(e.target.value)}
                 placeholder="A short note about the meal..."
                 rows={2}
-                className={`w-full rounded-xl border px-4 py-2.5 text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all resize-none text-sm ${
-                  suggesting ? 'border-amber-200 bg-amber-50/50' : 'border-stone-200'
+                className={`w-full rounded-xl border px-4 py-2.5 text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-700 placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all resize-none text-sm ${
+                  suggesting ? 'border-amber-200 bg-amber-50/50 dark:border-amber-700' : 'border-stone-200 dark:border-stone-600'
                 }`}
               />
               {suggesting && (
@@ -253,10 +253,10 @@ export function MealModal({
 
           {/* Ingredients */}
           <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">
+            <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide mb-1.5">
               Ingredients
             </label>
-            <div className={`space-y-2 rounded-xl transition-colors ${suggesting ? 'bg-amber-50/40 p-2 -m-2' : ''}`}>
+            <div className={`space-y-2 rounded-xl transition-colors ${suggesting ? 'bg-amber-50/40 dark:bg-amber-900/10 p-2 -m-2' : ''}`}>
               {ingredients.map((ing, idx) => (
                 <div key={idx} className="flex gap-2 items-center">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 mt-0.5" />
@@ -266,14 +266,14 @@ export function MealModal({
                     onChange={e => updateIngredient(idx, e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addIngredient(); } }}
                     placeholder={`Ingredient ${idx + 1}`}
-                    className={`flex-1 rounded-xl border px-3 py-2 text-sm text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all ${
-                      suggesting ? 'border-amber-200 bg-white/80' : 'border-stone-200'
+                    className={`flex-1 rounded-xl border px-3 py-2 text-sm text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-700 placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all ${
+                      suggesting ? 'border-amber-200 dark:border-amber-700 bg-white/80' : 'border-stone-200 dark:border-stone-600'
                     }`}
                   />
                   {ingredients.length > 1 && (
                     <button
                       onClick={() => removeIngredient(idx)}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-stone-300 hover:text-rose-400 transition-colors"
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-stone-300 dark:text-stone-600 hover:text-rose-400 transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -291,10 +291,10 @@ export function MealModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-stone-100 flex gap-3 justify-end">
+        <div className="px-6 py-4 border-t border-stone-100 dark:border-stone-700 flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-stone-500 hover:bg-stone-100 transition-colors"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
           >
             Cancel
           </button>
@@ -304,7 +304,7 @@ export function MealModal({
             className={`px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all ${
               name.trim() && !saving
                 ? `${cfg.activeBg} hover:opacity-90 shadow-md`
-                : 'bg-stone-200 cursor-not-allowed'
+                : 'bg-stone-200 dark:bg-stone-600 cursor-not-allowed'
             }`}
           >
             {saving ? 'Saving…' : isEditing ? 'Update' : 'Add Meal'}
