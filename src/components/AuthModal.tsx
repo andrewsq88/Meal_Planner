@@ -116,7 +116,7 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
             </>
           ) : (
             <>
-              <p className="text-white font-extrabold text-lg">Welcome to Family Menu</p>
+              <p className="text-white font-extrabold text-lg">Welcome to Weekly Menu</p>
               <p className="text-white/70 text-xs mt-1">Sign in to save your meals and favorites</p>
             </>
           )}

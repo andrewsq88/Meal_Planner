@@ -34,7 +34,7 @@ export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guest
               <UtensilsCrossed className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold text-stone-800 dark:text-stone-100 leading-tight">Family Menu</h1>
+              <h1 className="text-xl font-extrabold text-stone-800 dark:text-stone-100 leading-tight">Weekly Menu</h1>
               <p className="text-xs text-stone-400 dark:text-stone-500 font-medium">Weekly meal planner</p>
             </div>
           </div>
