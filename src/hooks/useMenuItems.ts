@@ -15,7 +15,20 @@ function loadGuestItems(): MenuItem[] {
 }
 
 function saveGuestItems(items: MenuItem[]) {
-  localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(items));
+  try {
+    localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // Quota exceeded — drop the oldest week and retry once
+    const sorted = [...items].sort(
+      (a, b) => new Date(a.week_start).getTime() - new Date(b.week_start).getTime(),
+    );
+    const trimmed = sorted.slice(Math.ceil(sorted.length / 2));
+    try {
+      localStorage.setItem(GUEST_STORAGE_KEY, JSON.stringify(trimmed));
+    } catch {
+      // Give up silently rather than crashing
+    }
+  }
 }
 
 export function clearGuestItems() {
@@ -78,9 +91,13 @@ export function useMenuItems(weekStart: string) {
             .map(({ id: _id, created_at: _ca, updated_at: _ua, ...rest }) => rest);
 
           if (toInsert.length > 0) {
-            await supabase.from('menu_items').insert(toInsert);
+            const { error: insertErr } = await supabase.from('menu_items').insert(toInsert);
+            if (!insertErr) {
+              clearGuestItems();
+            }
+          } else {
+            clearGuestItems();
           }
-          clearGuestItems();
         }
 
         prevUserId.current = userId;

@@ -40,7 +40,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
   const [mealFilter, setMealFilter] = useState<MealType | 'all'>('all');
 
   const { suggestions, loading: libLoading } = useSuggestions(query, mealFilter);
-  const { recipes: rssRecipes, loading: rssLoading, error: rssError } = useRssRecipes(
+  const { recipes: rssRecipes, loading: rssLoading, error: rssError, retry: retryRss } = useRssRecipes(
     activeTab === 'live' ? query : '',
     activeTab === 'live' ? mealFilter : 'all',
   );
@@ -228,6 +228,12 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                 </div>
                 <p className="text-stone-500 dark:text-stone-400 font-medium text-sm">Couldn't load live recipes</p>
                 <p className="text-stone-400 dark:text-stone-500 text-xs mt-1">{rssError}</p>
+                <button
+                  onClick={retryRss}
+                  className="mt-3 px-4 py-2 rounded-xl text-xs font-bold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-100 transition-colors"
+                >
+                  Try again
+                </button>
               </div>
             ) : loading && rssRecipes.length === 0 ? (
               <div className="text-center py-8">
@@ -248,7 +254,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                   return (
                     <div key={recipe.id} className="rounded-2xl border border-stone-100 dark:border-stone-700 bg-white dark:bg-stone-750 overflow-hidden flex flex-col hover:shadow-md transition-shadow" style={{backgroundColor: 'var(--card-bg, transparent)'}}>
                       {/* Thumbnail */}
-                      {recipe.imageUrl && (
+                      {recipe.imageUrl && /^https?:\/\//i.test(recipe.imageUrl) && (
                         <div className="h-36 overflow-hidden bg-stone-100 dark:bg-stone-700 flex-shrink-0">
                           <img
                             src={recipe.imageUrl}

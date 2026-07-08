@@ -30,6 +30,8 @@ export function useSuggestions(query: string, mealTypeFilter: MealType | 'all') 
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    // Only query when blank (show defaults) or at least 2 characters entered
+    if (query.trim().length === 1) return;
     debounceRef.current = setTimeout(() => search(query, mealTypeFilter), 300);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);

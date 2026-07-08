@@ -169,8 +169,9 @@ export function MealModal({
             <input
               type="text"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={e => setName(e.target.value.slice(0, 150))}
               placeholder="e.g. Spaghetti Bolognese"
+              maxLength={150}
               autoFocus
               className="w-full rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 px-4 py-2.5 text-stone-800 dark:text-stone-100 font-semibold placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all"
             />
@@ -208,8 +209,9 @@ export function MealModal({
                 <input
                   type="text"
                   value={cook}
-                  onChange={e => setCook(e.target.value)}
+                  onChange={e => setCook(e.target.value.slice(0, 80))}
                   placeholder="Who's cooking?"
+                  maxLength={80}
                   className="w-full rounded-xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 pl-9 pr-4 py-2.5 text-stone-700 dark:text-stone-200 placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all text-sm"
                 />
               </div>
@@ -236,9 +238,10 @@ export function MealModal({
             <div className="relative">
               <textarea
                 value={description}
-                onChange={e => handleDescriptionChange(e.target.value)}
+                onChange={e => handleDescriptionChange(e.target.value.slice(0, 300))}
                 placeholder="A short note about the meal..."
                 rows={2}
+                maxLength={300}
                 className={`w-full rounded-xl border px-4 py-2.5 text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-700 placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all resize-none text-sm ${
                   suggesting ? 'border-amber-200 bg-amber-50/50 dark:border-amber-700' : 'border-stone-200 dark:border-stone-600'
                 }`}
@@ -263,9 +266,10 @@ export function MealModal({
                   <input
                     type="text"
                     value={ing}
-                    onChange={e => updateIngredient(idx, e.target.value)}
+                    onChange={e => updateIngredient(idx, e.target.value.slice(0, 100))}
                     onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addIngredient(); } }}
                     placeholder={`Ingredient ${idx + 1}`}
+                    maxLength={100}
                     className={`flex-1 rounded-xl border px-3 py-2 text-sm text-stone-700 dark:text-stone-200 bg-white dark:bg-stone-700 placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all ${
                       suggesting ? 'border-amber-200 dark:border-amber-700 bg-white/80' : 'border-stone-200 dark:border-stone-600'
                     }`}

@@ -27,7 +27,7 @@ export function useFavorites() {
     mealType: MealType,
     description: string,
     ingredients: string[],
-  ): Promise<boolean | 'auth_required'> => {
+  ): Promise<boolean | 'auth_required' | 'error'> => {
     if (!user) return 'auth_required';
     const already = favorites.some(f => f.name.toLowerCase() === name.toLowerCase());
     if (already) return false;
@@ -36,7 +36,10 @@ export function useFavorites() {
       .insert({ name, meal_type: mealType, description, ingredients })
       .select()
       .single();
-    if (error || !data) return false;
+    if (error || !data) {
+      console.error('Failed to save favorite:', error?.message);
+      return 'error';
+    }
     setFavorites(prev => [data, ...prev]);
     return true;
   }, [favorites, user]);

@@ -1,11 +1,20 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
-};
+const ALLOWED_ORIGINS = [
+  "https://www.weeklymealplan.space",
+  "https://weeklymealplan.space",
+];
+
+function getCorsHeaders(req: Request): Record<string, string> {
+  const origin = req.headers.get("origin") ?? "";
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
+  };
+}
 
 // RSS feeds to aggregate — all are publicly accessible, CORS-free from server side
 const RSS_FEEDS: Array<{ url: string; name: string }> = [
@@ -17,6 +26,8 @@ const RSS_FEEDS: Array<{ url: string; name: string }> = [
 
 // Cache TTL: 30 minutes in milliseconds
 const CACHE_TTL_MS = 30 * 60 * 1000;
+
+const VALID_MEAL_TYPES = new Set(["breakfast", "lunch", "dinner"]);
 
 type MealType = "breakfast" | "lunch" | "dinner";
 
@@ -49,11 +60,8 @@ const NAMED_ENTITIES: Record<string, string> = {
 
 function decodeEntities(str: string): string {
   return str
-    // Decimal numeric entities: &#8212; -> —
     .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(parseInt(code, 10)))
-    // Hex numeric entities: &#x2014; -> —
     .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCodePoint(parseInt(code, 16)))
-    // Named entities
     .replace(/&([a-zA-Z]+);/g, (match, name) => NAMED_ENTITIES[name.toLowerCase()] ?? match);
 }
 
@@ -79,7 +87,6 @@ function simpleHash(str: string): string {
 }
 
 function extractTag(xml: string, tag: string): string {
-  // Match <tag ...>content</tag> — handles CDATA and attributes
   const cdataRe = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tag}>`, "i");
   const cdataMatch = xml.match(cdataRe);
   if (cdataMatch) return cdataMatch[1].trim();
@@ -96,7 +103,6 @@ function extractAttr(xml: string, tag: string, attr: string): string {
 }
 
 function parseItems(xmlText: string, sourceName: string): RssItem[] {
-  // Split on <item> boundaries
   const itemPattern = /<item[\s>][\s\S]*?<\/item>/gi;
   const rawItems = xmlText.match(itemPattern) ?? [];
   const items: RssItem[] = [];
@@ -115,7 +121,6 @@ function parseItems(xmlText: string, sourceName: string): RssItem[] {
 
     const pubDate = extractTag(raw, "pubDate") || extractTag(raw, "published") || extractTag(raw, "dc:date") || "";
 
-    // Try multiple image locations: media:content, enclosure, og image in content
     let imageUrl =
       extractAttr(raw, "media:content", "url") ||
       extractAttr(raw, "enclosure", "url") ||
@@ -124,7 +129,11 @@ function parseItems(xmlText: string, sourceName: string): RssItem[] {
       const imgMatch = rawDesc.match(/<img[^>]+src=["']([^"']+)["']/i);
       if (imgMatch) imageUrl = imgMatch[1];
     }
-    if (imageUrl) imageUrl = decodeUrl(imageUrl);
+    // Only accept http/https image URLs
+    if (imageUrl) {
+      imageUrl = decodeUrl(imageUrl);
+      if (!/^https?:\/\//i.test(imageUrl)) imageUrl = "";
+    }
 
     const meal_type = inferMealType(title + " " + description);
 
@@ -161,14 +170,17 @@ async function fetchFeed(feed: { url: string; name: string }): Promise<RssItem[]
 }
 
 Deno.serve(async (req: Request) => {
+  const cors = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
-    return new Response(null, { status: 200, headers: corsHeaders });
+    return new Response(null, { status: 200, headers: cors });
   }
 
   try {
     const url = new URL(req.url);
-    const query = (url.searchParams.get("query") ?? "").trim().toLowerCase();
-    const mealTypeFilter = url.searchParams.get("meal_type") ?? "all";
+    const query = (url.searchParams.get("query") ?? "").trim().toLowerCase().slice(0, 100);
+    const rawMealType = url.searchParams.get("meal_type") ?? "all";
+    const mealTypeFilter = VALID_MEAL_TYPES.has(rawMealType) ? rawMealType : "all";
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -178,7 +190,6 @@ Deno.serve(async (req: Request) => {
     const now = Date.now();
     const allItems: RssItem[] = [];
 
-    // Fetch each feed, using cache where still fresh
     await Promise.all(
       RSS_FEEDS.map(async (feed) => {
         const { data: cached } = await supabase
@@ -203,7 +214,6 @@ Deno.serve(async (req: Request) => {
                 { onConflict: "feed_url" },
               );
           } else if (cached) {
-            // Feed failed but we have stale cache — use it rather than returning nothing
             items = cached.items as RssItem[];
           }
         }
@@ -212,14 +222,12 @@ Deno.serve(async (req: Request) => {
       }),
     );
 
-    // Sort by pubDate descending (most recent first)
     allItems.sort((a, b) => {
       const da = a.pubDate ? new Date(a.pubDate).getTime() : 0;
       const db = b.pubDate ? new Date(b.pubDate).getTime() : 0;
       return db - da;
     });
 
-    // Filter by query keyword
     let filtered = allItems;
     if (query) {
       filtered = allItems.filter(
@@ -229,12 +237,10 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Filter by meal type
     if (mealTypeFilter !== "all") {
       filtered = filtered.filter((item) => item.meal_type === mealTypeFilter);
     }
 
-    // Deduplicate by id, cap at 16
     const seen = new Set<string>();
     const results: RssItem[] = [];
     for (const item of filtered) {
@@ -246,12 +252,12 @@ Deno.serve(async (req: Request) => {
     }
 
     return new Response(JSON.stringify({ items: results }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...cors, "Content-Type": "application/json" },
     });
   } catch (err) {
     return new Response(
       JSON.stringify({ error: (err as Error).message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { status: 500, headers: { ...cors, "Content-Type": "application/json" } },
     );
   }
 });

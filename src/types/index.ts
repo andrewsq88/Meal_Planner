@@ -41,26 +41,32 @@ export function getWeekStart(date: Date = new Date()): string {
   const day = d.getDay();
   const diff = day === 0 ? -6 : 1 - day;
   d.setDate(d.getDate() + diff);
-  d.setHours(0, 0, 0, 0);
-  return d.toISOString().split('T')[0];
+  // Zero out time in local timezone, then format as YYYY-MM-DD without UTC conversion
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 export function addDays(dateStr: string, days: number): string {
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split('T')[0];
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d + days);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 export function formatDisplayDate(weekStart: string, dayIndex: number): string {
-  const d = new Date(weekStart);
-  d.setDate(d.getDate() + dayIndex);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const [y, m, d] = weekStart.split('-').map(Number);
+  const date = new Date(y, m - 1, d + dayIndex);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 export function formatWeekRange(weekStart: string): string {
-  const start = new Date(weekStart);
-  const end = new Date(weekStart);
-  end.setDate(end.getDate() + 6);
+  const [y, m, d] = weekStart.split('-').map(Number);
+  const start = new Date(y, m - 1, d);
+  const end = new Date(y, m - 1, d + 6);
   const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
   return `${start.toLocaleDateString('en-US', opts)} – ${end.toLocaleDateString('en-US', { ...opts, year: 'numeric' })}`;
 }
