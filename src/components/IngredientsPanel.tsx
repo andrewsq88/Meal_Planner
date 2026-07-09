@@ -1,4 +1,4 @@
-import { X, Heart, ShoppingBag, CheckSquare, Square, ChefHat, Clock } from 'lucide-react';
+import { X, Heart, ShoppingBag, CheckSquare, Square, ChefHat, Clock, ShoppingCart, Truck } from 'lucide-react';
 import { useState } from 'react';
 import type { MenuItem, MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
@@ -25,6 +25,10 @@ export function IngredientsPanel({ item, isFavorited, onClose, onAddFavorite }: 
   };
 
   const allChecked = item.ingredients.length > 0 && checkedIngredients.size === item.ingredients.length;
+
+  // Replace these with your affiliate-tagged URLs before going live
+  const instacartUrl = `https://www.instacart.com/store/s?k=${encodeURIComponent(item.name)}`;
+  const hellofreshUrl = `https://www.hellofresh.com/recipes/search/?q=${encodeURIComponent(item.name)}`;
 
   return (
     <div className="bg-white dark:bg-stone-800 rounded-3xl border border-stone-100 dark:border-stone-700 shadow-xl overflow-hidden h-fit sticky top-24">
@@ -128,6 +132,33 @@ export function IngredientsPanel({ item, isFavorited, onClose, onAddFavorite }: 
           <Heart className={`w-4 h-4 ${isFavorited ? 'fill-rose-400' : ''}`} />
           {isFavorited ? 'In your favorites' : 'Add to Favorites'}
         </button>
+
+        {/* Affiliate: shop ingredients */}
+        <div className="border-t border-stone-100 dark:border-stone-700 pt-2 flex flex-col gap-2">
+          <a
+            href={instacartUrl}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm hover:shadow-md transition-all"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Shop Ingredients on Instacart
+          </a>
+
+          {/* Meal kit deep link */}
+          <a
+            href={hellofreshUrl}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm border border-stone-200 dark:border-stone-600 text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-all"
+          >
+            <Truck className="w-4 h-4" />
+            Get Kit Delivered via HelloFresh
+          </a>
+          <p className="text-center text-xs text-stone-400 dark:text-stone-500">
+            Affiliate links — we may earn a commission
+          </p>
+        </div>
       </div>
     </div>
   );

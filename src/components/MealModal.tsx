@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Plus, Trash2, Sparkles, ChefHat, Clock } from 'lucide-react';
+import { X, Plus, Trash2, Sparkles, ChefHat, Clock, Truck } from 'lucide-react';
 import type { MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
 import { supabase } from '../lib/supabase';
@@ -295,24 +295,37 @@ export function MealModal({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-stone-100 dark:border-stone-700 flex gap-3 justify-end">
-          <button
-            onClick={onClose}
-            className="px-5 py-2.5 rounded-xl text-sm font-semibold text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={!name.trim() || saving}
-            className={`px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all ${
-              name.trim() && !saving
-                ? `${cfg.activeBg} hover:opacity-90 shadow-md`
-                : 'bg-stone-200 dark:bg-stone-600 cursor-not-allowed'
-            }`}
-          >
-            {saving ? 'Saving…' : isEditing ? 'Update' : 'Add Meal'}
-          </button>
+        <div className="px-6 py-4 border-t border-stone-100 dark:border-stone-700 space-y-3">
+          {name.trim() && (
+            <a
+              href={`https://www.hellofresh.com/recipes/search/?q=${encodeURIComponent(name.trim())}`}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-semibold border border-stone-200 dark:border-stone-600 text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors"
+            >
+              <Truck className="w-3.5 h-3.5" />
+              Get ingredients delivered via HelloFresh
+            </a>
+          )}
+          <div className="flex gap-3 justify-end">
+            <button
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={!name.trim() || saving}
+              className={`px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all ${
+                name.trim() && !saving
+                  ? `${cfg.activeBg} hover:opacity-90 shadow-md`
+                  : 'bg-stone-200 dark:bg-stone-600 cursor-not-allowed'
+              }`}
+            >
+              {saving ? 'Saving…' : isEditing ? 'Update' : 'Add Meal'}
+            </button>
+          </div>
         </div>
       </div>
     </div>
