@@ -4,185 +4,29 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://pl30266296.effectivecpmnetwork.com https://*.effectivecpmnetwork.com https://*.adsterra.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://ltgiyrymtyunxuggqkxp.supabase.co wss://ltgiyrymtyunxuggqkxp.supabase.co https://*.effectivecpmnetwork.com https://*.adsterra.com; img-src 'self' data: https:; frame-src https:; frame-ancestors 'none';" />
-    <title>Weekly Meal Planner — Plan Family Meals for the Week</title>
-    <meta name="description" content="Free weekly meal planner for the whole family. Plan breakfast, lunch, and dinner for 7 days, save favorite meals, and build your shopping list — all in one place." />
-    <meta name="keywords" content="weekly meal planner, family meal plan, dinner planner, meal prep, recipe planner, weekly menu, family meals, meal planning" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <meta name="googlebot" content="index, follow" />
-    <meta name="theme-color" content="#f59e0b" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' https://ltgiyrymtyunxuggqkxp.supabase.co wss://ltgiyrymtyunxuggqkxp.supabase.co; img-src 'self' data: https:; frame-ancestors 'none';" />
+    <title>Weekly Meal Planner - Plan Your Family Meals for the Week</title>
+    <meta name="description" content="Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, build a shopping list, and organize breakfast, lunch, and dinner for the whole week." />
+    <meta name="keywords" content="weekly meal planner, family meal plan, dinner planner, meal prep, recipe planner, weekly menu" />
     <link rel="canonical" href="https://weeklymealplan.space" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.json" />
-
-    <!-- Google Fonts — preconnect before stylesheet for faster LCP -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://weeklymealplan.space" />
-    <meta property="og:title" content="Weekly Meal Planner — Plan Family Meals for the Week" />
-    <meta property="og:description" content="Free weekly meal planner for the whole family. Plan breakfast, lunch, and dinner for 7 days, save favorites, and build your shopping list." />
-    <meta property="og:image" content="https://weeklymealplan.space/og-image.svg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:title" content="Weekly Meal Planner - Plan Your Family Meals" />
+    <meta property="og:description" content="Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, and build a shopping list — all in one place." />
+    <meta property="og:image" content="https://weeklymealplan.space/og-image.png" />
     <meta property="og:site_name" content="Weekly Meal Planner" />
-    <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://weeklymealplan.space" />
-    <meta name="twitter:title" content="Weekly Meal Planner — Plan Family Meals for the Week" />
-    <meta name="twitter:description" content="Free weekly meal planner for the whole family. Plan breakfast, lunch, and dinner for 7 days, save favorites, and build your shopping list." />
-    <meta name="twitter:image" content="https://weeklymealplan.space/og-image.svg" />
-
-    <!-- Structured Data: WebApplication -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Weekly Meal Planner",
-      "url": "https://weeklymealplan.space",
-      "description": "Free weekly meal planner for the whole family. Plan breakfast, lunch, and dinner for 7 days, save favorite meals, and build your shopping list.",
-      "applicationCategory": "LifestyleApplication",
-      "operatingSystem": "Web",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": [
-        "7-day meal planning grid",
-        "Breakfast, lunch, and dinner planning",
-        "Family meal recipe suggestions",
-        "Favorites collection",
-        "Ingredient and shopping list tracking",
-        "Live recipe feed from top food sites"
-      ]
-    }
-    </script>
-
-    <!-- Structured Data: FAQPage (AEO / AI answer engine targeting) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is a weekly meal planner?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "A weekly meal planner is a tool that helps you organize breakfast, lunch, and dinner for every day of the week. It lets you schedule meals in advance, browse recipe ideas, save favorites, and track ingredients so you can shop efficiently and reduce food waste."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How do I plan family meals for the week?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Planning family meals for the week is easy with a meal planner: choose your week, pick a meal type (breakfast, lunch, or dinner), add meals to each day of a 7-day grid, browse recipe suggestions, and save your best family meals to a favorites list for quick reuse. Reviewing the ingredient list lets you build an efficient shopping list."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Is this meal planner free to use?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, the Weekly Meal Planner is completely free to use. You can plan meals for the whole week without creating an account. Creating a free account lets you save your meal plans across devices and build a personal favorites collection."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can I save my favorite family meals and recipes?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. Create a free account and save any meal to your Favorites collection. Saved favorites can be added back to your weekly plan with a single click, making it easy to rotate your family's go-to meals."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How many days can I plan meals for?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "The planner covers a full 7-day week from Monday to Sunday. You can navigate forward or backward to plan family meals for any week of the year."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Does the meal planner work on mobile?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes. The Weekly Meal Planner is fully responsive and works on phones, tablets, and desktops. Plan your family meals on any device and access your saved plan anywhere when signed in."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Where do the recipe suggestions come from?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Recipe suggestions come from two sources: a curated built-in library of meal ideas, and a live feed of fresh recipes pulled from top food sites including Smitten Kitchen, The Kitchn, Serious Eats, and Simply Recipes."
-          }
-        }
-      ]
-    }
-    </script>
-
-    <!-- Structured Data: HowTo (voice search and AI answer boxes) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "HowTo",
-      "name": "How to Plan Your Weekly Family Meals",
-      "description": "A step-by-step guide to planning a full week of meals for your family using the Weekly Meal Planner.",
-      "totalTime": "PT10M",
-      "step": [
-        {
-          "@type": "HowToStep",
-          "position": 1,
-          "name": "Choose your week",
-          "text": "Use the week navigation arrows in the header to select the week you want to plan meals for."
-        },
-        {
-          "@type": "HowToStep",
-          "position": 2,
-          "name": "Select a meal type",
-          "text": "Switch between Breakfast, Lunch, and Dinner using the meal type tabs to plan each part of your family's day."
-        },
-        {
-          "@type": "HowToStep",
-          "position": 3,
-          "name": "Add meals to each day",
-          "text": "Click any day cell on the 7-day grid to add a meal. Type the meal name, add ingredients, and save it."
-        },
-        {
-          "@type": "HowToStep",
-          "position": 4,
-          "name": "Browse recipe suggestions",
-          "text": "Use the Meal Suggestions panel to search recipes by ingredient or cuisine. Add any suggestion directly to a day on your weekly menu."
-        },
-        {
-          "@type": "HowToStep",
-          "position": 5,
-          "name": "Save favorites for easy reuse",
-          "text": "Sign in for free and save your best family meals to Favorites. Add them back to any future week with one click."
-        },
-        {
-          "@type": "HowToStep",
-          "position": 6,
-          "name": "Build your shopping list",
-          "text": "Click any planned meal to see its full ingredient list. Use this to compile your weekly shopping list and never miss an ingredient."
-        }
-      ]
-    }
-    </script>
+    <meta name="twitter:title" content="Weekly Meal Planner - Plan Your Family Meals" />
+    <meta name="twitter:description" content="Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, and build a shopping list." />
+    <meta name="twitter:image" content="https://weeklymealplan.space/og-image.png" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script src="https://pl30266295.effectivecpmnetwork.com/a2/d9/d4/a2d9d4b400fb78c1ce6660145538a470.js"></script>
-    <script src="https://pl30266293.effectivecpmnetwork.com/71/3c/98/713c984856a716ba373916bd1e593b99.js"></script>
   </body>
 </html>

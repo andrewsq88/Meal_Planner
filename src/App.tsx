@@ -8,7 +8,6 @@ import { FavoritesSection } from './components/FavoritesSection';
 import { SuggestionsSection } from './components/SuggestionsSection';
 import { AddToMenuModal } from './components/AddToMenuModal';
 import { AuthModal } from './components/AuthModal';
-import { AdBanner } from './components/AdBanner';
 import { AuthProvider } from './context/AuthContext';
 import { useMenuItems } from './hooks/useMenuItems';
 import { useFavorites } from './hooks/useFavorites';
@@ -169,10 +168,6 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed max-w-2xl">
-          Plan breakfast, lunch, and dinner for your whole family — 7 days at a glance. Search recipes, save favorite family meals, and track ingredients all in one free weekly meal planner.
-        </p>
-
         <div className="flex items-center justify-between flex-wrap gap-3">
           <MealTypeNav selected={mealType} onChange={type => { setMealType(type); setSelectedItem(null); }} />
           <p className="text-sm text-stone-400 font-medium hidden sm:block">
@@ -213,8 +208,6 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
           onAddToMenu={handleFavoriteAddToMenu}
           onSignIn={() => onAuthRequired('Sign in to save and manage your favorites.')}
         />
-
-        <AdBanner />
 
         <SuggestionsSection
           onUseInMenu={handleSuggestionUseInMenu}
