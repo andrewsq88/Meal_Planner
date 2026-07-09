@@ -8,6 +8,7 @@ import { FavoritesSection } from './components/FavoritesSection';
 import { SuggestionsSection } from './components/SuggestionsSection';
 import { AddToMenuModal } from './components/AddToMenuModal';
 import { AuthModal } from './components/AuthModal';
+import { AdBanner } from './components/AdBanner';
 import { AuthProvider } from './context/AuthContext';
 import { useMenuItems } from './hooks/useMenuItems';
 import { useFavorites } from './hooks/useFavorites';
@@ -208,6 +209,8 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
           onAddToMenu={handleFavoriteAddToMenu}
           onSignIn={() => onAuthRequired('Sign in to save and manage your favorites.')}
         />
+
+        <AdBanner />
 
         <SuggestionsSection
           onUseInMenu={handleSuggestionUseInMenu}
