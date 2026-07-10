@@ -18,10 +18,10 @@ function getCorsHeaders(req: Request): Record<string, string> {
 
 // RSS feeds to aggregate — all are publicly accessible, CORS-free from server side
 const RSS_FEEDS: Array<{ url: string; name: string }> = [
-  { url: "https://smittenkitchen.com/feed", name: "Smitten Kitchen" },
-  { url: "https://www.thekitchn.com/feeds/all.rss.xml", name: "The Kitchn" },
-  { url: "https://www.seriouseats.com/feeds/all.xml", name: "Serious Eats" },
-  { url: "https://www.simplyrecipes.com/feeds/", name: "Simply Recipes" },
+  { url: "https://feeds.feedburner.com/smittenkitchen", name: "Smitten Kitchen" },
+  { url: "https://www.budgetbytes.com/feed/", name: "Budget Bytes" },
+  { url: "https://cookieandkate.com/feed/", name: "Cookie and Kate" },
+  { url: "https://www.loveandlemons.com/feed/", name: "Love and Lemons" },
 ];
 
 // Cache TTL: 30 minutes in milliseconds
@@ -156,7 +156,7 @@ async function fetchFeed(feed: { url: string; name: string }): Promise<RssItem[]
   try {
     const res = await fetch(feed.url, {
       headers: {
-        "User-Agent": "FamilyMenuApp/1.0 (RSS Reader)",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "application/rss+xml, application/xml, text/xml, */*",
       },
       signal: AbortSignal.timeout(8000),

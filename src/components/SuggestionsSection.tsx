@@ -16,9 +16,9 @@ type TabId = 'library' | 'live';
 
 const SOURCE_COLORS: Record<string, string> = {
   'Smitten Kitchen': 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400',
-  'The Kitchn': 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
-  'Serious Eats': 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-  'Simply Recipes': 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400',
+  'Budget Bytes': 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
+  'Cookie and Kate': 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400',
+  'Love and Lemons': 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
 };
 
 function formatRelativeDate(dateStr: string): string {
@@ -96,7 +96,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
         {activeTab === 'live' && (
           <p className="text-xs text-stone-400 mb-3 leading-relaxed">
             Fresh recipes from{' '}
-            {['Smitten Kitchen', 'The Kitchn', 'Serious Eats', 'Simply Recipes'].map((src, i, arr) => (
+            {['Smitten Kitchen', 'Budget Bytes', 'Cookie and Kate', 'Love and Lemons'].map((src, i, arr) => (
               <span key={src} className="font-semibold text-stone-500 dark:text-stone-400">
                 {src}{i < arr.length - 1 ? ', ' : ''}
               </span>
