@@ -17,6 +17,7 @@ import { getWeekStart, addDays } from './types';
 import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './types';
 import { UtensilsCrossed } from 'lucide-react';
 import { AdUnit } from './components/AdUnit';
+import { SponsoredLink } from './components/SponsoredLink';
 
 function AppContent() {
   const { loading } = useAuth();
@@ -221,6 +222,7 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
       </main>
 
       <footer className="border-t border-amber-100 dark:border-stone-700 mt-8 py-5 transition-colors duration-300">
+        <SponsoredLink className="mb-2" />
         <p className="text-center text-xs text-stone-400 dark:text-stone-500">
           &copy; {new Date().getFullYear()} SQ Consultancy. All rights reserved.
         </p>
