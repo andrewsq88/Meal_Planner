@@ -3,6 +3,7 @@ import { X, Plus, Trash2, Sparkles, ChefHat, Clock } from 'lucide-react';
 import type { MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 // Generate all 15-minute timeslots for a 12-hour clock
 const TIME_SLOTS: string[] = (() => {
@@ -43,6 +44,7 @@ export function MealModal({
   const [saving, setSaving] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [aiSuggested, setAiSuggested] = useState(false);
+  const { user } = useAuth();
   const descEditedRef = useRef(false);
   const ingEditedRef = useRef(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -69,7 +71,7 @@ export function MealModal({
     if (abortRef.current) abortRef.current.abort();
 
     const trimmed = name.trim();
-    if (trimmed.length < 3) {
+    if (!user || trimmed.length < 3) {
       setSuggesting(false);
       return;
     }
@@ -102,7 +104,7 @@ export function MealModal({
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [name, isOpen, mealType]);
+  }, [name, isOpen, mealType, user]);
 
   if (!isOpen) return null;
 

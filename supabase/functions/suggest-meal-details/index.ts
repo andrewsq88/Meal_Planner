@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const ALLOWED_ORIGINS = [
   "https://www.weeklymealplan.space",
@@ -18,11 +19,40 @@ function getCorsHeaders(req: Request): Record<string, string> {
   };
 }
 
+async function isSignedInUser(req: Request): Promise<boolean> {
+  const header = req.headers.get("Authorization") ?? "";
+  const token = header.match(/^Bearer\s+(\S+)/i)?.[1] ?? "";
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!token || !supabaseUrl || !anonKey) return false;
+
+  const supabase = createClient(supabaseUrl, anonKey, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data, error } = await supabase.auth.getUser(token);
+  return !error && !!data.user;
+}
+
 Deno.serve(async (req: Request) => {
   const cors = getCorsHeaders(req);
 
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: cors });
+  }
+
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { ...cors, "Content-Type": "application/json" },
+    });
+  }
+
+  if (!(await isSignedInUser(req))) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...cors, "Content-Type": "application/json" },
+    });
   }
 
   try {
