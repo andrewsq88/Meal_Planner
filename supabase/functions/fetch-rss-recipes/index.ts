@@ -255,8 +255,9 @@ Deno.serve(async (req: Request) => {
       headers: { ...cors, "Content-Type": "application/json" },
     });
   } catch (err) {
+    console.error("fetch-rss-recipes error:", err);
     return new Response(
-      JSON.stringify({ error: (err as Error).message }),
+      JSON.stringify({ error: "Feed unavailable" }),
       { status: 500, headers: { ...cors, "Content-Type": "application/json" } },
     );
   }
