@@ -17,6 +17,7 @@ import { getWeekStart, addDays } from './types';
 import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './types';
 import { UtensilsCrossed } from 'lucide-react';
 import { AdUnit } from './components/AdUnit';
+import { NativeBanner } from './components/NativeBanner';
 import { SponsoredLink } from './components/SponsoredLink';
 
 function AppContent() {
@@ -220,6 +221,8 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
           onAddToFavorites={handleSuggestionAddToFavorites}
         />
       </main>
+
+      {!user && <NativeBanner />}
 
       <footer className="border-t border-amber-100 dark:border-stone-700 mt-8 py-5 transition-colors duration-300">
         <SponsoredLink className="mb-2" />
