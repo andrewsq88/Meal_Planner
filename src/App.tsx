@@ -16,7 +16,6 @@ import { useAuth } from './context/AuthContext';
 import { getWeekStart, addDays } from './types';
 import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './types';
 import { UtensilsCrossed } from 'lucide-react';
-import { AdUnit } from './components/AdUnit';
 import { NativeBanner } from './components/NativeBanner';
 import { SponsoredLink } from './components/SponsoredLink';
 
@@ -189,10 +188,6 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
               onAdd={handleOpenEditModal}
               onDelete={handleDeleteItem}
             />
-
-            <div className="mt-6">
-              <AdUnit slot="1234567890" format="horizontal" />
-            </div>
           </div>
           {selectedItem && (
             <div className="mt-4 lg:mt-0">
