@@ -1,1 +1,1 @@
-google.com, pub-2857342591276131, DIRECT, f08c47fec0942fa0
+# ads.txt - no authorised Google sellers. Adsterra does not require ads.txt entries.
