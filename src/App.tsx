@@ -217,7 +217,7 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
         />
       </main>
 
-      {!user && <NativeBanner />}
+      <NativeBanner />
 
       <footer className="border-t border-amber-100 dark:border-stone-700 mt-8 py-5 transition-colors duration-300">
         <SponsoredLink className="mb-2" />

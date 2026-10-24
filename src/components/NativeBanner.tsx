@@ -1,25 +1,19 @@
-import { useEffect } from 'react';
+import { useLayoutEffect } from 'react';
 
 const AD_SCRIPT_SRC = 'https://bicea.org/21/a7e9174df967c6cbfe2fac56776ae229';
 const AD_CONTAINER_ID = 'container-a7e9174df967c6cbfe2fac56776ae229';
 
-let scriptInjected = false;
-
-/** Adsterra Native Banner (4:1). Injects its script once and reserves the slot. */
+/** Adsterra Native Banner (4:1). Places its script immediately before the slot. */
 export function NativeBanner() {
-  useEffect(() => {
-    if (scriptInjected) return;
-    if (document.querySelector(`script[src="${AD_SCRIPT_SRC}"]`)) {
-      scriptInjected = true;
-      return;
-    }
-    scriptInjected = true;
+  useLayoutEffect(() => {
+    const container = document.getElementById(AD_CONTAINER_ID);
+    if (!container || document.querySelector(`script[src="${AD_SCRIPT_SRC}"]`)) return;
 
     const script = document.createElement('script');
     script.src = AD_SCRIPT_SRC;
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
-    document.body.appendChild(script);
+    container.insertAdjacentElement('beforebegin', script);
   }, []);
 
   return (
