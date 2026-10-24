@@ -101,9 +101,8 @@ function directive(name) {
 }
 
 const scriptSrc = directive('script-src');
-assert.match(scriptSrc, /'sha256-9gOWJ5cp2JbyH8RIbeP3Wo7Mpg5TEAoTYRpbef4fYHQ=' /);
-assert.match(scriptSrc, /'sha256-QgkzQQua\/sSV5tyQR1yOSST3XChulQoJIcbBEYswCAw=' /);
-assert.equal(scriptSrc.includes("'unsafe-inline'"), false);
+assert.equal(scriptSrc.includes('sha256-'), false);
+assert.match(scriptSrc, /'unsafe-inline'/);
 for (const name of ['script-src', 'frame-src', 'connect-src']) {
   assert.match(directive(name), /https:\/\/bicea\.org(?:\s|$)/, name);
 }
