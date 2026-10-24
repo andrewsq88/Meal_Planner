@@ -1,7 +1,7 @@
 /**
  * In-flow Adsterra slots for the public planner.
- * Banner sizes 300x250, 320x50, and 728x90 have no invoke key in the
- * publisher export, so they are omitted. Do not invent keys.
+ * At most three units: the native slot, a 300x250, and either a 320x50
+ * (viewport under 768px) or a 728x90. Never both leaderboard sizes.
  */
 
 export const AD_ROUTE_BLOCK =
@@ -26,22 +26,23 @@ export const NATIVE_SLOT = {
 export const AD_LABEL_HEIGHT = 16;
 export const AD_LABEL_GAP = 4;
 
+/** Mobile leaderboard is used below the Tailwind `md` breakpoint. */
+export const MOBILE_BANNER_QUERY = '(max-width: 767px)';
+
 export function reservedSlotHeight(frameHeight: number): number {
   return AD_LABEL_HEIGHT + AD_LABEL_GAP + frameHeight;
 }
 
-export const MISSING_BANNER_SIZES = ['300x250', '320x50', '728x90'] as const;
-
-export type BannerSize = (typeof MISSING_BANNER_SIZES)[number];
+export type BannerSize = '300x250' | '320x50' | '728x90';
 
 export interface BannerPlacement {
   slot: string;
+  /** Adsterra unit id from the publisher export. */
+  unitId: string;
   size: BannerSize;
   key: string;
   width: number;
   height: number;
-  /** CSS visibility (media query). Not a JS show/hide swap. */
-  frameClassName: string;
 }
 
 export interface AtOptions {
@@ -52,11 +53,48 @@ export interface AtOptions {
   params: Record<string, string>;
 }
 
+/** Banner 300x250, unit 31892842. Shown on every viewport. */
+export const BANNER_300X250: BannerPlacement = {
+  slot: 'mp-300x250',
+  unitId: '31892842',
+  size: '300x250',
+  key: '34e44129251709530029981c3e745180',
+  width: 300,
+  height: 250,
+};
+
+/** Banner 320x50, unit 31892843. Mobile only. */
+export const BANNER_320X50: BannerPlacement = {
+  slot: 'mp-320x50',
+  unitId: '31892843',
+  size: '320x50',
+  key: 'fa50c1f9cb5dc4192c4b02fe37c56461',
+  width: 320,
+  height: 50,
+};
+
+/** Banner 728x90, unit 31892844. Desktop only (768px and up). */
+export const BANNER_728X90: BannerPlacement = {
+  slot: 'mp-728x90',
+  unitId: '31892844',
+  size: '728x90',
+  key: 'd61b3b0f54ad245ef88499d87e516a9a',
+  width: 728,
+  height: 90,
+};
+
 /**
- * No banner invoke keys were supplied. Leave the list empty.
- * Slots would be, in order: 300x250, then 320x50 (mobile) or 728x90 (desktop).
+ * 300x250, then the single leaderboard that matches the viewport.
+ * The two leaderboards are never returned together.
  */
-export const BANNER_PLACEMENTS: readonly BannerPlacement[] = [];
+export function bannersForViewport(isMobile: boolean): readonly BannerPlacement[] {
+  return [BANNER_300X250, isMobile ? BANNER_320X50 : BANNER_728X90];
+}
+
+/** Native plus the banners for this viewport. Always three, never four. */
+export function slotsForViewport(isMobile: boolean): readonly string[] {
+  return [NATIVE_SLOT.slot, ...bannersForViewport(isMobile).map((banner) => banner.slot)];
+}
 
 export function bannerAtOptions(banner: BannerPlacement): AtOptions {
   return {
@@ -68,9 +106,12 @@ export function bannerAtOptions(banner: BannerPlacement): AtOptions {
   };
 }
 
-/** Standard Adsterra banner invoke URL. Only called for a real placement key. */
+/**
+ * Adsterra iframe invoke script for these units.
+ * Standard placement sets `atOptions`, then loads this URL.
+ */
 export function bannerInvokeSrc(key: string): string {
-  return `https://www.highperformanceformat.com/${key}/invoke.js`;
+  return `https://bicea.org/22/${key}`;
 }
 
 /** Banners share the page-global atOptions, so each mount must finish before the next starts. */

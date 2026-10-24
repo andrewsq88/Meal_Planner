@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import {
   AD_LABEL_GAP,
   AD_LABEL_HEIGHT,
-  BANNER_PLACEMENTS,
+  MOBILE_BANNER_QUERY,
   NATIVE_SLOT,
   bannerAtOptions,
   bannerInvokeSrc,
+  bannersForViewport,
   isAdRouteBlocked,
   locationKey,
   mountBannersInOrder,
@@ -32,6 +33,20 @@ function AdvertisementLabel() {
       Advertisement
     </p>
   );
+}
+
+function useNarrowViewport(): boolean {
+  const [narrow, setNarrow] = useState(() => window.matchMedia(MOBILE_BANNER_QUERY).matches);
+
+  useEffect(() => {
+    const media = window.matchMedia(MOBILE_BANNER_QUERY);
+    const sync = () => setNarrow(media.matches);
+    sync();
+    media.addEventListener('change', sync);
+    return () => media.removeEventListener('change', sync);
+  }, []);
+
+  return narrow;
 }
 
 function useAdsAllowed(): boolean {
@@ -126,11 +141,14 @@ function mountBanner(banner: BannerPlacement): Promise<void> {
 }
 
 /**
- * Native sits under the planner. 300x250, then 320x50 (mobile) or 728x90 (desktop),
- * mount one after another when a real invoke key exists. Missing sizes are not rendered.
+ * Native sits under the planner. Then 300x250, then either 320x50 (under 768px)
+ * or 728x90. Banners mount one after another because they share atOptions.
+ * Slots stay in normal flow, above the footer, so they do not cover a CTA or the sign-up dialog.
  */
 export function AdSlots() {
   const allowed = useAdsAllowed();
+  const narrow = useNarrowViewport();
+  const banners = bannersForViewport(narrow);
 
   useEffect(() => {
     if (!allowed) return;
@@ -148,7 +166,7 @@ export function AdSlots() {
         });
       }
 
-      void mountBannersInOrder(BANNER_PLACEMENTS, async (banner) => {
+      void mountBannersInOrder(bannersForViewport(narrow), async (banner) => {
         if (cancelled) return;
         const slot = document.querySelector(`[data-ad-slot="${banner.slot}"]`);
         if (!(slot instanceof HTMLElement) || boxIsHidden(slot)) return;
@@ -165,7 +183,7 @@ export function AdSlots() {
       stopLoad();
       for (const cancel of cancels) cancel();
     };
-  }, [allowed]);
+  }, [allowed, narrow]);
 
   if (!allowed) return null;
 
@@ -195,11 +213,11 @@ export function AdSlots() {
         </div>
       </section>
 
-      {BANNER_PLACEMENTS.map((banner) => (
+      {banners.map((banner) => (
         <section
           key={banner.slot}
           data-ad-slot={banner.slot}
-          className={banner.frameClassName}
+          data-ad-unit={banner.unitId}
           style={{
             position: 'relative',
             zIndex: 0,
