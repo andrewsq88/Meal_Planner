@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import {
   BANNER_300X250,
@@ -107,11 +106,9 @@ for (const name of ['script-src', 'frame-src', 'connect-src']) {
   assert.match(directive(name), /https:\/\/bicea\.org(?:\s|$)/, name);
 }
 
-const inlineStart = html.indexOf('<script>\n');
-const inlineEnd = html.indexOf('</script>', inlineStart);
-assert.ok(inlineStart >= 0 && inlineEnd > inlineStart, 'social bar loader');
-const loaderSource = html.slice(inlineStart + '<script>'.length, inlineEnd);
-const loaderHash = 'sha256-' + createHash('sha256').update(loaderSource).digest('base64');
-assert.equal(loaderHash, 'sha256-9gOWJ5cp2JbyH8RIbeP3Wo7Mpg5TEAoTYRpbef4fYHQ=');
+assert.equal(html.includes('bicea.org/14/'), false);
+assert.equal(html.includes('713c984856a716ba373916bd1e593b99'), false);
+assert.equal(html.includes('injectSocialBar'), false);
+assert.equal(/<script>\s*\(function/.test(html), false);
 
 console.log('banner mount order ok');

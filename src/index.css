@@ -21,12 +21,6 @@
   }
 }
 
-/* Network overlays are appended outside #root. Hide them while sign-up is open. */
-body[data-auth-open='true'] > :not(#root):not(script):not(noscript):not(style) {
-  display: none !important;
-  pointer-events: none !important;
-}
-
 @keyframes slideIn {
   from {
     opacity: 0;
