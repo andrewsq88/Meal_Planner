@@ -2,7 +2,6 @@
 
 interface Window {
   __mealplanHistoryWrapped?: boolean;
-  __mealplanAdsAllowed?: boolean;
   atOptions?: {
     key: string;
     format: string;

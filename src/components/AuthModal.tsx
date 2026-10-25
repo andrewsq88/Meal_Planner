@@ -20,19 +20,14 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset form when modal opens. The attribute tells the social-bar loader
-  // to take the overlay down so it cannot cover the sign-up buttons.
+  // Reset form when modal opens.
   useEffect(() => {
-    if (open) {
-      setMode('signin');
-      setEmail('');
-      setPassword('');
-      setShowPassword(false);
-      setError(null);
-      document.body.setAttribute('data-auth-open', 'true');
-      return () => document.body.removeAttribute('data-auth-open');
-    }
-    document.body.removeAttribute('data-auth-open');
+    if (!open) return;
+    setMode('signin');
+    setEmail('');
+    setPassword('');
+    setShowPassword(false);
+    setError(null);
   }, [open]);
 
   function switchMode(next: Mode) {
