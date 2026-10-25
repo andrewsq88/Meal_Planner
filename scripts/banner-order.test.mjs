@@ -13,6 +13,7 @@ import {
   reservedSlotHeight,
   slotsForViewport,
 } from '../src/lib/adsterra.ts';
+import { isSignupPath, isStartPath } from '../src/lib/routes.ts';
 
 const banners = [
   {
@@ -82,11 +83,20 @@ assert.equal(reservedSlotHeight(BANNER_320X50.height), 70);
 assert.equal(reservedSlotHeight(BANNER_728X90.height), 110);
 assert.equal(reservedSlotHeight(NATIVE_SLOT.frameHeight), 202);
 
-for (const path of ['/checkout', '/pay', '/billing', '/stripe/return', '/auth', '/login', '/sign-in', '/sign-up', '/register', '/account']) {
+for (const path of ['/checkout', '/pay', '/billing', '/stripe/return', '/auth', '/login', '/sign-in', '/signup', '/sign-up', '/register', '/account', '/start', '/start/', '/start#plan']) {
   assert.equal(isAdRouteBlocked(path), true, path);
 }
 assert.equal(isAdRouteBlocked('/'), false);
+assert.equal(isAdRouteBlocked('/starting'), false);
 assert.equal(isAdRouteBlocked('/#/checkout'), true);
+assert.equal(isStartPath('/start'), true);
+assert.equal(isStartPath('/start/'), true);
+assert.equal(isStartPath('/'), false);
+assert.equal(isStartPath('/starting'), false);
+assert.equal(isSignupPath('/signup'), true);
+assert.equal(isSignupPath('/signup/'), true);
+assert.equal(isSignupPath('/sign-up'), true);
+assert.equal(isSignupPath('/'), false);
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const meta = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/);
@@ -110,5 +120,8 @@ assert.equal(html.includes('bicea.org/14/'), false);
 assert.equal(html.includes('713c984856a716ba373916bd1e593b99'), false);
 assert.equal(html.includes('injectSocialBar'), false);
 assert.equal(/<script>\s*\(function/.test(html), false);
+assert.equal(/<meta\s+name="robots"\s+content="noindex"/.test(html), false);
+assert.match(html, /location\.pathname === "\/start"/);
+assert.match(html, /startRobots\.setAttribute\("content", "noindex"\)/);
 
 console.log('banner mount order ok');

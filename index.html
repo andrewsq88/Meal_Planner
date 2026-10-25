@@ -24,6 +24,15 @@
     <meta name="twitter:title" content="Weekly Meal Planner - Plan Your Family Meals" />
     <meta name="twitter:description" content="Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, and build a shopping list." />
     <meta name="twitter:image" content="https://weeklymealplan.space/og-image.png" />
+    <script>
+      if (location.pathname === "/start" || location.pathname === "/start/") {
+        const startRobots = document.createElement("meta");
+        startRobots.setAttribute("name", "robots");
+        startRobots.setAttribute("content", "noindex");
+        startRobots.setAttribute("data-route-robots", "start");
+        document.head.appendChild(startRobots);
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

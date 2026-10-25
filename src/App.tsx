@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Header } from './components/Header';
 import { MealTypeNav } from './components/MealTypeNav';
 import { WeekGrid } from './components/WeekGrid';
@@ -17,35 +17,69 @@ import { getWeekStart, addDays } from './types';
 import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './types';
 import { UtensilsCrossed } from 'lucide-react';
 import { AdSlots } from './components/AdSlots';
+import { StartPage } from './components/StartPage';
+import { isSignupPath, isStartPath } from './lib/routes';
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 flex items-center justify-center">
+      <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-pulse">
+        <UtensilsCrossed className="w-7 h-7 text-white" />
+      </div>
+    </div>
+  );
+}
 
 function AppContent() {
   const { loading } = useAuth();
   const { dark, toggle: toggleDark } = useDarkMode();
+  const [pathname, setPathname] = useState(() => window.location.pathname);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState<string | undefined>(undefined);
+  const onStart = isStartPath(pathname);
+  const onSignup = isSignupPath(pathname);
+
+  useEffect(() => {
+    const sync = () => setPathname(window.location.pathname);
+    window.addEventListener('popstate', sync);
+    window.addEventListener('mealplan-ad-route', sync);
+    return () => {
+      window.removeEventListener('popstate', sync);
+      window.removeEventListener('mealplan-ad-route', sync);
+    };
+  }, []);
 
   function requireAuth(prompt?: string) {
     setAuthPrompt(prompt);
     setAuthModalOpen(true);
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 flex items-center justify-center">
-        <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-pulse">
-          <UtensilsCrossed className="w-7 h-7 text-white" />
-        </div>
-      </div>
-    );
+  function closeAuth() {
+    setAuthModalOpen(false);
+    if (!isSignupPath(window.location.pathname)) return;
+    window.history.pushState(null, '', '/');
+    setPathname('/');
+    window.dispatchEvent(new Event('mealplan-ad-route'));
+  }
+
+  if (onStart) {
+    return <StartPage dark={dark} onToggleDark={toggleDark} />;
+  }
+
+  if (loading && !onSignup) {
+    return <LoadingScreen />;
   }
 
   return (
     <>
-      <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} />
+      {loading ? <LoadingScreen /> : (
+        <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} />
+      )}
       <AuthModal
-        open={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
+        open={authModalOpen || onSignup}
+        onClose={closeAuth}
         prompt={authPrompt}
+        initialMode={onSignup ? 'signup' : 'signin'}
       />
     </>
   );

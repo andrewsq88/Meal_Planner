@@ -9,10 +9,12 @@ interface AuthModalProps {
   onClose: () => void;
   /** Optional headline shown above the form explaining why sign-in is needed */
   prompt?: string;
+  /** Tab selected when the dialog opens. Defaults to the existing sign-in tab. */
+  initialMode?: Mode;
 }
 
-export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
-  const [mode, setMode] = useState<Mode>('signin');
+export function AuthModal({ open, onClose, prompt, initialMode = 'signin' }: AuthModalProps) {
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -20,15 +22,15 @@ export function AuthModal({ open, onClose, prompt }: AuthModalProps) {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset form when modal opens.
+  // Reset form when the dialog opens, keeping the caller's starting tab.
   useEffect(() => {
     if (!open) return;
-    setMode('signin');
+    setMode(initialMode);
     setEmail('');
     setPassword('');
     setShowPassword(false);
     setError(null);
-  }, [open]);
+  }, [open, initialMode]);
 
   function switchMode(next: Mode) {
     setMode(next);
