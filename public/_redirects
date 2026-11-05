@@ -1,1 +1,4 @@
-/* /index.html 200
+# Prerendered public pages, assets, robots.txt, sitemap.xml, ads.txt, and llms.txt
+# are real files and are served as-is. Every other path, including auth and
+# payment, boots the empty SPA shell so those responses contain no ad markup.
+/*    /spa.html   200

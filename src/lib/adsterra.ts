@@ -7,8 +7,18 @@
 export const AD_ROUTE_BLOCK =
   /\/checkout|\/pay|\/billing|stripe|\/auth(?:\/|$|\?|#)|\/login(?:\/|$|\?|#)|\/signin(?:\/|$|\?|#)|\/sign-in(?:\/|$|\?|#)|\/signup(?:\/|$|\?|#)|\/sign-up(?:\/|$|\?|#)|\/register(?:\/|$|\?|#)|\/account(?:\/|$|\?|#)|\/start(?:\/|$|\?|#)/i;
 
-export function locationKey(loc: Pick<Location, 'pathname' | 'hash'> = location): string {
-  return loc.pathname + loc.hash;
+/** Path the prerender sets so ad checks do not read window during renderToString. */
+let ssrLocation: string | null = null;
+
+export function setSsrLocation(pathname: string | null): void {
+  ssrLocation = pathname;
+}
+
+export function locationKey(loc?: Pick<Location, 'pathname' | 'hash'>): string {
+  if (loc) return loc.pathname + loc.hash;
+  if (ssrLocation != null) return ssrLocation;
+  if (typeof location === 'undefined') return '/';
+  return location.pathname + location.hash;
 }
 
 export function isAdRouteBlocked(path = locationKey()): boolean {
