@@ -18,7 +18,48 @@ import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './
 import { UtensilsCrossed } from 'lucide-react';
 import { AdSlots } from './components/AdSlots';
 import { StartPage } from './components/StartPage';
+import { isAdRouteBlocked, locationKey } from './lib/adsterra';
 import { isSignupPath, isStartPath } from './lib/routes';
+
+const SHELL_ROBOTS_SELECTOR = 'meta[name="robots"][data-route-robots="shell"]';
+
+function readPathname(initialPath?: string): string {
+  if (initialPath) return initialPath;
+  if (typeof window === 'undefined') return '/';
+  return window.location.pathname;
+}
+
+/**
+ * Auth and payment documents ship with a noindex shell meta.
+ * Drop it when the visitor reaches a public page without a full reload.
+ */
+function useShellNoIndex(pathname: string) {
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const sync = () => {
+      const privateRoute = isAdRouteBlocked(locationKey()) && !isStartPath(window.location.pathname);
+      const meta = document.head.querySelector(SHELL_ROBOTS_SELECTOR);
+      if (!privateRoute) {
+        meta?.remove();
+        return;
+      }
+      const robots = meta instanceof HTMLMetaElement ? meta : document.createElement('meta');
+      robots.setAttribute('name', 'robots');
+      robots.setAttribute('data-route-robots', 'shell');
+      robots.setAttribute('content', 'noindex');
+      if (!meta) document.head.appendChild(robots);
+    };
+    sync();
+    window.addEventListener('hashchange', sync);
+    window.addEventListener('popstate', sync);
+    window.addEventListener('mealplan-ad-route', sync);
+    return () => {
+      window.removeEventListener('hashchange', sync);
+      window.removeEventListener('popstate', sync);
+      window.removeEventListener('mealplan-ad-route', sync);
+    };
+  }, [pathname]);
+}
 
 function LoadingScreen() {
   return (
@@ -30,10 +71,11 @@ function LoadingScreen() {
   );
 }
 
-function AppContent() {
+function AppContent({ initialPath }: { initialPath?: string }) {
   const { loading } = useAuth();
   const { dark, toggle: toggleDark } = useDarkMode();
-  const [pathname, setPathname] = useState(() => window.location.pathname);
+  const [pathname, setPathname] = useState(() => readPathname(initialPath));
+  useShellNoIndex(pathname);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState<string | undefined>(undefined);
   const onStart = isStartPath(pathname);
@@ -286,10 +328,10 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
   );
 }
 
-export default function App() {
+export default function App({ initialPath }: { initialPath?: string } = {}) {
   return (
     <AuthProvider>
-      <AppContent />
+      <AppContent initialPath={initialPath} />
     </AuthProvider>
   );
 }

@@ -36,7 +36,9 @@ function AdvertisementLabel() {
 }
 
 function useNarrowViewport(): boolean {
-  const [narrow, setNarrow] = useState(() => window.matchMedia(MOBILE_BANNER_QUERY).matches);
+  const [narrow, setNarrow] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia(MOBILE_BANNER_QUERY).matches,
+  );
 
   useEffect(() => {
     const media = window.matchMedia(MOBILE_BANNER_QUERY);

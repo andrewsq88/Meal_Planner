@@ -1,0 +1,34 @@
+# Weekly Meal Planner
+
+> Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, build a shopping list, and organize breakfast, lunch, and dinner for the whole week.
+
+Plan your family's meals for the entire week with ease. Weekly Meal Planner helps you organize breakfast, lunch, and dinner across all seven days of the week, so you always know what's cooking.
+
+The public planner is the logged-out home page. Saving a meal plan and favorites requires an account. Auth and payment URLs are not content pages.
+
+## Plan Your Week
+
+Click on any day and meal type to add a meal. Each meal can include a name, description, list of ingredients, cooking instructions, and a time slot. Switch between breakfast, lunch, and dinner to plan every meal of the day.
+
+## Recipe Suggestions
+
+Browse a curated library of meal suggestions and recipes from around the web. Save your favorites and add them directly to your weekly menu with a single click.
+
+## Save Your Favorites
+
+Build a personal collection of favorite meals. Sign in to save your meal plan and favorites to your account, so they are available on any device.
+
+## Ingredients and Shopping
+
+View all ingredients for your planned meals in one place, making it easy to build your shopping list for the week.
+
+## Pages
+
+- [Weekly Meal Planner](https://weeklymealplan.space/): Plan your family's meals for the entire week with ease. Weekly Meal Planner helps you organize breakfast, lunch, and dinner across all seven days of the week, so you always know what's cooking.
+- [Sitemap](https://weeklymealplan.space/sitemap.xml): Public prerendered pages.
+
+## Optional
+
+- [Start](https://weeklymealplan.space/start): Plan your family's meals for the week. This landing page is noindex.
+
+Start planning your meals today at weeklymealplan.space.

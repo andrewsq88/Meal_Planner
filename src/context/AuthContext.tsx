@@ -14,7 +14,9 @@ const AuthContext = createContext<AuthContextValue>({ user: null, session: null,
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Start logged-out so the prerender and the first client paint include the
+  // planner. The session effect fills in the account when one exists.
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
