@@ -119,8 +119,34 @@ function BlockView({
   );
 }
 
+function isLateAd(block: Block): boolean {
+  return block.type === 'p' && block.text.startsWith('**[AD SLOT 2');
+}
+
+/** Keep both ads in the upper article: one after the button, one after the second section. */
+function placeGuideAds(blocks: Block[]): Array<Block | { type: 'ad'; index: 1 }> {
+  const source = blocks.filter((block) => !isLateAd(block));
+  const headings: number[] = [];
+  source.forEach((block, index) => {
+    if (block.type === 'h2' && block.text !== 'Frequently asked questions') headings.push(index);
+  });
+  const sectionStart = headings[1] ?? headings[0];
+  let insertAt = source.length;
+  if (sectionStart != null) {
+    insertAt = sectionStart + 1;
+    while (insertAt < source.length && source[insertAt].type !== 'h2') insertAt += 1;
+  }
+  const laid: Array<Block | { type: 'ad'; index: 1 }> = [];
+  source.forEach((block, index) => {
+    if (index === insertAt) laid.push({ type: 'ad', index: 1 });
+    laid.push(block);
+  });
+  if (!laid.some((item) => 'index' in item && item.index === 1)) laid.push({ type: 'ad', index: 1 });
+  return laid;
+}
+
 export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps) {
-  const blocks = parseBlocks(page.body);
+  const blocks = placeGuideAds(parseBlocks(page.body));
   const narrow = useGuideBanners(pathname);
 
   return (
@@ -170,7 +196,11 @@ export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps
             <strong>Short answer:</strong> {page.shortAnswer}
           </p>
           {blocks.map((block, index) => (
-            <BlockView key={index} block={block} page={page} narrow={narrow} />
+            'type' in block && block.type === 'ad' ? (
+              <GuideBanner key={index} index={1} narrow={narrow} pathname={page.path} />
+            ) : (
+              <BlockView key={index} block={block as Block} page={page} narrow={narrow} />
+            )
           ))}
         </article>
       </main>

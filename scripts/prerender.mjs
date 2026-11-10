@@ -374,7 +374,9 @@ for (const guide of GUIDE_PAGES) {
   const slot2 = pageHtml.indexOf('data-ad-slot="mp-728x90"');
   const footerAt = pageHtml.lastIndexOf('<footer');
   assert.ok(pageHtml.indexOf(lead) < buttonAt, `${guide.path} button`);
-  assert.ok(buttonAt < slot1 && slot1 < slot2, `${guide.path} ad order`);
+  const faqAt = pageHtml.indexOf('Frequently asked questions');
+  assert.ok(buttonAt < slot1 && slot1 < slot2 && slot2 < faqAt, `${guide.path} ad order`);
+  assert.match(pageHtml.slice(slot2, faqAt), /<h2/);
   assert.equal((pageHtml.match(/data-ad-slot=/g) || []).length, 2, guide.path);
   assert.equal(pageHtml.includes('mp-native-below'), false, guide.path);
   assert.equal(pageHtml.includes('mp-320x50'), false, guide.path);

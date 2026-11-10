@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import {
   AD_LABEL_GAP,
   AD_LABEL_HEIGHT,
+  BANNER_300X250,
+  BANNER_728X90,
   MOBILE_BANNER_QUERY,
   bannerAtOptions,
   bannerInvokeSrc,
-  bannersForViewport,
   isAdRouteBlocked,
   mountBannersInOrder,
   reservedSlotHeight,
@@ -46,8 +47,12 @@ function whenNearViewport(element: Element): Promise<void> {
   });
 }
 
-function mountBanner(banner: BannerPlacement): Promise<void> {
-  const frame = document.querySelector(`[data-ad-slot="${banner.slot}"] [data-ad-frame]`);
+function guideBanners(narrow: boolean): readonly BannerPlacement[] {
+  return narrow ? [BANNER_300X250, BANNER_300X250] : [BANNER_300X250, BANNER_728X90];
+}
+
+function mountBanner(banner: BannerPlacement, index: number): Promise<void> {
+  const frame = document.querySelector(`[data-guide-ad="${index + 1}"] [data-ad-frame]`);
   if (!(frame instanceof HTMLElement) || frame.querySelector('script')) return Promise.resolve();
   window.atOptions = bannerAtOptions(banner);
   const script = document.createElement('script');
@@ -68,17 +73,20 @@ export function useGuideBanners(pathname: string): boolean {
   useEffect(() => {
     if (isAdRouteBlocked(pathname)) return;
     let cancelled = false;
-    const banners = bannersForViewport(narrow);
+    const banners = guideBanners(narrow);
 
     const mount = () => {
       if (cancelled) return;
+      let index = 0;
       void mountBannersInOrder(banners, async (banner) => {
+        const slotIndex = index;
+        index += 1;
         if (cancelled) return;
-        const slot = document.querySelector(`[data-ad-slot="${banner.slot}"]`);
+        const slot = document.querySelector(`[data-guide-ad="${slotIndex + 1}"]`);
         if (!(slot instanceof HTMLElement)) return;
         await whenNearViewport(slot);
         if (cancelled) return;
-        await mountBanner(banner);
+        await mountBanner(banner, slotIndex);
       });
     };
 
@@ -96,7 +104,7 @@ export function useGuideBanners(pathname: string): boolean {
 
 export function GuideBanner({ index, narrow, pathname }: { index: 0 | 1; narrow: boolean; pathname: string }) {
   if (isAdRouteBlocked(pathname)) return null;
-  const banner = bannersForViewport(narrow)[index];
+  const banner = guideBanners(narrow)[index];
 
   return (
     <section
@@ -130,6 +138,7 @@ export function GuideBanner({ index, narrow, pathname }: { index: 0 | 1; narrow:
         data-ad-frame
         style={{
           width: banner.width,
+          maxWidth: '100%',
           height: banner.height,
           margin: '0 auto',
           overflow: 'hidden',
