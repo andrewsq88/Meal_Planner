@@ -25,6 +25,12 @@ View all ingredients for your planned meals in one place, making it easy to buil
 ## Pages
 
 - [Weekly Meal Planner](https://www.weeklymealplan.space/): Plan your family's meals for the entire week with ease. Weekly Meal Planner helps you organize breakfast, lunch, and dinner across all seven days of the week, so you always know what's cooking.
+- [Cheap Weekly Meal Plan: Budget-Friendly Ideas](https://www.weeklymealplan.space/cheap-weekly-meal-plan): Plan a budget-friendly week of meals: six simple steps, a sample 7-day plan and shopping habits that help you waste less food.
+- [Weekly Meal Plan for a Family of 4 | Sample Week](https://www.weeklymealplan.space/family-of-4-meal-plan): A weekly meal plan for a family of four: a sample week of breakfasts, lunches and dinners, packed lunch ideas and a planning checklist.
+- [Meal Prep Shopping List: How to Write One + Template](https://www.weeklymealplan.space/meal-prep-shopping-list): Turn your weekly meal plan into a meal prep shopping list. Five steps, a list grouped by shop section and a template you can copy.
+- [7-Day Dinner Plan: Sample Week and Dinner Themes](https://www.weeklymealplan.space/7-day-dinner-plan): Build a 7-day dinner plan in six steps. Includes nightly dinner themes, a sample week, quick weeknight ideas and a checklist.
+- [Weekly Breakfast Plan: Quick and Make-Ahead Ideas](https://www.weeklymealplan.space/weekly-breakfast-ideas): Plan a week of breakfasts: a sample weekly plan, quick weekday ideas, make-ahead breakfasts and weekend favourites.
+- [Printable Weekly Meal Planner Layout + Example Week](https://www.weeklymealplan.space/printable-weekly-meal-planner): A printable weekly meal planner layout with breakfast, lunch, dinner, notes and a shopping list section, plus a filled-in example.
 - [Sitemap](https://www.weeklymealplan.space/sitemap.xml): Public prerendered pages.
 
 ## Optional

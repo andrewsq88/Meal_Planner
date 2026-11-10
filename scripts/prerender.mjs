@@ -3,6 +3,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { guideJsonLd } from '../src/content/guide-model.ts';
+import { GUIDE_PAGES } from '../src/content/guides.ts';
 import { CANONICAL_ORIGIN } from '../src/lib/routes.ts';
 
 /**
@@ -24,6 +26,13 @@ const PUBLIC_ROUTES = [
     priority: '0.4',
     robots: 'noindex',
   },
+  ...GUIDE_PAGES.map((guide) => ({
+    path: guide.path,
+    loc: `${CANONICAL_ORIGIN}${guide.path}`,
+    changefreq: 'monthly',
+    priority: '0.7',
+    guide,
+  })),
 ];
 
 const SPA_FALLBACK_ROUTES = [
@@ -80,6 +89,61 @@ function applyPageUrl(html, loc) {
   return next;
 }
 
+function escapeHtml(value) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function applyGuideHead(html, guide) {
+  const loc = `${CANONICAL_ORIGIN}${guide.path}`;
+  let next = applyPageUrl(html, loc);
+  const title = escapeHtml(guide.title);
+  const description = escapeHtml(guide.description);
+  next = next.replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`);
+  next = next.replace(
+    /<meta name="description" content="[^"]*" \/>/,
+    `<meta name="description" content="${description}" />`,
+  );
+  next = next.replace(
+    /<meta property="og:type" content="[^"]*" \/>/,
+    '<meta property="og:type" content="article" />',
+  );
+  next = next.replace(
+    /<meta property="og:title" content="[^"]*" \/>/,
+    `<meta property="og:title" content="${title}" />`,
+  );
+  next = next.replace(
+    /<meta property="og:description" content="[^"]*" \/>/,
+    `<meta property="og:description" content="${description}" />`,
+  );
+  next = next.replace(
+    /<meta name="twitter:title" content="[^"]*" \/>/,
+    `<meta name="twitter:title" content="${title}" />`,
+  );
+  next = next.replace(
+    /<meta name="twitter:description" content="[^"]*" \/>/,
+    `<meta name="twitter:description" content="${description}" />`,
+  );
+  const json = JSON.stringify(guideJsonLd(guide, CANONICAL_ORIGIN)).replace(/</g, '\\u003c');
+  if (!next.includes('application/ld+json')) throw new Error(`Missing structured data for ${guide.path}`);
+  next = next.replace(
+    /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
+    `<script type="application/ld+json">${json}</script>`,
+  );
+  if (!next.includes(`<title>${title}</title>`) || !next.includes(`content="${description}"`)) {
+    throw new Error(`Failed to set guide metadata for ${guide.path}`);
+  }
+  // The shared noscript fallback has its own h1. Guide pages keep a single h1 in the article.
+  next = next.replace(
+    '<h1>Weekly Meal Planner</h1>',
+    '<p style="font-size:2rem;font-weight:800;margin:0 0 1rem;">Weekly Meal Planner</p>',
+  );
+  return next;
+}
+
 function applyRobots(html, content) {
   if (html.includes('data-route-robots="start"')) return html;
   return html.replace(
@@ -96,7 +160,7 @@ for (const route of PUBLIC_ROUTES) {
   if (!appHtml || !appHtml.includes('<')) {
     throw new Error(`renderToString returned no markup for ${route.path}`);
   }
-  let html = applyPageUrl(template, route.loc);
+  let html = route.guide ? applyGuideHead(template, route.guide) : applyPageUrl(template, route.loc);
   if (route.robots) html = applyRobots(html, route.robots);
   html = html.replace(rootPlaceholder, `<div id="root">${appHtml}</div>`);
   writeHtml(route.path, html);
@@ -166,6 +230,97 @@ assert.equal(start.includes('Advertisement'), false);
 assert.match(start, /Explore our other sites/);
 assert.deepEqual(otherSiteLinks(start), otherSiteHrefs);
 assert.equal(/registerprep/i.test(start), false);
+assert.equal(start.includes('Meal planning guides'), false);
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function flexText(value) {
+  return escapeRegex(value).replace(/'/g, "(?:'|&#x27;)");
+}
+
+const guideLeads = {
+  '/cheap-weekly-meal-plan': 'Feeding a household on a tight budget is mostly about planning.',
+  '/family-of-4-meal-plan': 'Planning meals for four people is a juggling act.',
+  '/meal-prep-shopping-list': 'A good meal prep session starts long before you pick up a knife.',
+  '/7-day-dinner-plan': 'Dinner is the meal most of us find hardest to plan.',
+  '/weekly-breakfast-ideas': 'Breakfast is often the meal that gets left to chance.',
+  '/printable-weekly-meal-planner': 'Sometimes the simplest tools work best.',
+};
+
+for (const guide of GUIDE_PAGES) {
+  assert.match(home, new RegExp(`href="${guide.path}"`));
+  assert.match(home, new RegExp(`>${flexText(guide.h1)}<`));
+  const pageHtml = rendered.get(guide.path);
+  const lead = guideLeads[guide.path];
+  assert.ok(pageHtml, guide.path);
+  assert.equal((pageHtml.match(/<h1[\s>]/g) || []).length, 1, guide.path);
+  assert.match(pageHtml, new RegExp(`<h1[^>]*>${flexText(guide.h1)}</h1>`));
+  assert.match(pageHtml, new RegExp(`<title>${flexText(guide.title)}</title>`));
+  assert.match(pageHtml, new RegExp(`<meta name="description" content="${flexText(guide.description)}" />`));
+  assert.match(pageHtml, new RegExp(`<link rel="canonical" href="${CANONICAL_ORIGIN}${guide.path}" />`));
+  assert.match(pageHtml, new RegExp(`<meta property="og:url" content="${CANONICAL_ORIGIN}${guide.path}" />`));
+  assert.match(pageHtml, new RegExp(`<meta property="og:title" content="${flexText(guide.title)}" />`));
+  assert.match(pageHtml, new RegExp(`<meta property="og:description" content="${flexText(guide.description)}" />`));
+  assert.match(pageHtml, /<meta property="og:type" content="article" \/>/);
+  assert.match(pageHtml, new RegExp(`<meta name="twitter:title" content="${flexText(guide.title)}" />`));
+  assert.match(pageHtml, new RegExp(`<meta name="twitter:description" content="${flexText(guide.description)}" />`));
+  assert.match(pageHtml, /"@type":"WebPage"/);
+  assert.match(pageHtml, /"@type":"BreadcrumbList"/);
+  assert.match(pageHtml, /"@type":"HowTo"/);
+  assert.match(pageHtml, /"@type":"FAQPage"/);
+  const structured = JSON.parse(pageHtml.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+  assert.deepEqual(structured, guideJsonLd(guide, CANONICAL_ORIGIN));
+  const decoded = pageHtml.replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+  const visible = decoded.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  assert.ok(visible.includes(guide.shortAnswer), `${guide.path} short answer`);
+  assert.ok(visible.indexOf(guide.h1) < visible.indexOf(guide.shortAnswer), `${guide.path} short answer under h1`);
+  assert.ok(visible.indexOf(guide.shortAnswer) < visible.indexOf(guide.buttonLabel), `${guide.path} button after answer`);
+  for (const node of structured['@graph']) {
+    if (node['@type'] === 'FAQPage') {
+      assert.equal(node.mainEntity.length, 5, guide.path);
+      for (const question of node.mainEntity) {
+        assert.ok(visible.includes(question.name), question.name);
+        assert.ok(visible.includes(question.acceptedAnswer.text), question.acceptedAnswer.text);
+      }
+    }
+    if (node['@type'] === 'HowTo') {
+      assert.equal(node.name, guide.h1);
+      assert.equal(node.description, guide.shortAnswer);
+      assert.ok(node.step.length >= 5, guide.path);
+      for (const step of node.step) {
+        assert.ok(visible.includes(step.name), step.name);
+        assert.ok(visible.includes(step.text), step.text);
+        assert.equal(Object.hasOwn(step, 'url'), false);
+        assert.ok(String(node.url).startsWith('https://www.weeklymealplan.space/'));
+      }
+    }
+    if (node['@type'] === 'BreadcrumbList') {
+      assert.equal(node.itemListElement[0].name, 'Weekly Meal Planner');
+      assert.equal(node.itemListElement[0].item, 'https://www.weeklymealplan.space/');
+      assert.equal(node.itemListElement[1].name, guide.h1);
+      assert.equal(node.itemListElement[1].item, `https://www.weeklymealplan.space${guide.path}`);
+    }
+  }
+  assert.equal(/affiliate/i.test(pageHtml), false, guide.path);
+  assert.ok(pageHtml.includes(lead), guide.path);
+  const buttonAt = pageHtml.search(new RegExp(`>${flexText(guide.buttonLabel)}</a>`));
+  const slot1 = pageHtml.indexOf('data-ad-placeholder="1"');
+  const slot2 = pageHtml.indexOf('data-ad-placeholder="2"');
+  assert.ok(pageHtml.indexOf(lead) < buttonAt, `${guide.path} button`);
+  assert.ok(buttonAt < slot1 && slot1 < slot2, `${guide.path} ad order`);
+  assert.equal((pageHtml.match(/data-ad-placeholder="/g) || []).length, 2, guide.path);
+  assert.equal((pageHtml.match(/data-ad-slot=/g) || []).length, 0, guide.path);
+  assert.equal(pageHtml.includes('Advertisement'), false, guide.path);
+  assert.equal(pageHtml.includes('[AD SLOT'), false, guide.path);
+  assert.equal(pageHtml.includes('[MAIN BUTTON'), false, guide.path);
+  assert.equal(pageHtml.includes('**'), false, guide.path);
+  assert.equal(/<script[^>]*src="https:\/\/bicea\.org/.test(pageHtml), false, guide.path);
+  assert.equal(/registerprep/i.test(pageHtml), false, guide.path);
+  assert.match(pageHtml, new RegExp(`<a href="/"[^>]*>${flexText(guide.buttonLabel)}</a>`));
+  assert.equal(pageHtml.includes('Meal planning guides'), false, guide.path);
+}
 
 for (const html of [signup, checkout, billing]) {
   assert.match(html, /<div id="root"><\/div>/);

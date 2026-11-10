@@ -19,6 +19,8 @@ import { UtensilsCrossed } from 'lucide-react';
 import { AdSlots } from './components/AdSlots';
 import { StartPage } from './components/StartPage';
 import { SiteFooter } from './components/SiteFooter';
+import { GuidePage } from './components/GuidePage';
+import { findGuidePage } from './content/guides';
 import { isAdRouteBlocked, locationKey } from './lib/adsterra';
 import { isSignupPath, isStartPath } from './lib/routes';
 
@@ -79,6 +81,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   useShellNoIndex(pathname);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState<string | undefined>(undefined);
+  const guide = findGuidePage(pathname);
   const onStart = isStartPath(pathname);
   const onSignup = isSignupPath(pathname);
 
@@ -103,6 +106,10 @@ function AppContent({ initialPath }: { initialPath?: string }) {
     window.history.pushState(null, '', '/');
     setPathname('/');
     window.dispatchEvent(new Event('mealplan-ad-route'));
+  }
+
+  if (guide) {
+    return <GuidePage page={guide} pathname={pathname} dark={dark} onToggleDark={toggleDark} />;
   }
 
   if (onStart) {
