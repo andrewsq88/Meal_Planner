@@ -3,7 +3,7 @@ import { isAuthOrPaymentPath } from '../lib/routes';
 
 const OTHER_SITES = [
   {
-    label: 'Lushlands Management',
+    label: 'LushLands Management',
     href: 'https://www.lushlandsmanagement.com/?utm_source=mealplan&utm_medium=crosslink&utm_campaign=footer-2026-11',
   },
   {

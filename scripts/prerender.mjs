@@ -218,6 +218,10 @@ function otherSiteLinks(html) {
 }
 
 assert.deepEqual(otherSiteLinks(home), otherSiteHrefs);
+assert.match(home, />LushLands Management</);
+assert.match(home, />The Daily Pulse</);
+assert.equal(home.includes('Lushlands Management'), false);
+assert.equal(/More from Andrew|>Andrew</i.test(home), false);
 assert.equal(/registerprep/i.test(home), false);
 
 assert.match(start, /Plan your family(?:'|&#x27;)s meals for the week/);
