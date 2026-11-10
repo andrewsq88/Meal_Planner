@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Moon, Sun, UtensilsCrossed } from 'lucide-react';
 import type { GuidePageCopy } from '../content/guides';
 import { parseBlocks, type Block } from '../content/guide-model';
+import { GuideBanner, useGuideBanners } from './GuideBanners';
 import { SiteFooter } from './SiteFooter';
 
 interface GuidePageProps {
@@ -32,7 +33,15 @@ function PlannerButton({ label }: { label: string }) {
   );
 }
 
-function BlockView({ block, page }: { block: Block; page: GuidePageCopy }) {
+function BlockView({
+  block,
+  page,
+  narrow,
+}: {
+  block: Block;
+  page: GuidePageCopy;
+  narrow: boolean;
+}) {
   if (block.type === 'p' && block.text.startsWith('**[MAIN BUTTON:')) {
     if (!block.text.includes(`"${page.buttonLabel}"`)) {
       throw new Error(`Primary button label does not match the copy for ${page.path}`);
@@ -42,7 +51,7 @@ function BlockView({ block, page }: { block: Block; page: GuidePageCopy }) {
   if (block.type === 'p' && block.text.startsWith('**[AD SLOT')) {
     const slot = block.text.match(/AD SLOT (\d+)/)?.[1];
     if (slot !== '1' && slot !== '2') throw new Error(`Unexpected ad marker on ${page.path}`);
-    return <div data-ad-placeholder={slot} hidden />;
+    return <GuideBanner index={slot === '1' ? 0 : 1} narrow={narrow} pathname={page.path} />;
   }
   if (block.type === 'h2') {
     return (
@@ -112,6 +121,7 @@ function BlockView({ block, page }: { block: Block; page: GuidePageCopy }) {
 
 export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps) {
   const blocks = parseBlocks(page.body);
+  const narrow = useGuideBanners(pathname);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-rose-50/20 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 transition-colors duration-300 flex flex-col">
@@ -160,7 +170,7 @@ export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps
             <strong>Short answer:</strong> {page.shortAnswer}
           </p>
           {blocks.map((block, index) => (
-            <BlockView key={index} block={block} page={page} />
+            <BlockView key={index} block={block} page={page} narrow={narrow} />
           ))}
         </article>
       </main>

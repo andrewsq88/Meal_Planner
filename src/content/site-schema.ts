@@ -15,7 +15,7 @@ export function siteGraph(origin: string) {
     {
       '@type': 'Organization',
       '@id': `${origin}/#organization`,
-      name: 'SQ Consultancy',
+      name: 'Weekly Meal Planner',
     },
     {
       '@type': 'WebSite',

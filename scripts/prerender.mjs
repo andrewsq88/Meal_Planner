@@ -370,17 +370,20 @@ for (const guide of GUIDE_PAGES) {
   assert.equal(/affiliate/i.test(pageHtml), false, guide.path);
   assert.ok(pageHtml.includes(lead), guide.path);
   const buttonAt = pageHtml.search(new RegExp(`>${flexText(guide.buttonLabel)}</a>`));
-  const slot1 = pageHtml.indexOf('data-ad-placeholder="1"');
-  const slot2 = pageHtml.indexOf('data-ad-placeholder="2"');
+  const slot1 = pageHtml.indexOf('data-ad-slot="mp-300x250"');
+  const slot2 = pageHtml.indexOf('data-ad-slot="mp-728x90"');
+  const footerAt = pageHtml.lastIndexOf('<footer');
   assert.ok(pageHtml.indexOf(lead) < buttonAt, `${guide.path} button`);
   assert.ok(buttonAt < slot1 && slot1 < slot2, `${guide.path} ad order`);
-  assert.equal((pageHtml.match(/data-ad-placeholder="/g) || []).length, 2, guide.path);
-  assert.equal((pageHtml.match(/data-ad-slot=/g) || []).length, 0, guide.path);
-  assert.equal(pageHtml.includes('Advertisement'), false, guide.path);
+  assert.equal((pageHtml.match(/data-ad-slot=/g) || []).length, 2, guide.path);
+  assert.equal(pageHtml.includes('mp-native-below'), false, guide.path);
+  assert.equal(pageHtml.includes('mp-320x50'), false, guide.path);
+  assert.equal((pageHtml.match(/Advertisement/g) || []).length, 2, guide.path);
+  assert.equal(pageHtml.slice(footerAt).includes('data-ad-slot'), false, guide.path);
+  assert.equal(/<script[^>]*src="https:\/\/bicea\.org/.test(pageHtml), false, guide.path);
   assert.equal(pageHtml.includes('[AD SLOT'), false, guide.path);
   assert.equal(pageHtml.includes('[MAIN BUTTON'), false, guide.path);
   assert.equal(pageHtml.includes('**'), false, guide.path);
-  assert.equal(/<script[^>]*src="https:\/\/bicea\.org/.test(pageHtml), false, guide.path);
   assert.equal(/registerprep/i.test(pageHtml), false, guide.path);
   assert.match(pageHtml, new RegExp(`<a href="/"[^>]*>${flexText(guide.buttonLabel)}</a>`));
   assert.equal(pageHtml.includes('Meal planning guides'), false, guide.path);
@@ -471,7 +474,7 @@ function assertGraph(data, { article = false, faq = false, howTo = false, webPag
   assert.deepEqual(types.filter((type) => type === 'Organization').length, 1);
   assert.deepEqual(types.filter((type) => type === 'WebSite').length, 1);
   const organization = data['@graph'].find((node) => node['@type'] === 'Organization');
-  assert.equal(organization.name, 'SQ Consultancy');
+  assert.equal(organization.name, 'Weekly Meal Planner');
   assert.equal(organization['@id'], `${CANONICAL_ORIGIN}/#organization`);
   for (const key of ['logo', 'sameAs', 'email', 'telephone', 'contactPoint', 'address', 'image']) {
     assert.equal(Object.hasOwn(organization, key), false, key);
