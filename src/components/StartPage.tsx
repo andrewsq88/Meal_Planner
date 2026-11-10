@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { CalendarDays, Heart, ShoppingBasket, Sun, Moon, UtensilsCrossed } from 'lucide-react';
+import { SiteFooter } from './SiteFooter';
 
 interface StartPageProps {
   dark: boolean;
   onToggleDark: () => void;
+  pathname: string;
 }
 
 /**
@@ -42,7 +44,7 @@ const BENEFITS = [
   },
 ] as const;
 
-export function StartPage({ dark, onToggleDark }: StartPageProps) {
+export function StartPage({ dark, onToggleDark, pathname }: StartPageProps) {
   useStartNoIndex();
 
   return (
@@ -91,11 +93,10 @@ export function StartPage({ dark, onToggleDark }: StartPageProps) {
         </div>
       </main>
 
-      <footer className="border-t border-amber-100 dark:border-stone-700 py-5">
-        <p className="text-center text-xs text-stone-400 dark:text-stone-500">
-          &copy; {new Date().getFullYear()} SQ Consultancy. All rights reserved.
-        </p>
-      </footer>
+      <SiteFooter
+        pathname={pathname}
+        className="border-t border-amber-100 dark:border-stone-700 py-5"
+      />
     </div>
   );
 }

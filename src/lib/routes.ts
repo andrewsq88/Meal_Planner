@@ -16,3 +16,14 @@ export function isSignupPath(pathname: string): boolean {
   const path = normalizePath(pathname);
   return path === '/signup' || path === '/sign-up';
 }
+
+/**
+ * Auth, payment, and checkout paths. The public planner and /start are not included.
+ * Mirrors the ad-route list without /start.
+ */
+const AUTH_OR_PAYMENT_ROUTE =
+  /\/checkout|\/pay|\/billing|stripe|\/auth(?:\/|$|\?|#)|\/login(?:\/|$|\?|#)|\/signin(?:\/|$|\?|#)|\/sign-in(?:\/|$|\?|#)|\/signup(?:\/|$|\?|#)|\/sign-up(?:\/|$|\?|#)|\/register(?:\/|$|\?|#)|\/account(?:\/|$|\?|#)/i;
+
+export function isAuthOrPaymentPath(pathname: string): boolean {
+  return AUTH_OR_PAYMENT_ROUTE.test(pathname);
+}

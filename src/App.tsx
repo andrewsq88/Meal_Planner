@@ -18,6 +18,7 @@ import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './
 import { UtensilsCrossed } from 'lucide-react';
 import { AdSlots } from './components/AdSlots';
 import { StartPage } from './components/StartPage';
+import { SiteFooter } from './components/SiteFooter';
 import { isAdRouteBlocked, locationKey } from './lib/adsterra';
 import { isSignupPath, isStartPath } from './lib/routes';
 
@@ -105,7 +106,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   }
 
   if (onStart) {
-    return <StartPage dark={dark} onToggleDark={toggleDark} />;
+    return <StartPage dark={dark} onToggleDark={toggleDark} pathname={pathname} />;
   }
 
   if (loading && !onSignup) {
@@ -115,7 +116,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   return (
     <>
       {loading ? <LoadingScreen /> : (
-        <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} />
+        <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} pathname={pathname} />
       )}
       <AuthModal
         open={authModalOpen || onSignup}
@@ -131,9 +132,10 @@ interface PlannerProps {
   onAuthRequired: (prompt?: string) => void;
   dark: boolean;
   toggleDark: () => void;
+  pathname: string;
 }
 
-function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
+function Planner({ onAuthRequired, dark, toggleDark, pathname }: PlannerProps) {
   const { user } = useAuth();
   const [weekStart, setWeekStart] = useState(() => getWeekStart());
   const [mealType, setMealType] = useState<MealType>('dinner');
@@ -294,11 +296,10 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
 
       <AdSlots />
 
-      <footer className="border-t border-amber-100 dark:border-stone-700 mt-8 py-5 transition-colors duration-300">
-        <p className="text-center text-xs text-stone-400 dark:text-stone-500">
-          &copy; {new Date().getFullYear()} SQ Consultancy. All rights reserved.
-        </p>
-      </footer>
+      <SiteFooter
+        pathname={pathname}
+        className="border-t border-amber-100 dark:border-stone-700 mt-8 py-5 transition-colors duration-300"
+      />
 
       {editModal && (
         <MealModal

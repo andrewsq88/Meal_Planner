@@ -139,6 +139,21 @@ assert.equal(home.includes('FAQPage'), false);
 assert.equal(/<script[^>]*src="https:\/\/bicea\.org/.test(home), false);
 assert.equal(home.includes('data-route-robots="shell"'), false);
 assert.match(home, /Plan your family's meals for the entire week with ease\./);
+assert.match(home, /Explore our other sites/);
+assert.equal((home.match(/Explore our other sites/g) || []).length, 1);
+
+const otherSiteHrefs = [
+  'https://www.lushlandsmanagement.com/?utm_source=mealplan&utm_medium=crosslink&utm_campaign=footer-2026-11',
+  'https://thedailypulse.space/?utm_source=mealplan&utm_medium=crosslink&utm_campaign=footer-2026-11',
+];
+
+function otherSiteLinks(html) {
+  return [...html.matchAll(/href="(https:\/\/(?:www\.lushlandsmanagement\.com|thedailypulse\.space)\/\?[^"]*)"/g)]
+    .map((match) => match[1].replace(/&amp;/g, '&'));
+}
+
+assert.deepEqual(otherSiteLinks(home), otherSiteHrefs);
+assert.equal(/registerprep/i.test(home), false);
 
 assert.match(start, /Plan your family(?:'|&#x27;)s meals for the week/);
 assert.match(start, /Create your free account/);
@@ -147,16 +162,45 @@ assert.match(start, /<meta property="og:url" content="https:\/\/weeklymealplan\.
 assert.match(start, /<meta name="robots" content="noindex" data-route-robots="start" \/>/);
 assert.equal(start.includes('data-ad-slot'), false);
 assert.equal(start.includes('Advertisement'), false);
+assert.match(start, /Explore our other sites/);
+assert.deepEqual(otherSiteLinks(start), otherSiteHrefs);
+assert.equal(/registerprep/i.test(start), false);
 
 for (const html of [signup, checkout, billing]) {
   assert.match(html, /<div id="root"><\/div>/);
   assert.equal(html.includes('data-ad-slot'), false);
   assert.equal(html.includes('Advertisement'), false);
+  assert.equal(html.includes('Explore our other sites'), false);
+  assert.equal(html.includes('lushlandsmanagement.com'), false);
+  assert.equal(html.includes('thedailypulse.space'), false);
   assert.equal(/<script[^>]*src="https:\/\/bicea\.org/.test(html), false);
   assert.match(html, /data-route-robots="shell"/);
   assert.match(html, /google-site-verification/);
   assert.match(html, /Content-Security-Policy/);
 }
+
+const indexNowKey = 'aa07e5ec709905f895fcccc55555a4c9';
+const indexNowFile = readFileSync(path.join(dist, `${indexNowKey}.txt`));
+assert.deepEqual(indexNowFile, Buffer.from(indexNowKey));
+
+const redirectLines = readFileSync(path.join(dist, '_redirects'), 'utf8')
+  .split('\n')
+  .map((line) => line.trim())
+  .filter((line) => line && !line.startsWith('#'));
+const keyRedirect = redirectLines.find((line) => line.startsWith(`/${indexNowKey}.txt`));
+const spaRedirect = redirectLines.find((line) => line.startsWith('/*'));
+assert.equal(keyRedirect, `/${indexNowKey}.txt  /${indexNowKey}.txt  200`);
+assert.equal(spaRedirect, '/*    /spa.html   200');
+assert.ok(redirectLines.indexOf(keyRedirect) < redirectLines.indexOf(spaRedirect));
+assert.equal(spaRedirect.endsWith('!'), false);
+
+const headerText = readFileSync(path.join(dist, '_headers'), 'utf8');
+assert.match(headerText, new RegExp(`/${indexNowKey}\\.txt\\n  Content-Type: text/plain; charset=utf-8`));
+
+const netlifyToml = readFileSync(path.resolve('netlify.toml'), 'utf8');
+assert.equal(netlifyToml.includes('[[redirects]]'), false);
+assert.equal(netlifyToml.includes(indexNowKey), false);
+assert.equal(netlifyToml.includes('index.html'), false);
 
 for (const bot of ['GPTBot', 'OAI-SearchBot', 'ClaudeBot', 'PerplexityBot', 'Google-Extended']) {
   assert.match(robots, new RegExp(`User-agent: ${bot}\\nAllow: /`));

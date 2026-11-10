@@ -1,4 +1,7 @@
-# Prerendered public pages, assets, robots.txt, sitemap.xml, ads.txt, and llms.txt
-# are real files and are served as-is. Every other path, including auth and
-# payment, boots the empty SPA shell so those responses contain no ad markup.
+# Prerendered public pages, assets, robots.txt, sitemap.xml, ads.txt, llms.txt,
+# and the IndexNow key file are real files and are served as-is. The key-file
+# rule is listed first and is not forced, so the SPA rewrite cannot replace it.
+# Every other path, including auth and payment, boots the empty SPA shell
+# so those responses contain no ad markup.
+/aa07e5ec709905f895fcccc55555a4c9.txt  /aa07e5ec709905f895fcccc55555a4c9.txt  200
 /*    /spa.html   200
