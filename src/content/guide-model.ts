@@ -166,7 +166,7 @@ export function guideSteps(blocks: Block[]): GuideStep[] {
 
 export function guideFaqs(blocks: Block[]): GuideFaq[] {
   const start = blocks.findIndex((block) => block.type === 'h2' && block.text === 'Frequently asked questions');
-  if (start < 0) throw new Error('Guide is missing its questions');
+  if (start < 0) return [];
   const faqs: GuideFaq[] = [];
   for (let index = start + 1; index < blocks.length; index += 1) {
     const block = blocks[index];
@@ -180,68 +180,70 @@ export function guideFaqs(blocks: Block[]): GuideFaq[] {
   return faqs;
 }
 
-export function guideJsonLd(page: GuidePageCopy, origin: string) {
+export function guideGraph(page: GuidePageCopy, origin: string) {
   const blocks = parseBlocks(page.body);
   const steps = guideSteps(blocks);
   const faqs = guideFaqs(blocks);
   const url = `${origin}${page.path}`;
-  return {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebPage',
-        '@id': `${url}#webpage`,
-        url,
-        name: page.title,
-        headline: page.h1,
-        description: page.description,
-        inLanguage: 'en',
-        isPartOf: { '@id': `${origin}/#website` },
-      },
-      {
-        '@type': 'BreadcrumbList',
-        '@id': `${url}#breadcrumb`,
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Weekly Meal Planner',
-            item: `${origin}/`,
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: page.h1,
-            item: url,
-          },
-        ],
-      },
-      {
-        '@type': 'HowTo',
-        '@id': `${url}#howto`,
-        name: page.h1,
-        description: page.shortAnswer,
-        url,
-        step: steps.map((step) => ({
-          '@type': 'HowToStep',
-          position: step.position,
-          name: step.name,
-          text: step.text,
-        })),
-      },
-      {
-        '@type': 'FAQPage',
-        '@id': `${url}#faq`,
-        url,
-        mainEntity: faqs.map((faq) => ({
-          '@type': 'Question',
-          name: faq.question,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: faq.answer,
-          },
-        })),
-      },
-    ],
-  };
+  const nodes: Record<string, unknown>[] = [
+    {
+      '@type': 'Article',
+      '@id': `${url}#article`,
+      headline: page.h1,
+      description: page.description,
+      url,
+      mainEntityOfPage: url,
+      inLanguage: 'en',
+      isPartOf: { '@id': `${origin}/#website` },
+      author: { '@id': `${origin}/#organization` },
+      publisher: { '@id': `${origin}/#organization` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${url}#breadcrumb`,
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Weekly Meal Planner',
+          item: `${origin}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: page.h1,
+          item: url,
+        },
+      ],
+    },
+    {
+      '@type': 'HowTo',
+      '@id': `${url}#howto`,
+      name: page.h1,
+      description: page.shortAnswer,
+      url,
+      step: steps.map((step) => ({
+        '@type': 'HowToStep',
+        position: step.position,
+        name: step.name,
+        text: step.text,
+      })),
+    },
+  ];
+  if (faqs.length > 0) {
+    nodes.push({
+      '@type': 'FAQPage',
+      '@id': `${url}#faq`,
+      url,
+      mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    });
+  }
+  return nodes;
 }
