@@ -24,11 +24,11 @@ View all ingredients for your planned meals in one place, making it easy to buil
 
 ## Pages
 
-- [Weekly Meal Planner](https://weeklymealplan.space/): Plan your family's meals for the entire week with ease. Weekly Meal Planner helps you organize breakfast, lunch, and dinner across all seven days of the week, so you always know what's cooking.
-- [Sitemap](https://weeklymealplan.space/sitemap.xml): Public prerendered pages.
+- [Weekly Meal Planner](https://www.weeklymealplan.space/): Plan your family's meals for the entire week with ease. Weekly Meal Planner helps you organize breakfast, lunch, and dinner across all seven days of the week, so you always know what's cooking.
+- [Sitemap](https://www.weeklymealplan.space/sitemap.xml): Public prerendered pages.
 
 ## Optional
 
-- [Start](https://weeklymealplan.space/start): Plan your family's meals for the week. This landing page is noindex.
+- [Start](https://www.weeklymealplan.space/start): Plan your family's meals for the week. This landing page is noindex.
 
-Start planning your meals today at weeklymealplan.space.
+Start planning your meals today at www.weeklymealplan.space.

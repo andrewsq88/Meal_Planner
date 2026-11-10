@@ -3,7 +3,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const CANONICAL_ORIGIN = 'https://weeklymealplan.space';
+import { CANONICAL_ORIGIN } from '../src/lib/routes.ts';
 
 /**
  * Logged-out pages with real content. sitemap.xml is written from this list,
@@ -128,9 +128,10 @@ assert.match(home, /Meal Suggestions/);
 assert.match(home, /Save your favorite meals/);
 assert.match(home, /Breakfast/);
 assert.match(home, /data-ad-slot="mp-native-below"/);
-assert.match(home, /<link rel="canonical" href="https:\/\/weeklymealplan\.space\/" \/>/);
-assert.match(home, /<meta property="og:url" content="https:\/\/weeklymealplan\.space\/" \/>/);
-assert.match(home, /<meta name="twitter:url" content="https:\/\/weeklymealplan\.space\/" \/>/);
+assert.match(home, /<link rel="canonical" href="https:\/\/www\.weeklymealplan\.space\/" \/>/);
+assert.match(home, /<meta property="og:url" content="https:\/\/www\.weeklymealplan\.space\/" \/>/);
+assert.match(home, /<meta name="twitter:url" content="https:\/\/www\.weeklymealplan\.space\/" \/>/);
+assert.equal(home.includes('https://weeklymealplan.space'), false);
 assert.match(home, /google-site-verification" content="JsSnLl66a4rb7lyreNJ3dlcWuJrBZn02okHSsYhkGGg"/);
 assert.match(home, /http-equiv="Content-Security-Policy"/);
 assert.match(home, /"@type": "WebSite"/);
@@ -157,8 +158,8 @@ assert.equal(/registerprep/i.test(home), false);
 
 assert.match(start, /Plan your family(?:'|&#x27;)s meals for the week/);
 assert.match(start, /Create your free account/);
-assert.match(start, /<link rel="canonical" href="https:\/\/weeklymealplan\.space\/start" \/>/);
-assert.match(start, /<meta property="og:url" content="https:\/\/weeklymealplan\.space\/start" \/>/);
+assert.match(start, /<link rel="canonical" href="https:\/\/www\.weeklymealplan\.space\/start" \/>/);
+assert.match(start, /<meta property="og:url" content="https:\/\/www\.weeklymealplan\.space\/start" \/>/);
 assert.match(start, /<meta name="robots" content="noindex" data-route-robots="start" \/>/);
 assert.equal(start.includes('data-ad-slot'), false);
 assert.equal(start.includes('Advertisement'), false);
@@ -193,6 +194,9 @@ assert.equal(keyRedirect, `/${indexNowKey}.txt  /${indexNowKey}.txt  200`);
 assert.equal(spaRedirect, '/*    /spa.html   200');
 assert.ok(redirectLines.indexOf(keyRedirect) < redirectLines.indexOf(spaRedirect));
 assert.equal(spaRedirect.endsWith('!'), false);
+assert.ok(redirectLines.includes('https://weeklymealplan.space/*  https://www.weeklymealplan.space/:splat  301!'));
+assert.ok(redirectLines.includes('http://weeklymealplan.space/*  https://www.weeklymealplan.space/:splat  301!'));
+assert.ok(redirectLines.indexOf('https://weeklymealplan.space/*  https://www.weeklymealplan.space/:splat  301!') < redirectLines.indexOf(spaRedirect));
 
 const headerText = readFileSync(path.join(dist, '_headers'), 'utf8');
 assert.match(headerText, new RegExp(`/${indexNowKey}\\.txt\\n  Content-Type: text/plain; charset=utf-8`));
@@ -205,7 +209,7 @@ assert.equal(netlifyToml.includes('index.html'), false);
 for (const bot of ['GPTBot', 'OAI-SearchBot', 'ClaudeBot', 'PerplexityBot', 'Google-Extended']) {
   assert.match(robots, new RegExp(`User-agent: ${bot}\\nAllow: /`));
 }
-assert.match(robots, /Sitemap: https:\/\/weeklymealplan\.space\/sitemap\.xml/);
+assert.match(robots, /Sitemap: https:\/\/www\.weeklymealplan\.space\/sitemap\.xml/);
 
 for (const route of PUBLIC_ROUTES) {
   assert.ok(builtSitemap.includes(`<loc>${route.loc}</loc>`), route.loc);
@@ -214,6 +218,7 @@ assert.equal(builtSitemap.includes('/signup'), false);
 assert.equal(builtSitemap.includes('/checkout'), false);
 
 assert.match(llms, /Plan your family's weekly meals with ease\. Browse recipe suggestions, save favorites, build a shopping list, and organize breakfast, lunch, and dinner for the whole week\./);
-assert.match(llms, /https:\/\/weeklymealplan\.space\//);
+assert.match(llms, /https:\/\/www\.weeklymealplan\.space\//);
+assert.equal(llms.includes('https://weeklymealplan.space'), false);
 
 console.log(`Prerendered ${PUBLIC_ROUTES.map((route) => route.path).join(', ')}`);
