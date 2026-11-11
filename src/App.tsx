@@ -18,6 +18,13 @@ import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './
 import { UtensilsCrossed } from 'lucide-react';
 import { AdSlots } from './components/AdSlots';
 import { StartPage } from './components/StartPage';
+import { SiteFooter } from './components/SiteFooter';
+import { GuidePage } from './components/GuidePage';
+import { findGuidePage } from './content/guides';
+import { findLegalPage } from './content/legal';
+import { ConsentBanner } from './components/ConsentBanner';
+import { CookielessAnalytics } from './components/CookielessAnalytics';
+import { LegalPage } from './components/LegalPage';
 import { isAdRouteBlocked, locationKey } from './lib/adsterra';
 import { isSignupPath, isStartPath } from './lib/routes';
 
@@ -78,6 +85,8 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   useShellNoIndex(pathname);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState<string | undefined>(undefined);
+  const legal = findLegalPage(pathname);
+  const guide = findGuidePage(pathname);
   const onStart = isStartPath(pathname);
   const onSignup = isSignupPath(pathname);
 
@@ -104,8 +113,16 @@ function AppContent({ initialPath }: { initialPath?: string }) {
     window.dispatchEvent(new Event('mealplan-ad-route'));
   }
 
+  if (legal) {
+    return <LegalPage page={legal} pathname={pathname} dark={dark} onToggleDark={toggleDark} />;
+  }
+
+  if (guide) {
+    return <GuidePage page={guide} pathname={pathname} dark={dark} onToggleDark={toggleDark} />;
+  }
+
   if (onStart) {
-    return <StartPage dark={dark} onToggleDark={toggleDark} />;
+    return <StartPage dark={dark} onToggleDark={toggleDark} pathname={pathname} />;
   }
 
   if (loading && !onSignup) {
@@ -115,7 +132,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   return (
     <>
       {loading ? <LoadingScreen /> : (
-        <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} />
+        <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} pathname={pathname} />
       )}
       <AuthModal
         open={authModalOpen || onSignup}
@@ -131,9 +148,10 @@ interface PlannerProps {
   onAuthRequired: (prompt?: string) => void;
   dark: boolean;
   toggleDark: () => void;
+  pathname: string;
 }
 
-function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
+function Planner({ onAuthRequired, dark, toggleDark, pathname }: PlannerProps) {
   const { user } = useAuth();
   const [weekStart, setWeekStart] = useState(() => getWeekStart());
   const [mealType, setMealType] = useState<MealType>('dinner');
@@ -294,11 +312,10 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
 
       <AdSlots />
 
-      <footer className="border-t border-amber-100 dark:border-stone-700 mt-8 py-5 transition-colors duration-300">
-        <p className="text-center text-xs text-stone-400 dark:text-stone-500">
-          &copy; {new Date().getFullYear()} SQ Consultancy. All rights reserved.
-        </p>
-      </footer>
+      <SiteFooter
+        pathname={pathname}
+        className="border-t border-amber-100 dark:border-stone-700 mt-8 py-5 transition-colors duration-300"
+      />
 
       {editModal && (
         <MealModal
@@ -331,7 +348,9 @@ function Planner({ onAuthRequired, dark, toggleDark }: PlannerProps) {
 export default function App({ initialPath }: { initialPath?: string } = {}) {
   return (
     <AuthProvider>
+      <CookielessAnalytics />
       <AppContent initialPath={initialPath} />
+      <ConsentBanner />
     </AuthProvider>
   );
 }

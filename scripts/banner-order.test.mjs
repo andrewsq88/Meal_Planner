@@ -13,7 +13,7 @@ import {
   reservedSlotHeight,
   slotsForViewport,
 } from '../src/lib/adsterra.ts';
-import { isSignupPath, isStartPath } from '../src/lib/routes.ts';
+import { isAuthOrPaymentPath, isSignupPath, isStartPath } from '../src/lib/routes.ts';
 
 const banners = [
   {
@@ -97,6 +97,13 @@ assert.equal(isSignupPath('/signup'), true);
 assert.equal(isSignupPath('/signup/'), true);
 assert.equal(isSignupPath('/sign-up'), true);
 assert.equal(isSignupPath('/'), false);
+
+for (const path of ['/checkout', '/pay', '/billing', '/stripe/return', '/auth', '/login', '/signin', '/sign-in', '/signup', '/sign-up', '/register', '/account', '/account/billing', '/#/checkout']) {
+  assert.equal(isAuthOrPaymentPath(path), true, path);
+}
+for (const path of ['/', '/start', '/start/', '/starting']) {
+  assert.equal(isAuthOrPaymentPath(path), false, path);
+}
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const meta = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/);
