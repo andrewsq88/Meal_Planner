@@ -13,6 +13,7 @@ import {
   reservedSlotHeight,
   type BannerPlacement,
 } from '../lib/adsterra';
+import { useAdConsent } from '../hooks/useAdConsent';
 
 const NEAR_VIEWPORT = '200px 0px';
 
@@ -149,11 +150,12 @@ function mountBanner(banner: BannerPlacement): Promise<void> {
  */
 export function AdSlots() {
   const allowed = useAdsAllowed();
+  const consent = useAdConsent();
   const narrow = useNarrowViewport();
   const banners = bannersForViewport(narrow);
 
   useEffect(() => {
-    if (!allowed) return;
+    if (!allowed || consent !== 'accepted') return;
     let cancelled = false;
 
     const cancels: Array<() => void> = [];
@@ -185,9 +187,9 @@ export function AdSlots() {
       stopLoad();
       for (const cancel of cancels) cancel();
     };
-  }, [allowed, narrow]);
+  }, [allowed, consent, narrow]);
 
-  if (!allowed) return null;
+  if (!allowed || consent === 'rejected') return null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6" style={{ marginTop: 32 }}>

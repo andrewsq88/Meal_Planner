@@ -21,6 +21,10 @@ import { StartPage } from './components/StartPage';
 import { SiteFooter } from './components/SiteFooter';
 import { GuidePage } from './components/GuidePage';
 import { findGuidePage } from './content/guides';
+import { findLegalPage } from './content/legal';
+import { ConsentBanner } from './components/ConsentBanner';
+import { CookielessAnalytics } from './components/CookielessAnalytics';
+import { LegalPage } from './components/LegalPage';
 import { isAdRouteBlocked, locationKey } from './lib/adsterra';
 import { isSignupPath, isStartPath } from './lib/routes';
 
@@ -81,6 +85,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   useShellNoIndex(pathname);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState<string | undefined>(undefined);
+  const legal = findLegalPage(pathname);
   const guide = findGuidePage(pathname);
   const onStart = isStartPath(pathname);
   const onSignup = isSignupPath(pathname);
@@ -106,6 +111,10 @@ function AppContent({ initialPath }: { initialPath?: string }) {
     window.history.pushState(null, '', '/');
     setPathname('/');
     window.dispatchEvent(new Event('mealplan-ad-route'));
+  }
+
+  if (legal) {
+    return <LegalPage page={legal} pathname={pathname} dark={dark} onToggleDark={toggleDark} />;
   }
 
   if (guide) {
@@ -339,7 +348,9 @@ function Planner({ onAuthRequired, dark, toggleDark, pathname }: PlannerProps) {
 export default function App({ initialPath }: { initialPath?: string } = {}) {
   return (
     <AuthProvider>
+      <CookielessAnalytics />
       <AppContent initialPath={initialPath} />
+      <ConsentBanner />
     </AuthProvider>
   );
 }

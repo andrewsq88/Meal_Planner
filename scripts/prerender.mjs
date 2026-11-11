@@ -15,6 +15,7 @@ import {
   webPageNode,
 } from '../src/content/site-schema.ts';
 import { CANONICAL_ORIGIN } from '../src/lib/routes.ts';
+import { LEGAL_PAGES } from '../src/content/legal.ts';
 
 /**
  * Logged-out pages with real content. sitemap.xml is written from this list,
@@ -41,6 +42,13 @@ const PUBLIC_ROUTES = [
     changefreq: 'monthly',
     priority: '0.7',
     guide,
+  })),
+  ...LEGAL_PAGES.map((legal) => ({
+    path: legal.path,
+    loc: `${CANONICAL_ORIGIN}${legal.path}`,
+    changefreq: 'yearly',
+    priority: '0.3',
+    legal,
   })),
 ];
 
@@ -177,6 +185,23 @@ function publicHead(route) {
       '<p style="font-size:2rem;font-weight:800;margin:0 0 1rem;">Weekly Meal Planner</p>',
     );
   }
+  if (route.legal) {
+    const html = replaceJsonLd(
+      applyDocumentHead(template, {
+        title: route.legal.title,
+        description: route.legal.description,
+        canonical: route.loc,
+      }),
+      [
+        ...siteGraph(CANONICAL_ORIGIN),
+        webPageNode(CANONICAL_ORIGIN, route.path, route.legal.heading, route.legal.description),
+      ],
+    );
+    return html.replace(
+      '<h1>Weekly Meal Planner</h1>',
+      '<p style="font-size:2rem;font-weight:800;margin:0 0 1rem;">Weekly Meal Planner</p>',
+    );
+  }
   if (route.path === '/start') {
     return replaceJsonLd(
       applyDocumentHead(template, {
@@ -262,6 +287,10 @@ assert.equal(home.includes('data-route-robots="shell"'), false);
 assert.match(home, /Plan your family's meals for the entire week with ease\./);
 assert.match(home, /Explore our other sites/);
 assert.equal((home.match(/Explore our other sites/g) || []).length, 1);
+assert.match(home, /href="\/privacy"/);
+assert.match(home, /href="\/terms"/);
+assert.match(home, /href="\/cookies"/);
+assert.equal(home.includes('frame-ancestors'), false);
 
 const otherSiteHrefs = [
   'https://www.lushlandsmanagement.com/?utm_source=mealplan&utm_medium=crosslink&utm_campaign=footer-2026-11',
@@ -291,6 +320,29 @@ assert.match(start, /Explore our other sites/);
 assert.deepEqual(otherSiteLinks(start), otherSiteHrefs);
 assert.equal(/registerprep/i.test(start), false);
 assert.equal(start.includes('Meal planning guides'), false);
+
+for (const legal of LEGAL_PAGES) {
+  const pageHtml = rendered.get(legal.path);
+  assert.ok(pageHtml, legal.path);
+  assert.equal((pageHtml.match(/<h1[\s>]/g) || []).length, 1, legal.path);
+  assert.match(pageHtml, new RegExp(`<h1[^>]*>${legal.heading}</h1>`));
+  assert.ok(pageHtml.includes(`<title>${legal.title}</title>`), legal.path);
+  assert.match(pageHtml, new RegExp(`<link rel="canonical" href="${CANONICAL_ORIGIN}${legal.path}" />`));
+  assert.match(pageHtml, /SQ Consulting/);
+  assert.match(pageHtml, /mailto:/);
+  assert.equal(pageHtml.includes('data-ad-slot'), false, legal.path);
+  assert.equal(pageHtml.includes('Advertisement'), false, legal.path);
+  assert.equal(/More from Andrew|>Andrew</i.test(pageHtml), false, legal.path);
+  assert.equal(/AdSense|DART/i.test(pageHtml), false, legal.path);
+  assert.match(pageHtml, /href="\/privacy"/);
+  assert.match(pageHtml, /href="\/terms"/);
+  assert.match(pageHtml, /href="\/cookies"/);
+}
+
+assert.match(rendered.get('/privacy'), /Adsterra/);
+assert.match(rendered.get('/privacy'), /cookieless analytics/i);
+assert.match(rendered.get('/cookies'), /Reject ads/);
+assert.match(rendered.get('/cookies'), /Accept ads/);
 
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -429,6 +481,8 @@ const netlifyToml = readFileSync(path.resolve('netlify.toml'), 'utf8');
 assert.equal(netlifyToml.includes('[[redirects]]'), false);
 assert.equal(netlifyToml.includes(indexNowKey), false);
 assert.equal(netlifyToml.includes('index.html'), false);
+assert.match(netlifyToml, /\[\[headers\]\]/);
+assert.match(netlifyToml, /Content-Security-Policy\s*=\s*"frame-ancestors 'none'"/);
 
 for (const bot of ['GPTBot', 'OAI-SearchBot', 'ClaudeBot', 'PerplexityBot', 'Google-Extended']) {
   assert.match(robots, new RegExp(`User-agent: ${bot}\\nAllow: /`));
@@ -556,8 +610,20 @@ const seenTitles = new Set();
 const seenDescriptions = new Set();
 for (const route of PUBLIC_ROUTES) {
   const html = rendered.get(route.path);
-  const title = route.guide ? route.guide.title : route.path === '/start' ? START_TITLE : HOME_TITLE;
-  const description = route.guide ? route.guide.description : route.path === '/start' ? START_DESCRIPTION : HOME_DESCRIPTION;
+  const title = route.legal
+    ? route.legal.title
+    : route.guide
+      ? route.guide.title
+      : route.path === '/start'
+        ? START_TITLE
+        : HOME_TITLE;
+  const description = route.legal
+    ? route.legal.description
+    : route.guide
+      ? route.guide.description
+      : route.path === '/start'
+        ? START_DESCRIPTION
+        : HOME_DESCRIPTION;
   assert.equal(seenTitles.has(title), false, title);
   assert.equal(seenDescriptions.has(description), false, description);
   seenTitles.add(title);
@@ -569,6 +635,10 @@ for (const route of PUBLIC_ROUTES) {
     const article = data['@graph'].find((node) => node['@type'] === 'Article');
     assert.equal(article.headline, route.guide.h1);
     assert.equal(article.description, route.guide.description);
+  } else if (route.legal || route.path === '/start') {
+    assertGraph(data, { webPage: true });
+  } else {
+    assertGraph(data, { webApp: true });
   }
 }
 for (const routePath of SPA_FALLBACK_ROUTES) {

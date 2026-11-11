@@ -67,6 +67,27 @@ export function SiteFooter({ pathname, className }: SiteFooterProps) {
           </ul>
         </nav>
       ) : null}
+      <nav aria-labelledby="legal-pages" className="mb-3 px-4">
+        <h2 id="legal-pages" className="sr-only">
+          Legal
+        </h2>
+        <ul className="flex flex-wrap items-center justify-center gap-x-1">
+          {[
+            { href: '/privacy', label: 'Privacy' },
+            { href: '/terms', label: 'Terms' },
+            { href: '/cookies', label: 'Cookies' },
+          ].map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                className="inline-flex min-h-11 items-center justify-center px-3 text-center text-xs text-stone-600 underline decoration-stone-300 underline-offset-2 hover:text-stone-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-stone-300 dark:decoration-stone-600 dark:hover:text-stone-100"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
       <p className="text-center text-xs text-stone-400 dark:text-stone-500">
         &copy; {new Date().getFullYear()} SQ Consultancy. All rights reserved.
       </p>

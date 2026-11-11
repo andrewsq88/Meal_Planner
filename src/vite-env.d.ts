@@ -10,3 +10,11 @@ interface Window {
     params: Record<string, string>;
   };
 }
+
+interface ImportMetaEnv {
+  readonly VITE_GOATCOUNTER_CODE?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

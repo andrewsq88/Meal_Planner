@@ -12,6 +12,7 @@ import {
   reservedSlotHeight,
   type BannerPlacement,
 } from '../lib/adsterra';
+import { useAdConsent } from '../hooks/useAdConsent';
 
 const NEAR_VIEWPORT = '200px 0px';
 
@@ -69,9 +70,10 @@ function mountBanner(banner: BannerPlacement, index: number): Promise<void> {
 /** Two mainstream banners, the same pair the planner uses for the current viewport. */
 export function useGuideBanners(pathname: string): boolean {
   const narrow = useNarrowViewport();
+  const consent = useAdConsent();
 
   useEffect(() => {
-    if (isAdRouteBlocked(pathname)) return;
+    if (isAdRouteBlocked(pathname) || consent !== 'accepted') return;
     let cancelled = false;
     const banners = guideBanners(narrow);
 
@@ -97,13 +99,14 @@ export function useGuideBanners(pathname: string): boolean {
       cancelled = true;
       window.removeEventListener('load', mount);
     };
-  }, [pathname, narrow]);
+  }, [pathname, narrow, consent]);
 
   return narrow;
 }
 
 export function GuideBanner({ index, narrow, pathname }: { index: 0 | 1; narrow: boolean; pathname: string }) {
-  if (isAdRouteBlocked(pathname)) return null;
+  const consent = useAdConsent();
+  if (isAdRouteBlocked(pathname) || consent === 'rejected') return null;
   const banner = guideBanners(narrow)[index];
 
   return (
