@@ -22,4 +22,4 @@ VITE_ADS_ENABLED=false npm run build
 Do not set this variable in the Netlify UI unless you intend the next
 production or preview build to pick it up. The flag is read at compile time,
 so a rebuild is required to change the live behaviour. GoatCounter remains
-unset; this switch does not affect cookieless analytics.
+unset; this switch does not affect analytics.

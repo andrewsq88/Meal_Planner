@@ -353,7 +353,8 @@ for (const legal of LEGAL_PAGES) {
 }
 
 assert.match(rendered.get('/privacy'), /Adsterra/);
-assert.match(rendered.get('/privacy'), /cookieless analytics/i);
+assert.match(rendered.get('/privacy'), /does not run analytics unless a GoatCounter site code is configured/i);
+assert.match(rendered.get('/cookies'), /does not run analytics unless GoatCounter is enabled/i);
 assert.match(rendered.get('/cookies'), /Reject ads/);
 assert.match(rendered.get('/cookies'), /Accept ads/);
 

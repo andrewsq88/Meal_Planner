@@ -1,25 +1,15 @@
 import { existsSync } from 'node:fs';
 import { resolve as resolvePath } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { defineConfig, type Plugin, type PreviewServer, type ViteDevServer } from 'vite';
+import { defineConfig, type Plugin, type PreviewServer } from 'vite';
 import react from '@vitejs/plugin-react';
 
 function requestPath(req: IncomingMessage): string {
   return decodeURIComponent((req.url ?? '').split('?')[0]);
 }
 
-/** Accept first-party cookieless beacons in dev and `vite preview`. Do not log the body. */
-function cookielessCollectPlugin(): Plugin {
-  const handleCollect = (req: IncomingMessage, res: ServerResponse, next: () => void) => {
-    if (requestPath(req) !== '/collect' || req.method !== 'POST') {
-      next();
-      return;
-    }
-    req.resume();
-    res.statusCode = 204;
-    res.end();
-  };
-
+/** Serve prerendered /privacy (and other pretty routes) in `vite preview`. */
+function prettyHtmlPlugin(): Plugin {
   const prettyHtml = (outDir: string) => (req: IncomingMessage, _res: ServerResponse, next: () => void) => {
     const urlPath = requestPath(req);
     if (!urlPath || urlPath === '/' || urlPath.includes('.') || (req.method && req.method !== 'GET' && req.method !== 'HEAD')) {
@@ -36,20 +26,16 @@ function cookielessCollectPlugin(): Plugin {
   };
 
   return {
-    name: 'cookieless-collect',
-    configureServer(server: ViteDevServer) {
-      server.middlewares.use(handleCollect);
-    },
+    name: 'pretty-html',
     configurePreviewServer(server: PreviewServer) {
       const outDir = resolvePath(server.config.root, server.config.build.outDir);
       server.middlewares.use(prettyHtml(outDir));
-      server.middlewares.use(handleCollect);
     },
   };
 }
 
 export default defineConfig({
-  plugins: [react(), cookielessCollectPlugin()],
+  plugins: [react(), prettyHtmlPlugin()],
   optimizeDeps: {
     exclude: ['lucide-react'],
   },

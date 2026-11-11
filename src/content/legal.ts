@@ -25,7 +25,7 @@ export const LEGAL_PAGES: readonly LegalPageSpec[] = [
     path: '/privacy',
     title: 'Privacy Policy | Weekly Meal Planner',
     description:
-      'How SQ Consulting handles information on Weekly Meal Planner, including accounts, cookies, advertising, and cookieless analytics.',
+      'How SQ Consulting handles information on Weekly Meal Planner, including accounts, cookies, advertising, and optional GoatCounter analytics.',
     heading: 'Privacy Policy',
   },
   {

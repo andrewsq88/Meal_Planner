@@ -99,10 +99,10 @@ function PrivacyBody() {
       </p>
       <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Analytics</h2>
       <p>
-        We use cookieless analytics. The first-party pageview beacon records the path, referrer, viewport
-        size, and time. It does not set a cookie or a lasting device identifier. If a GoatCounter site code
-        is configured, the same kind of cookieless pageview is also sent to GoatCounter, a privacy-oriented
-        analytics service that does not use cookies.
+        This site does not run analytics unless a GoatCounter site code is configured at build time. When
+        that code is set, GoatCounter, a privacy-oriented analytics service that does not use cookies, may
+        record cookieless pageviews such as the path and referrer. No first-party analytics beacon is used.
+        Until a GoatCounter code is configured, we do not collect analytics pageviews.
       </p>
       <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Cookies and similar storage</h2>
       <p>
@@ -178,10 +178,10 @@ function CookiesBody() {
         pages other than sign-in, sign-up, and checkout routes. If you reject ads, those scripts are not
         loaded.
       </p>
-      <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Cookieless analytics</h2>
+      <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Analytics</h2>
       <p>
-        Analytics on this site is designed not to use cookies or a lasting advertising identifier. It can
-        run without advertising consent.
+        This site does not run analytics unless GoatCounter is enabled at build time. GoatCounter does not
+        use cookies or a lasting advertising identifier. Until it is enabled, no analytics script is loaded.
       </p>
       <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Change your choice</h2>
       <p>Use the buttons below to accept or reject advertising cookies.</p>
