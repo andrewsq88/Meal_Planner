@@ -17,6 +17,14 @@ import {
 import { CANONICAL_ORIGIN } from '../src/lib/routes.ts';
 import { LEGAL_PAGES } from '../src/content/legal.ts';
 
+function adsEnabledFromEnv() {
+  const value = String(process.env.VITE_ADS_ENABLED || '').trim().toLowerCase();
+  if (!value) return true;
+  return value !== 'false' && value !== '0' && value !== 'off' && value !== 'no';
+}
+
+const ADS_ENABLED = adsEnabledFromEnv();
+
 /**
  * Logged-out pages with real content. sitemap.xml is written from this list,
  * including the noindex /start landing page.
@@ -270,7 +278,12 @@ assert.match(home, /Weekly Menu/);
 assert.match(home, /Meal Suggestions/);
 assert.match(home, /Save your favorite meals/);
 assert.match(home, /Breakfast/);
-assert.match(home, /data-ad-slot="mp-native-below"/);
+if (ADS_ENABLED) {
+  assert.match(home, /data-ad-slot="mp-native-below"/);
+} else {
+  assert.equal(home.includes('data-ad-slot'), false);
+  assert.equal(home.includes('Advertisement'), false);
+}
 assert.match(home, /<link rel="canonical" href="https:\/\/www\.weeklymealplan\.space\/" \/>/);
 assert.match(home, /<meta property="og:url" content="https:\/\/www\.weeklymealplan\.space\/" \/>/);
 assert.match(home, /<meta name="twitter:url" content="https:\/\/www\.weeklymealplan\.space\/" \/>/);
@@ -422,18 +435,24 @@ for (const guide of GUIDE_PAGES) {
   assert.equal(/affiliate/i.test(pageHtml), false, guide.path);
   assert.ok(pageHtml.includes(lead), guide.path);
   const buttonAt = pageHtml.search(new RegExp(`>${flexText(guide.buttonLabel)}</a>`));
-  const slot1 = pageHtml.indexOf('data-ad-slot="mp-300x250"');
-  const slot2 = pageHtml.indexOf('data-ad-slot="mp-728x90"');
   const footerAt = pageHtml.lastIndexOf('<footer');
   assert.ok(pageHtml.indexOf(lead) < buttonAt, `${guide.path} button`);
   const faqAt = pageHtml.indexOf('Frequently asked questions');
-  assert.ok(buttonAt < slot1 && slot1 < slot2 && slot2 < faqAt, `${guide.path} ad order`);
-  assert.match(pageHtml.slice(slot2, faqAt), /<h2/);
-  assert.equal((pageHtml.match(/data-ad-slot=/g) || []).length, 2, guide.path);
-  assert.equal(pageHtml.includes('mp-native-below'), false, guide.path);
-  assert.equal(pageHtml.includes('mp-320x50'), false, guide.path);
-  assert.equal((pageHtml.match(/Advertisement/g) || []).length, 2, guide.path);
-  assert.equal(pageHtml.slice(footerAt).includes('data-ad-slot'), false, guide.path);
+  if (ADS_ENABLED) {
+    const slot1 = pageHtml.indexOf('data-ad-slot="mp-300x250"');
+    const slot2 = pageHtml.indexOf('data-ad-slot="mp-728x90"');
+    assert.ok(buttonAt < slot1 && slot1 < slot2 && slot2 < faqAt, `${guide.path} ad order`);
+    assert.match(pageHtml.slice(slot2, faqAt), /<h2/);
+    assert.equal((pageHtml.match(/data-ad-slot=/g) || []).length, 2, guide.path);
+    assert.equal(pageHtml.includes('mp-native-below'), false, guide.path);
+    assert.equal(pageHtml.includes('mp-320x50'), false, guide.path);
+    assert.equal((pageHtml.match(/Advertisement/g) || []).length, 2, guide.path);
+    assert.equal(pageHtml.slice(footerAt).includes('data-ad-slot'), false, guide.path);
+  } else {
+    assert.ok(buttonAt < faqAt, `${guide.path} button before faq`);
+    assert.equal(pageHtml.includes('data-ad-slot'), false, guide.path);
+    assert.equal(pageHtml.includes('Advertisement'), false, guide.path);
+  }
   assert.equal(/<script[^>]*src="https:\/\/bicea\.org/.test(pageHtml), false, guide.path);
   assert.equal(pageHtml.includes('[AD SLOT'), false, guide.path);
   assert.equal(pageHtml.includes('[MAIN BUTTON'), false, guide.path);

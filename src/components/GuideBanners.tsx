@@ -13,6 +13,7 @@ import {
   type BannerPlacement,
 } from '../lib/adsterra';
 import { useAdConsent } from '../hooks/useAdConsent';
+import { adsEnabled } from '../lib/ads-enabled';
 
 const NEAR_VIEWPORT = '200px 0px';
 
@@ -73,7 +74,7 @@ export function useGuideBanners(pathname: string): boolean {
   const consent = useAdConsent();
 
   useEffect(() => {
-    if (isAdRouteBlocked(pathname) || consent !== 'accepted') return;
+    if (!adsEnabled() || isAdRouteBlocked(pathname) || consent !== 'accepted') return;
     let cancelled = false;
     const banners = guideBanners(narrow);
 
@@ -106,7 +107,7 @@ export function useGuideBanners(pathname: string): boolean {
 
 export function GuideBanner({ index, narrow, pathname }: { index: 0 | 1; narrow: boolean; pathname: string }) {
   const consent = useAdConsent();
-  if (isAdRouteBlocked(pathname) || consent === 'rejected') return null;
+  if (!adsEnabled() || isAdRouteBlocked(pathname) || consent === 'rejected') return null;
   const banner = guideBanners(narrow)[index];
 
   return (

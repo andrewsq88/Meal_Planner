@@ -14,6 +14,7 @@ import {
   type BannerPlacement,
 } from '../lib/adsterra';
 import { useAdConsent } from '../hooks/useAdConsent';
+import { adsEnabled } from '../lib/ads-enabled';
 
 const NEAR_VIEWPORT = '200px 0px';
 
@@ -149,7 +150,7 @@ function mountBanner(banner: BannerPlacement): Promise<void> {
  * Slots stay in normal flow, above the footer, so they do not cover a CTA or the sign-up dialog.
  */
 export function AdSlots() {
-  const allowed = useAdsAllowed();
+  const allowed = useAdsAllowed() && adsEnabled();
   const consent = useAdConsent();
   const narrow = useNarrowViewport();
   const banners = bannersForViewport(narrow);

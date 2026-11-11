@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getAdConsent, setAdConsent, subscribeAdConsent, type AdConsent } from '../lib/consent';
+import { adsEnabled } from '../lib/ads-enabled';
 import { isAuthOrPaymentPath } from '../lib/routes';
 
 export function ConsentBanner() {
@@ -13,7 +14,7 @@ export function ConsentBanner() {
     return subscribeAdConsent(sync);
   }, []);
 
-  if (!ready || consent !== 'pending') return null;
+  if (!adsEnabled() || !ready || consent !== 'pending') return null;
   if (typeof window !== 'undefined' && isAuthOrPaymentPath(window.location.pathname)) return null;
 
   return (

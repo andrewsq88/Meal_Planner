@@ -13,6 +13,7 @@ interface Window {
 
 interface ImportMetaEnv {
   readonly VITE_GOATCOUNTER_CODE?: string;
+  readonly VITE_ADS_ENABLED?: string;
 }
 
 interface ImportMeta {
