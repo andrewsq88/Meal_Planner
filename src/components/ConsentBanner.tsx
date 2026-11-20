@@ -45,14 +45,14 @@ export function ConsentBanner() {
         <div className="flex shrink-0 gap-2">
           <button
             type="button"
-            className="inline-flex min-h-11 items-center justify-center rounded-xl border border-stone-300 px-4 text-sm font-semibold text-stone-700 hover:bg-stone-50 dark:border-stone-600 dark:text-stone-200 dark:hover:bg-stone-800"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl border border-stone-600 px-4 text-sm font-semibold text-stone-800 hover:bg-stone-50 dark:border-stone-400 dark:text-stone-100 dark:hover:bg-stone-800"
             onClick={() => setAdConsent('rejected')}
           >
             Reject ads
           </button>
           <button
             type="button"
-            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 text-sm font-semibold text-white shadow-sm hover:from-amber-600 hover:to-orange-600"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-amber-800 to-orange-700 px-4 text-sm font-semibold text-white shadow-sm hover:from-amber-900 hover:to-orange-800"
             onClick={() => setAdConsent('accepted')}
           >
             Accept ads

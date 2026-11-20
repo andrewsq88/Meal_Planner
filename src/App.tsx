@@ -26,7 +26,7 @@ import { ConsentBanner } from './components/ConsentBanner';
 import { CookielessAnalytics } from './components/CookielessAnalytics';
 import { LegalPage } from './components/LegalPage';
 import { isAdRouteBlocked, locationKey } from './lib/adsterra';
-import { isSignupPath, isStartPath } from './lib/routes';
+import { isSignInPath, isSignupPath, isStartPath } from './lib/routes';
 
 const SHELL_ROBOTS_SELECTOR = 'meta[name="robots"][data-route-robots="shell"]';
 
@@ -79,7 +79,7 @@ function LoadingScreen() {
 }
 
 function AppContent({ initialPath }: { initialPath?: string }) {
-  const { loading } = useAuth();
+  const { loading, passwordRecovery, clearPasswordRecovery } = useAuth();
   const { dark, toggle: toggleDark } = useDarkMode();
   const [pathname, setPathname] = useState(() => readPathname(initialPath));
   useShellNoIndex(pathname);
@@ -89,6 +89,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   const guide = findGuidePage(pathname);
   const onStart = isStartPath(pathname);
   const onSignup = isSignupPath(pathname);
+  const onSignIn = isSignInPath(pathname);
 
   useEffect(() => {
     const sync = () => setPathname(window.location.pathname);
@@ -107,7 +108,9 @@ function AppContent({ initialPath }: { initialPath?: string }) {
 
   function closeAuth() {
     setAuthModalOpen(false);
-    if (!isSignupPath(window.location.pathname)) return;
+    clearPasswordRecovery();
+    const path = window.location.pathname;
+    if (!isSignupPath(path) && !isSignInPath(path)) return;
     window.history.pushState(null, '', '/');
     setPathname('/');
     window.dispatchEvent(new Event('mealplan-ad-route'));
@@ -125,7 +128,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
     return <StartPage dark={dark} onToggleDark={toggleDark} pathname={pathname} />;
   }
 
-  if (loading && !onSignup) {
+  if (loading && !onSignup && !onSignIn && !passwordRecovery) {
     return <LoadingScreen />;
   }
 
@@ -135,10 +138,11 @@ function AppContent({ initialPath }: { initialPath?: string }) {
         <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} pathname={pathname} />
       )}
       <AuthModal
-        open={authModalOpen || onSignup}
+        open={authModalOpen || onSignup || onSignIn || passwordRecovery}
         onClose={closeAuth}
         prompt={authPrompt}
         initialMode={onSignup ? 'signup' : 'signin'}
+        passwordRecovery={passwordRecovery}
       />
     </>
   );

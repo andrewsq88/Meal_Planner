@@ -26,8 +26,8 @@ function adsEnabledFromEnv() {
 const ADS_ENABLED = adsEnabledFromEnv();
 
 /**
- * Logged-out pages with real content. sitemap.xml is written from this list,
- * including the noindex /start landing page.
+ * Logged-out pages with real content. sitemap.xml is written from this list.
+ * /start is a public marketing page and stays indexable.
  * Auth and payment paths stay on the SPA shell.
  */
 const PUBLIC_ROUTES = [
@@ -42,7 +42,6 @@ const PUBLIC_ROUTES = [
     loc: `${CANONICAL_ORIGIN}/start`,
     changefreq: 'monthly',
     priority: '0.4',
-    robots: 'noindex',
   },
   ...GUIDE_PAGES.map((guide) => ({
     path: guide.path,
@@ -324,9 +323,12 @@ assert.equal(/registerprep/i.test(home), false);
 
 assert.match(start, /Plan your family(?:'|&#x27;)s meals for the week/);
 assert.match(start, /Create your free account/);
+assert.match(start, /Open a meal to see the ingredients listed for it/);
+assert.equal(start.includes('single shopping list'), false);
 assert.match(start, /<link rel="canonical" href="https:\/\/www\.weeklymealplan\.space\/start" \/>/);
 assert.match(start, /<meta property="og:url" content="https:\/\/www\.weeklymealplan\.space\/start" \/>/);
-assert.match(start, /<meta name="robots" content="noindex" data-route-robots="start" \/>/);
+assert.equal(/noindex/i.test(start), false);
+assert.equal(start.includes('data-route-robots="start"'), false);
 assert.equal(start.includes('data-ad-slot'), false);
 assert.equal(start.includes('Advertisement'), false);
 assert.match(start, /Explore our other sites/);

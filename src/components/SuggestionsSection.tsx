@@ -71,7 +71,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'library'
                   ? 'bg-white dark:bg-stone-600 text-stone-800 dark:text-stone-100 shadow-sm'
-                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
+                  : 'text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-white'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -82,7 +82,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
               className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'live'
                   ? 'bg-white dark:bg-stone-600 text-stone-800 dark:text-stone-100 shadow-sm'
-                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
+                  : 'text-stone-700 dark:text-stone-200 hover:text-stone-900 dark:hover:text-white'
               }`}
             >
               <Rss className="w-3.5 h-3.5" />
@@ -94,7 +94,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
 
         {/* Live feed source attribution */}
         {activeTab === 'live' && (
-          <p className="text-xs text-stone-400 mb-3 leading-relaxed">
+          <p className="text-xs text-stone-600 dark:text-stone-300 mb-3 leading-relaxed">
             Fresh recipes from{' '}
             {['Smitten Kitchen', 'Budget Bytes', 'Cookie and Kate', 'Love and Lemons'].map((src, i, arr) => (
               <span key={src} className="font-semibold text-stone-500 dark:text-stone-400">
@@ -112,7 +112,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder={activeTab === 'library' ? 'Search by ingredient, cuisine, style…' : 'Filter live recipes…'}
-            className="w-full pl-10 pr-4 py-3 rounded-2xl border border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-sm text-stone-700 dark:text-stone-200 placeholder:text-stone-300 dark:placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition-all font-medium"
+            className="w-full pl-10 pr-4 py-3 rounded-2xl border border-stone-500 dark:border-stone-400 bg-white dark:bg-stone-700 text-sm text-stone-700 dark:text-stone-200 placeholder:text-stone-500 dark:placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-amber-700 transition-all font-medium"
           />
           {loading && (
             <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-amber-500 animate-spin" />
@@ -127,8 +127,8 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
               onClick={() => setMealFilter(value)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 mealFilter === value
-                  ? 'bg-amber-500 text-white shadow-md'
-                  : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:text-amber-700'
+                  ? 'bg-amber-800 text-white shadow-md'
+                  : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-200 hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:text-amber-900'
               }`}
             >
               <span>{emoji}</span>
@@ -144,7 +144,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
               <button
                 key={tag}
                 onClick={() => setQuery(tag)}
-                className="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
+                className="px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-700 dark:border-amber-400 text-xs font-semibold text-amber-900 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
               >
                 {tag}
               </button>
@@ -161,14 +161,14 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
             {loading ? (
               <div className="text-center py-8">
                 <Loader2 className="w-8 h-8 text-amber-400 animate-spin mx-auto" />
-                <p className="text-stone-400 text-sm mt-2">Looking for ideas…</p>
+                <p className="text-stone-600 text-sm mt-2">Looking for ideas…</p>
               </div>
             ) : suggestions.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-stone-500 dark:text-stone-400 font-medium text-sm">
+                <p className="text-stone-700 dark:text-stone-200 font-medium text-sm">
                   {query.trim() ? `No results for "${query}"` : 'No suggestions available'}
                 </p>
-                <p className="text-stone-400 dark:text-stone-500 text-xs mt-1">Try the Live Feed tab for fresh recipes from the web</p>
+                <p className="text-stone-600 dark:text-stone-300 text-xs mt-1">Try the Live Feed tab for fresh recipes from the web</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -178,20 +178,20 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                     <div key={sug.id} className={`rounded-2xl border ${cfg.border} ${cfg.bg} dark:bg-opacity-10 dark:border-opacity-30 p-4 flex flex-col gap-2`}>
                       <div className="flex-1">
                         <span className={`text-xs font-bold ${cfg.color}`}>{cfg.emoji} {cfg.label}</span>
-                        <h4 className="text-sm font-extrabold text-stone-800 dark:text-stone-100 mt-0.5 leading-snug">{sug.name}</h4>
+                        <h3 className="text-sm font-extrabold text-stone-800 dark:text-stone-100 mt-0.5 leading-snug">{sug.name}</h3>
                         {sug.description && (
-                          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">{sug.description}</p>
+                          <p className="text-xs text-stone-700 dark:text-stone-200 mt-1 leading-relaxed">{sug.description}</p>
                         )}
                       </div>
                       {sug.ingredients.length > 0 && (
                         <div className="flex flex-wrap gap-1">
                           {sug.ingredients.slice(0, 4).map((ing, i) => (
-                            <span key={i} className="text-xs bg-white/70 dark:bg-stone-700/70 border border-stone-200 dark:border-stone-600 text-stone-500 dark:text-stone-400 px-2 py-0.5 rounded-lg">
+                            <span key={i} className="text-xs bg-white/70 dark:bg-stone-700/70 border border-stone-500 dark:border-stone-400 text-stone-700 dark:text-stone-200 px-2 py-0.5 rounded-lg">
                               {ing.replace(/^\d+\s*(cup|tbsp|tsp|g|kg|oz|lb)?\s*/i, '').split(',')[0].trim()}
                             </span>
                           ))}
                           {sug.ingredients.length > 4 && (
-                            <span className="text-xs text-stone-400">+{sug.ingredients.length - 4} more</span>
+                            <span className="text-xs text-stone-600">+{sug.ingredients.length - 4} more</span>
                           )}
                         </div>
                       )}
@@ -277,7 +277,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                           )}
                         </div>
 
-                        <h4 className="text-sm font-extrabold text-stone-800 dark:text-stone-100 leading-snug">{recipe.title}</h4>
+                        <h3 className="text-sm font-extrabold text-stone-800 dark:text-stone-100 leading-snug">{recipe.title}</h3>
 
                         {recipe.description && (
                           <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed line-clamp-2">{recipe.description}</p>

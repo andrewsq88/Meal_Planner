@@ -89,7 +89,7 @@ export const MEAL_TYPE_CONFIG: Record<MealType, { label: string; emoji: string; 
     color: 'text-amber-700',
     bg: 'bg-amber-50',
     border: 'border-amber-200',
-    activeBg: 'bg-amber-500',
+    activeBg: 'bg-amber-800',
     activeText: 'text-white',
   },
   lunch: {
@@ -98,7 +98,7 @@ export const MEAL_TYPE_CONFIG: Record<MealType, { label: string; emoji: string; 
     color: 'text-orange-700',
     bg: 'bg-orange-50',
     border: 'border-orange-200',
-    activeBg: 'bg-orange-500',
+    activeBg: 'bg-orange-700',
     activeText: 'text-white',
   },
   dinner: {
@@ -107,7 +107,7 @@ export const MEAL_TYPE_CONFIG: Record<MealType, { label: string; emoji: string; 
     color: 'text-rose-700',
     bg: 'bg-rose-50',
     border: 'border-rose-200',
-    activeBg: 'bg-rose-500',
+    activeBg: 'bg-rose-700',
     activeText: 'text-white',
   },
 };

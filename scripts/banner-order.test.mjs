@@ -13,7 +13,7 @@ import {
   reservedSlotHeight,
   slotsForViewport,
 } from '../src/lib/adsterra.ts';
-import { isAuthOrPaymentPath, isSignupPath, isStartPath } from '../src/lib/routes.ts';
+import { isAuthOrPaymentPath, isSignInPath, isSignupPath, isStartPath } from '../src/lib/routes.ts';
 
 const banners = [
   {
@@ -97,6 +97,12 @@ assert.equal(isSignupPath('/signup'), true);
 assert.equal(isSignupPath('/signup/'), true);
 assert.equal(isSignupPath('/sign-up'), true);
 assert.equal(isSignupPath('/'), false);
+assert.equal(isSignInPath('/login'), true);
+assert.equal(isSignInPath('/login/'), true);
+assert.equal(isSignInPath('/signin'), true);
+assert.equal(isSignInPath('/sign-in'), true);
+assert.equal(isSignInPath('/signup'), false);
+assert.equal(isSignInPath('/'), false);
 
 for (const path of ['/checkout', '/pay', '/billing', '/stripe/return', '/auth', '/login', '/signin', '/sign-in', '/signup', '/sign-up', '/register', '/account', '/account/billing', '/#/checkout']) {
   assert.equal(isAuthOrPaymentPath(path), true, path);
@@ -128,7 +134,7 @@ assert.equal(html.includes('713c984856a716ba373916bd1e593b99'), false);
 assert.equal(html.includes('injectSocialBar'), false);
 assert.equal(/<script>\s*\(function/.test(html), false);
 assert.equal(/<meta\s+name="robots"\s+content="noindex"/.test(html), false);
-assert.match(html, /location\.pathname === "\/start"/);
-assert.match(html, /startRobots\.setAttribute\("content", "noindex"\)/);
+assert.equal(html.includes('startRobots'), false);
+assert.equal(/noindex/i.test(html), false);
 
 console.log('banner mount order ok');

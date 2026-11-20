@@ -7,7 +7,14 @@ const ALLOWED_ORIGINS = [
 ];
 
 const MINIMAX_API_URL = "https://api.minimax.io/v1/chat/completions";
-const MINIMAX_MODEL = "MiniMax-M2.5-highspeed";
+const MINIMAX_MODEL = "MiniMax-M3";
+
+function jsonError(cors: Record<string, string>, status: number, error: string): Response {
+  return new Response(JSON.stringify({ error }), {
+    status,
+    headers: { ...cors, "Content-Type": "application/json" },
+  });
+}
 
 function getCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("origin") ?? "";
@@ -67,9 +74,7 @@ Deno.serve(async (req: Request) => {
     const apiKey = Deno.env.get("MINIMAX_API_KEY");
     if (!apiKey) {
       console.error("MINIMAX_API_KEY secret is not set");
-      return new Response(JSON.stringify({ description: "", ingredients: [] }), {
-        headers: { ...cors, "Content-Type": "application/json" },
-      });
+      return jsonError(cors, 503, "Meal suggestions are not configured.");
     }
 
     const safeName = name.trim().slice(0, 100);
@@ -96,15 +101,13 @@ Use 5–8 common ingredients. Keep the description under 100 characters.`;
     if (!response.ok) {
       const errText = await response.text();
       console.error("Minimax error:", response.status, errText);
-      return new Response(JSON.stringify({ description: "", ingredients: [] }), {
-        headers: { ...cors, "Content-Type": "application/json" },
-      });
+      return jsonError(cors, 502, "The suggestion service returned an error.");
     }
 
     const data = await response.json();
     const text: string = data.choices?.[0]?.message?.content ?? "";
 
-    let parsed: { description: string; ingredients: string[] } = { description: "", ingredients: [] };
+    let parsed: { description?: unknown; ingredients?: unknown } = {};
     try {
       const clean = text.replace(/```(?:json)?/gi, "").replace(/```/g, "").trim();
       parsed = JSON.parse(clean);
@@ -115,14 +118,20 @@ Use 5–8 common ingredients. Keep the description under 100 characters.`;
       }
     }
 
-    return new Response(JSON.stringify(parsed), {
+    const description = typeof parsed.description === "string" ? parsed.description : "";
+    const ingredients = Array.isArray(parsed.ingredients)
+      ? parsed.ingredients.filter((item): item is string => typeof item === "string")
+      : [];
+
+    if (!description && ingredients.length === 0) {
+      return jsonError(cors, 502, "The suggestion service returned an unusable response.");
+    }
+
+    return new Response(JSON.stringify({ description, ingredients }), {
       headers: { ...cors, "Content-Type": "application/json" },
     });
   } catch (err) {
     console.error("suggest-meal-details error:", err);
-    return new Response(
-      JSON.stringify({ description: "", ingredients: [] }),
-      { status: 500, headers: { ...cors, "Content-Type": "application/json" } },
-    );
+    return jsonError(cors, 500, "Meal suggestions are unavailable right now.");
   }
 });

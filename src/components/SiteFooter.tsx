@@ -27,7 +27,7 @@ export function SiteFooter({ pathname, className }: SiteFooterProps) {
         <nav aria-labelledby="meal-planning-guides" className="mb-4 px-4">
           <h2
             id="meal-planning-guides"
-            className="text-center text-xs font-semibold text-stone-500 dark:text-stone-400"
+            className="text-center text-xs font-semibold text-stone-700 dark:text-stone-200"
           >
             Meal planning guides
           </h2>
@@ -49,7 +49,7 @@ export function SiteFooter({ pathname, className }: SiteFooterProps) {
         <nav aria-labelledby="explore-other-sites" className="mb-3 px-4">
           <h2
             id="explore-other-sites"
-            className="text-center text-xs font-semibold text-stone-500 dark:text-stone-400"
+            className="text-center text-xs font-semibold text-stone-700 dark:text-stone-200"
           >
             Explore our other sites
           </h2>
@@ -88,7 +88,7 @@ export function SiteFooter({ pathname, className }: SiteFooterProps) {
           ))}
         </ul>
       </nav>
-      <p className="text-center text-xs text-stone-400 dark:text-stone-500">
+      <p className="text-center text-xs text-stone-600 dark:text-stone-300">
         &copy; {new Date().getFullYear()} SQ Consultancy. All rights reserved.
       </p>
     </footer>

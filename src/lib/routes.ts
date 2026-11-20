@@ -20,6 +20,12 @@ export function isSignupPath(pathname: string): boolean {
   return path === '/signup' || path === '/sign-up';
 }
 
+/** Paths that open the existing sign-in dialog. Ads stay blocked on these routes. */
+export function isSignInPath(pathname: string): boolean {
+  const path = normalizePath(pathname);
+  return path === '/login' || path === '/signin' || path === '/sign-in';
+}
+
 /**
  * Auth, payment, and checkout paths. The public planner and /start are not included.
  * Mirrors the ad-route list without /start.
