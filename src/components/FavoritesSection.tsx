@@ -34,12 +34,12 @@ export function FavoritesSection({ favorites, onRemove, onAddToMenu, onSignIn }:
             <Heart className="w-7 h-7 text-rose-300" />
           </div>
           <p className="text-stone-600 dark:text-stone-300 font-semibold text-sm">Save your favorite meals</p>
-          <p className="text-stone-400 dark:text-stone-500 text-xs mt-1 max-w-xs mx-auto">
+          <p className="text-stone-600 dark:text-stone-300 text-xs mt-1 max-w-xs mx-auto">
             Create a free account to build your personal collection of go-to recipes.
           </p>
           <button
             onClick={onSignIn}
-            className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-sm font-bold shadow-md shadow-amber-200 transition-all duration-200"
+            className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-800 to-orange-700 hover:from-amber-900 hover:to-orange-800 text-white text-sm font-bold shadow-md shadow-amber-200 transition-all duration-200"
           >
             <LogIn className="w-4 h-4" />
             Sign In to Save Favorites
@@ -61,7 +61,7 @@ export function FavoritesSection({ favorites, onRemove, onAddToMenu, onSignIn }:
             <Heart className="w-7 h-7 text-rose-300" />
           </div>
           <p className="text-stone-500 dark:text-stone-400 font-medium text-sm">No favorites yet</p>
-          <p className="text-stone-400 dark:text-stone-500 text-xs mt-1">Click a meal on the weekly grid and hit "Add to Favorites"</p>
+          <p className="text-stone-600 dark:text-stone-300 text-xs mt-1">Click a meal on the weekly grid and hit "Add to Favorites"</p>
         </div>
       </section>
     );

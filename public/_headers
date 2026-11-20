@@ -7,26 +7,14 @@
   Cross-Origin-Resource-Policy: same-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
 
-# noindex for /start only; security headers repeated so this path keeps them
-/start
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  X-Frame-Options: DENY
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(), browsing-topics=()
-  Cross-Origin-Opener-Policy: same-origin-allow-popups
-  Cross-Origin-Resource-Policy: same-origin
-  Strict-Transport-Security: max-age=31536000; includeSubDomains
-  X-Robots-Tag: noindex
+/og-image.png
+  Content-Type: image/png
 
-/start/
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  X-Frame-Options: DENY
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), usb=(), browsing-topics=()
-  Cross-Origin-Opener-Policy: same-origin-allow-popups
-  Cross-Origin-Resource-Policy: same-origin
-  Strict-Transport-Security: max-age=31536000; includeSubDomains
-  X-Robots-Tag: noindex
+/favicon.ico
+  Content-Type: image/x-icon
+
+/vite.svg
+  Content-Type: image/svg+xml
 
 /aa07e5ec709905f895fcccc55555a4c9.txt
   Content-Type: text/plain; charset=utf-8

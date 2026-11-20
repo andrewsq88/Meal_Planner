@@ -4,6 +4,7 @@ import type { MealType } from '../types';
 import { DAYS, MEAL_TYPE_CONFIG } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { aiSuggestionsEnabled } from '../lib/feature-flags';
 
 // Generate all 15-minute timeslots for a 12-hour clock
 const TIME_SLOTS: string[] = (() => {
@@ -44,6 +45,8 @@ export function MealModal({
   const [saving, setSaving] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [aiSuggested, setAiSuggested] = useState(false);
+  const [suggestionError, setSuggestionError] = useState<string | null>(null);
+  const suggestionsEnabled = aiSuggestionsEnabled();
   const { user } = useAuth();
   const descEditedRef = useRef(false);
   const ingEditedRef = useRef(false);
@@ -59,23 +62,30 @@ export function MealModal({
       setTimeSlot(initialTimeSlot);
       setAiSuggested(false);
       setSuggesting(false);
+      setSuggestionError(null);
       descEditedRef.current = false;
       ingEditedRef.current = false;
     }
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Debounced AI suggestion when name changes
+  // Debounced AI suggestion when name changes. The flag defaults off, and then
+  // this effect never calls the function or shows the suggestion UI.
   useEffect(() => {
-    if (!isOpen) return;
+    if (!suggestionsEnabled || !isOpen) {
+      setSuggesting(false);
+      return;
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (abortRef.current) abortRef.current.abort();
 
     const trimmed = name.trim();
     if (!user || trimmed.length < 3) {
       setSuggesting(false);
+      setSuggestionError(null);
       return;
     }
 
+    setSuggestionError(null);
     setSuggesting(true);
     debounceRef.current = setTimeout(async () => {
       const ctrl = new AbortController();
@@ -86,16 +96,23 @@ export function MealModal({
           body: { name: trimmed, mealType },
         });
 
-        if (ctrl.signal.aborted || error) return;
+        if (ctrl.signal.aborted) return;
 
-        const desc: string = data?.description ?? '';
-        const ings: string[] = Array.isArray(data?.ingredients) ? data.ingredients : [];
+        const failed = Boolean(error) || Boolean(data && typeof data === 'object' && 'error' in data && data.error);
+        const desc: string = failed ? '' : (data?.description ?? '');
+        const ings: string[] = !failed && Array.isArray(data?.ingredients) ? data.ingredients : [];
+
+        if (failed || (!desc && ings.length === 0)) {
+          setSuggestionError('Suggestions are unavailable right now.');
+          return;
+        }
 
         if (desc && !descEditedRef.current) setDescription(desc);
         if (ings.length > 0 && !ingEditedRef.current) setIngredients(ings);
         if (desc || ings.length > 0) setAiSuggested(true);
+        setSuggestionError(null);
       } catch {
-        // silently ignore
+        if (!ctrl.signal.aborted) setSuggestionError('Suggestions are unavailable right now.');
       } finally {
         if (!ctrl.signal.aborted) setSuggesting(false);
       }
@@ -104,7 +121,7 @@ export function MealModal({
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [name, isOpen, mealType, user]);
+  }, [name, isOpen, mealType, user, suggestionsEnabled]);
 
   if (!isOpen) return null;
 
@@ -226,13 +243,18 @@ export function MealModal({
               <label className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide">
                 Description
               </label>
-              {suggesting && (
-                <span className="flex items-center gap-1 text-xs text-amber-500 font-medium animate-pulse">
+              {suggestionsEnabled && suggesting && (
+                <span className="flex items-center gap-1 text-xs text-amber-800 font-medium animate-pulse">
                   <Sparkles className="w-3 h-3" /> Suggesting…
                 </span>
               )}
-              {!suggesting && aiSuggested && (
-                <span className="flex items-center gap-1 text-xs text-amber-500 font-medium">
+              {suggestionsEnabled && !suggesting && suggestionError && (
+                <span className="text-xs text-rose-800 font-medium" role="status">
+                  {suggestionError}
+                </span>
+              )}
+              {suggestionsEnabled && !suggesting && !suggestionError && aiSuggested && (
+                <span className="flex items-center gap-1 text-xs text-amber-800 font-medium">
                   <Sparkles className="w-3 h-3" /> AI suggested
                 </span>
               )}

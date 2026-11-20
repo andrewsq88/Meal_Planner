@@ -35,6 +35,6 @@ View all ingredients for your planned meals in one place, making it easy to buil
 
 ## Optional
 
-- [Start](https://www.weeklymealplan.space/start): Plan your family's meals for the week. This landing page is noindex.
+- [Start](https://www.weeklymealplan.space/start): Plan your family's meals for the week.
 
 Start planning your meals today at www.weeklymealplan.space.

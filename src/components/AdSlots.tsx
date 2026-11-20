@@ -21,7 +21,7 @@ const NEAR_VIEWPORT = '200px 0px';
 function AdvertisementLabel() {
   return (
     <p
-      className="text-stone-500 dark:text-stone-400"
+      className="text-stone-700 dark:text-stone-200"
       style={{
         height: AD_LABEL_HEIGHT,
         lineHeight: `${AD_LABEL_HEIGHT}px`,
@@ -236,6 +236,7 @@ export function AdSlots() {
             data-ad-frame
             style={{
               width: banner.width,
+              maxWidth: '100%',
               height: banner.height,
               margin: '0 auto',
               overflow: 'hidden',

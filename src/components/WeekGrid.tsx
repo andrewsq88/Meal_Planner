@@ -35,10 +35,10 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
             {/* Day header */}
             <div className={`px-3 pt-3 pb-2 flex items-center justify-between`}>
               <div>
-                <span className={`text-xs font-bold uppercase tracking-wide ${isWeekend ? 'text-amber-600 dark:text-amber-400' : 'text-stone-400 dark:text-stone-500'}`}>
+                <span className={`text-xs font-bold uppercase tracking-wide ${isWeekend ? 'text-amber-800 dark:text-amber-300' : 'text-stone-600 dark:text-stone-300'}`}>
                   {DAYS_SHORT[idx]}
                 </span>
-                <p className="text-xs text-stone-400 dark:text-stone-500 leading-none mt-0.5">{dateLabel}</p>
+                <p className="text-xs text-stone-600 dark:text-stone-300 leading-none mt-0.5">{dateLabel}</p>
               </div>
               {isWeekend && <span className="text-xs">🌟</span>}
             </div>
@@ -71,7 +71,7 @@ export function WeekGrid({ weekStart, items, mealType, selectedItemId, onSelect,
               ) : (
                 <button
                   onClick={() => onAdd(idx)}
-                  className="w-full h-full min-h-[64px] flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-stone-200 dark:border-stone-600 text-stone-300 dark:text-stone-600 hover:border-amber-300 hover:text-amber-400 transition-all group"
+                  className="w-full h-full min-h-[64px] flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-stone-500 dark:border-stone-400 text-stone-700 dark:text-stone-200 hover:border-amber-800 hover:text-amber-800 transition-all group"
                 >
                   <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   <span className="text-xs font-medium">Add meal</span>
