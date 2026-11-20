@@ -1,6 +1,6 @@
 # Weekly Meal Planner
 
-> Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, build a shopping list, and organize breakfast, lunch, and dinner for the whole week.
+> Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, and organize breakfast, lunch, and dinner for the whole week. Open a meal to see its ingredients.
 
 Plan your family's meals for the entire week with ease. Weekly Meal Planner helps you organize breakfast, lunch, and dinner across all seven days of the week, so you always know what's cooking.
 
@@ -18,9 +18,9 @@ Browse a curated library of meal suggestions and recipes from around the web. Sa
 
 Build a personal collection of favorite meals. Sign in to save your meal plan and favorites to your account, so they are available on any device.
 
-## Ingredients and Shopping
+## Ingredients
 
-View all ingredients for your planned meals in one place, making it easy to build your shopping list for the week.
+Open a meal to see the ingredients listed for it.
 
 ## Pages
 

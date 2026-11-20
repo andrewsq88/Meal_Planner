@@ -92,7 +92,7 @@ function BlockView({
     throw new Error(`Unsupported block ${block.type}`);
   }
   return (
-    <div className="mt-4 max-w-full overflow-x-auto">
+    <div className="mt-4 min-w-0 max-w-full overflow-x-auto">
       <table className="w-full min-w-[40rem] border-collapse text-left text-sm text-stone-700 dark:text-stone-300">
         <thead>
           <tr className="border-b border-amber-200 bg-amber-50 dark:border-stone-600 dark:bg-stone-800">

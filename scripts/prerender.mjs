@@ -14,7 +14,7 @@ import {
   webApplicationNode,
   webPageNode,
 } from '../src/content/site-schema.ts';
-import { CANONICAL_ORIGIN } from '../src/lib/routes.ts';
+import { CANONICAL_ORIGIN, isKnownPath } from '../src/lib/routes.ts';
 import { LEGAL_PAGES } from '../src/content/legal.ts';
 
 function adsEnabledFromEnv() {
@@ -162,7 +162,6 @@ function shellDocument(routePath) {
 }
 
 writeFileSync(path.join(dist, 'spa.html'), shell);
-writeFileSync(path.join(dist, '404.html'), shell);
 for (const routePath of SPA_FALLBACK_ROUTES) {
   writeHtml(routePath, shellDocument(routePath));
 }
@@ -240,6 +239,33 @@ function applyRobots(html, content) {
 
 const { render } = await import(pathToFileURL(path.resolve('dist-ssr/entry-server.js')).href);
 
+function notFoundDocument() {
+  let html = applyDocumentHead(template, {
+    title: 'Page not found | Weekly Meal Planner',
+    description: 'That page is not on Weekly Meal Planner.',
+    canonical: `${CANONICAL_ORIGIN}/404`,
+  });
+  html = html.replace(/\n\s*<link rel="canonical" href="[^"]*" \/>/, '');
+  html = html.replace(/\n\s*<meta property="og:url" content="[^"]*" \/>/, '');
+  html = html.replace(/\n\s*<meta name="twitter:url" content="[^"]*" \/>/, '');
+  html = html.replace(/\n\s*<script type="application\/ld\+json">[\s\S]*?<\/script>/, '');
+  html = html.replace(/\n\s*<noscript>[\s\S]*?<\/noscript>/, '');
+  if (!html.includes('data-route-robots="not-found"')) {
+    html = html.replace(
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <meta name="robots" content="noindex" data-route-robots="not-found" />',
+    );
+  }
+  const appHtml = render('/this-does-not-exist');
+  if (!appHtml.includes('Page not found')) {
+    throw new Error('404 render did not include the not-found page');
+  }
+  return html.replace(rootPlaceholder, `<div id="root">${appHtml}</div>`);
+}
+
+const notFoundHtml = notFoundDocument();
+writeFileSync(path.join(dist, '404.html'), notFoundHtml);
+
 const rendered = new Map();
 for (const route of PUBLIC_ROUTES) {
   const appHtml = render(route.path);
@@ -283,6 +309,20 @@ if (ADS_ENABLED) {
   assert.equal(home.includes('data-ad-slot'), false);
   assert.equal(home.includes('Advertisement'), false);
 }
+assert.match(notFoundHtml, /<h1[^>]*>Page not found<\/h1>/);
+assert.match(notFoundHtml, /Back to the weekly planner/);
+assert.match(notFoundHtml, /<meta name="robots" content="noindex" data-route-robots="not-found" \/>/);
+assert.equal(notFoundHtml.includes('rel="canonical"'), false);
+assert.equal(notFoundHtml.includes('property="og:url"'), false);
+for (const route of [...PUBLIC_ROUTES.map((route) => route.path), ...SPA_FALLBACK_ROUTES]) {
+  assert.equal(isKnownPath(route), true, route);
+}
+assert.equal(isKnownPath('/this-does-not-exist'), false);
+assert.equal(isKnownPath('/auth/callback'), true);
+assert.equal(notFoundHtml.includes('data-ad-slot'), false);
+assert.equal(notFoundHtml.includes('Advertisement'), false);
+assert.equal(/shopping list/i.test(notFoundHtml), false);
+
 assert.match(home, /<link rel="canonical" href="https:\/\/www\.weeklymealplan\.space\/" \/>/);
 assert.match(home, /<meta property="og:url" content="https:\/\/www\.weeklymealplan\.space\/" \/>/);
 assert.match(home, /<meta name="twitter:url" content="https:\/\/www\.weeklymealplan\.space\/" \/>/);
@@ -489,9 +529,14 @@ const redirectLines = readFileSync(path.join(dist, '_redirects'), 'utf8')
 const keyRedirect = redirectLines.find((line) => line.startsWith(`/${indexNowKey}.txt`));
 const spaRedirect = redirectLines.find((line) => line.startsWith('/*'));
 assert.equal(keyRedirect, `/${indexNowKey}.txt  /${indexNowKey}.txt  200`);
-assert.equal(spaRedirect, '/*    /spa.html   200');
+assert.equal(spaRedirect, '/*    /404.html   404');
 assert.ok(redirectLines.indexOf(keyRedirect) < redirectLines.indexOf(spaRedirect));
 assert.equal(spaRedirect.endsWith('!'), false);
+assert.ok(redirectLines.includes('/login       /login/index.html       200'));
+assert.ok(redirectLines.includes('/login/*     /login/index.html       200'));
+assert.ok(redirectLines.includes('/signup      /signup/index.html      200'));
+assert.ok(redirectLines.includes('/auth/*      /auth/index.html        200'));
+assert.ok(redirectLines.indexOf('/login       /login/index.html       200') < redirectLines.indexOf(spaRedirect));
 assert.ok(redirectLines.includes('https://weeklymealplan.space/*  https://www.weeklymealplan.space/:splat  301!'));
 assert.ok(redirectLines.includes('http://weeklymealplan.space/*  https://www.weeklymealplan.space/:splat  301!'));
 assert.ok(redirectLines.indexOf('https://weeklymealplan.space/*  https://www.weeklymealplan.space/:splat  301!') < redirectLines.indexOf(spaRedirect));
@@ -681,7 +726,14 @@ for (const routePath of SPA_FALLBACK_ROUTES) {
   assert.match(html, /data-route-robots="shell"/);
 }
 
-assert.match(llms, /Plan your family's weekly meals with ease\. Browse recipe suggestions, save favorites, build a shopping list, and organize breakfast, lunch, and dinner for the whole week\./);
+assert.match(llms, /Plan your family's weekly meals with ease\. Browse recipe suggestions, save favorites, and organize breakfast, lunch, and dinner for the whole week\. Open a meal to see its ingredients\./);
+assert.equal(/build a shopping list/i.test(llms), false);
+assert.equal(/build a shopping list/i.test(home), false);
+const homeNoscript = home.match(/<noscript>[\s\S]*?<\/noscript>/)?.[0] ?? '';
+assert.equal(/shopping list/i.test(homeNoscript), false);
+assert.equal(/name="description" content="[^"]*shopping list/i.test(home), false);
+assert.equal(/property="og:description" content="[^"]*shopping list/i.test(home), false);
+assert.equal(/name="twitter:description" content="[^"]*shopping list/i.test(home), false);
 assert.match(llms, /https:\/\/www\.weeklymealplan\.space\//);
 assert.equal(llms.includes('https://weeklymealplan.space'), false);
 

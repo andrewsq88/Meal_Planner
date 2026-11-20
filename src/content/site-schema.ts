@@ -3,7 +3,7 @@
 export const HOME_TITLE = 'Weekly Meal Planner - Plan Your Family Meals for the Week';
 
 export const HOME_DESCRIPTION =
-  "Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, build a shopping list, and organize breakfast, lunch, and dinner for the whole week.";
+  "Plan your family's weekly meals with ease. Browse recipe suggestions, save favorites, and organize breakfast, lunch, and dinner for the whole week. Open a meal to see its ingredients.";
 
 export const START_TITLE = "Plan Your Family's Meals for the Week";
 

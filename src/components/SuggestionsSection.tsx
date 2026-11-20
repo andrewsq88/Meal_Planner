@@ -205,7 +205,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                         </button>
                         <button
                           onClick={() => onAddToFavorites(sug)}
-                          className="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                          className="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-900 bg-rose-50 dark:text-rose-100 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
                         >
                           ♥ Save
                         </button>
@@ -294,7 +294,7 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
                           </button>
                           <button
                             onClick={() => onAddToFavorites(recipe)}
-                            className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+                            className="px-2.5 py-1.5 rounded-xl text-xs font-bold text-rose-900 bg-rose-50 dark:text-rose-100 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
                           >
                             ♥
                           </button>
