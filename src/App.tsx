@@ -25,8 +25,9 @@ import { findLegalPage } from './content/legal';
 import { ConsentBanner } from './components/ConsentBanner';
 import { CookielessAnalytics } from './components/CookielessAnalytics';
 import { LegalPage } from './components/LegalPage';
+import { NotFoundPage } from './components/NotFoundPage';
 import { isAdRouteBlocked, locationKey } from './lib/adsterra';
-import { isSignInPath, isSignupPath, isStartPath } from './lib/routes';
+import { CANONICAL_ORIGIN, isKnownPath, isSignInPath, isSignupPath, isStartPath } from './lib/routes';
 
 const SHELL_ROBOTS_SELECTOR = 'meta[name="robots"][data-route-robots="shell"]';
 
@@ -36,15 +37,37 @@ function readPathname(initialPath?: string): string {
   return window.location.pathname;
 }
 
+const NOT_FOUND_ROBOTS_SELECTOR = 'meta[name="robots"][data-route-robots="not-found"]';
+
 /**
  * Auth and payment documents ship with a noindex shell meta.
- * Drop it when the visitor reaches a public page without a full reload.
+ * Unknown routes keep noindex and must not adopt the homepage canonical.
+ * Drop the shell tag when the visitor reaches a public page without a full reload.
  */
 function useShellNoIndex(pathname: string) {
   useEffect(() => {
     if (typeof document === 'undefined') return;
     const sync = () => {
-      const privateRoute = isAdRouteBlocked(locationKey()) && !isStartPath(window.location.pathname);
+      const path = window.location.pathname;
+      if (!isKnownPath(path)) {
+        let meta = document.head.querySelector('meta[name="robots"]');
+        if (!(meta instanceof HTMLMetaElement)) {
+          meta = document.createElement('meta');
+          meta.setAttribute('name', 'robots');
+          document.head.appendChild(meta);
+        }
+        meta.setAttribute('content', 'noindex');
+        if (!meta.getAttribute('data-route-robots')) {
+          meta.setAttribute('data-route-robots', 'not-found');
+        }
+        document.head.querySelectorAll('link[rel="canonical"]').forEach((node) => {
+          const href = node.getAttribute('href') ?? '';
+          if (href === `${CANONICAL_ORIGIN}/` || href === CANONICAL_ORIGIN) node.remove();
+        });
+        return;
+      }
+      document.head.querySelector(NOT_FOUND_ROBOTS_SELECTOR)?.remove();
+      const privateRoute = isAdRouteBlocked(locationKey()) && !isStartPath(path);
       const meta = document.head.querySelector(SHELL_ROBOTS_SELECTOR);
       if (!privateRoute) {
         meta?.remove();
@@ -90,6 +113,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   const onStart = isStartPath(pathname);
   const onSignup = isSignupPath(pathname);
   const onSignIn = isSignInPath(pathname);
+  const unknown = !isKnownPath(pathname);
 
   useEffect(() => {
     const sync = () => setPathname(window.location.pathname);
@@ -126,6 +150,10 @@ function AppContent({ initialPath }: { initialPath?: string }) {
 
   if (onStart) {
     return <StartPage dark={dark} onToggleDark={toggleDark} pathname={pathname} />;
+  }
+
+  if (unknown) {
+    return <NotFoundPage dark={dark} onToggleDark={toggleDark} pathname={pathname} />;
   }
 
   if (loading && !onSignup && !onSignIn && !passwordRecovery) {

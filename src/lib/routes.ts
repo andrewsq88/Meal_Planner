@@ -36,3 +36,30 @@ const AUTH_OR_PAYMENT_ROUTE =
 export function isAuthOrPaymentPath(pathname: string): boolean {
   return AUTH_OR_PAYMENT_ROUTE.test(pathname);
 }
+
+/**
+ * Public content paths. Kept here as strings so this module can load under
+ * Node during prerender without a second import graph. prerender.mjs checks
+ * that every public route is in this set.
+ */
+const PUBLIC_CONTENT = new Set([
+  '/start',
+  '/privacy',
+  '/terms',
+  '/cookies',
+  '/cheap-weekly-meal-plan',
+  '/family-of-4-meal-plan',
+  '/meal-prep-shopping-list',
+  '/7-day-dinner-plan',
+  '/weekly-breakfast-ideas',
+  '/printable-weekly-meal-planner',
+]);
+
+/** Public pages, auth shells, and payment shells. Everything else is a 404. */
+export function isKnownPath(pathname: string): boolean {
+  const path = normalizePath(pathname.split('?')[0].split('#')[0]);
+  if (path === '/' || path === '') return true;
+  if (isStartPath(path) || isSignupPath(path) || isSignInPath(path)) return true;
+  if (PUBLIC_CONTENT.has(path) || isAuthOrPaymentPath(path)) return true;
+  return false;
+}
