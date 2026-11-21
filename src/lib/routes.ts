@@ -44,6 +44,7 @@ export function isAuthOrPaymentPath(pathname: string): boolean {
  */
 const PUBLIC_CONTENT = new Set([
   '/start',
+  '/advertise',
   '/privacy',
   '/terms',
   '/cookies',
@@ -54,6 +55,10 @@ const PUBLIC_CONTENT = new Set([
   '/weekly-breakfast-ideas',
   '/printable-weekly-meal-planner',
 ]);
+
+export function isAdvertisePath(pathname: string): boolean {
+  return normalizePath(pathname) === '/advertise';
+}
 
 /** Public pages, auth shells, and payment shells. Everything else is a 404. */
 export function isKnownPath(pathname: string): boolean {

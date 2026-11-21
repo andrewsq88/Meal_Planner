@@ -1,4 +1,5 @@
 import { CalendarDays, Heart, List, Sun, Moon, UtensilsCrossed } from 'lucide-react';
+import { PartnerHeaderLink } from './PartnerHeaderLink';
 import { SiteFooter } from './SiteFooter';
 
 interface StartPageProps {
@@ -36,14 +37,17 @@ export function StartPage({ dark, onToggleDark, pathname }: StartPageProps) {
               <p className="hidden sm:block text-xs text-stone-600 dark:text-stone-400 font-medium">Weekly meal planner</p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onToggleDark}
-            className="w-9 h-9 shrink-0 rounded-xl flex items-center justify-center text-stone-600 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-stone-700 border border-amber-200 dark:border-stone-600 bg-amber-50 dark:bg-stone-800 transition-all duration-200"
-            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <PartnerHeaderLink />
+            <button
+              type="button"
+              onClick={onToggleDark}
+              className="w-9 h-9 shrink-0 rounded-xl flex items-center justify-center text-stone-600 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-stone-700 border border-amber-200 dark:border-stone-600 bg-amber-50 dark:bg-stone-800 transition-all duration-200"
+              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </header>
 

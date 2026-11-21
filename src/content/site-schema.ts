@@ -58,3 +58,37 @@ export function webPageNode(origin: string, path: string, name: string, descript
     isPartOf: { '@id': `${origin}/#website` },
   };
 }
+
+export const ADVERTISE_PATH = '/advertise';
+
+export const ADVERTISE_HEADING = 'Partner / Advertise with us';
+
+export const ADVERTISE_TITLE = 'Partner and Advertise | Weekly Meal Planner';
+
+export const ADVERTISE_DESCRIPTION =
+  'Weekly Meal Planner is a free weekly meal planner. Food and cooking brands, caterers, restaurants, and affiliate or sponsorship partners can send a partnership enquiry.';
+
+/** Public partnership address. The only address published for this page. */
+export const ADVERTISE_EMAIL = 'advertisers@weeklymealplan.space';
+
+export const ADVERTISE_MAILTO = `mailto:${ADVERTISE_EMAIL}?subject=Partnership%20enquiry`;
+
+/** Contact page for partnership enquiries. No audience, traffic, or pricing fields. */
+export function contactPageNode(origin: string) {
+  const url = `${origin}${ADVERTISE_PATH}`;
+  return {
+    '@type': 'ContactPage',
+    '@id': `${url}#webpage`,
+    url,
+    name: ADVERTISE_TITLE,
+    description: ADVERTISE_DESCRIPTION,
+    inLanguage: 'en',
+    isPartOf: { '@id': `${origin}/#website` },
+    mainEntity: {
+      '@type': 'ContactPoint',
+      contactType: 'partnerships',
+      email: ADVERTISE_EMAIL,
+      url,
+    },
+  };
+}

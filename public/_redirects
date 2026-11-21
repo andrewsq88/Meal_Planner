@@ -55,6 +55,6 @@ http://weeklymealplan.space/*  https://www.weeklymealplan.space/:splat  301!
 /stripe/*    /stripe/index.html      200
 
 # Unknown paths. Not forced, so a real file (the pages above, guides, legal
-# pages, and assets) is still served with its own status. This rule is what
-# makes a missing path HTTP 404 instead of the planner.
+# pages, /advertise, and assets) is still served with its own status. This
+# rule is what makes a missing path HTTP 404 instead of the planner.
 /*    /404.html   404

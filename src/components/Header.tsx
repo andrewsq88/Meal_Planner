@@ -3,6 +3,7 @@ import { formatWeekRange } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { clearGuestItems } from '../hooks/useMenuItems';
+import { PartnerHeaderLink } from './PartnerHeaderLink';
 
 interface HeaderProps {
   weekStart: string;
@@ -85,6 +86,8 @@ export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guest
             <div className="hidden sm:block">
               <WeekSwitcher weekStart={weekStart} onPrevWeek={onPrevWeek} onNextWeek={onNextWeek} />
             </div>
+
+            <PartnerHeaderLink />
 
             <button
               onClick={onToggleDark}
