@@ -26,8 +26,9 @@ import { ConsentBanner } from './components/ConsentBanner';
 import { CookielessAnalytics } from './components/CookielessAnalytics';
 import { LegalPage } from './components/LegalPage';
 import { NotFoundPage } from './components/NotFoundPage';
+import { AdvertisePage } from './components/AdvertisePage';
 import { isAdRouteBlocked, locationKey } from './lib/adsterra';
-import { CANONICAL_ORIGIN, isKnownPath, isSignInPath, isSignupPath, isStartPath } from './lib/routes';
+import { CANONICAL_ORIGIN, isAdvertisePath, isKnownPath, isSignInPath, isSignupPath, isStartPath } from './lib/routes';
 
 const SHELL_ROBOTS_SELECTOR = 'meta[name="robots"][data-route-robots="shell"]';
 
@@ -111,6 +112,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
   const legal = findLegalPage(pathname);
   const guide = findGuidePage(pathname);
   const onStart = isStartPath(pathname);
+  const onAdvertise = isAdvertisePath(pathname);
   const onSignup = isSignupPath(pathname);
   const onSignIn = isSignInPath(pathname);
   const unknown = !isKnownPath(pathname);
@@ -150,6 +152,10 @@ function AppContent({ initialPath }: { initialPath?: string }) {
 
   if (onStart) {
     return <StartPage dark={dark} onToggleDark={toggleDark} pathname={pathname} />;
+  }
+
+  if (onAdvertise) {
+    return <AdvertisePage dark={dark} onToggleDark={toggleDark} pathname={pathname} />;
   }
 
   if (unknown) {

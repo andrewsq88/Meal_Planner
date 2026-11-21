@@ -6,10 +6,15 @@ import { pathToFileURL } from 'node:url';
 import { guideGraph } from '../src/content/guide-model.ts';
 import { GUIDE_PAGES } from '../src/content/guides.ts';
 import {
+  ADVERTISE_DESCRIPTION,
+  ADVERTISE_EMAIL,
+  ADVERTISE_HEADING,
+  ADVERTISE_TITLE,
   HOME_DESCRIPTION,
   HOME_TITLE,
   START_DESCRIPTION,
   START_TITLE,
+  contactPageNode,
   siteGraph,
   webApplicationNode,
   webPageNode,
@@ -57,6 +62,12 @@ const PUBLIC_ROUTES = [
     priority: '0.3',
     legal,
   })),
+  {
+    path: '/advertise',
+    loc: `${CANONICAL_ORIGIN}/advertise`,
+    changefreq: 'monthly',
+    priority: '0.5',
+  },
 ];
 
 const SPA_FALLBACK_ROUTES = [
@@ -218,6 +229,20 @@ function publicHead(route) {
       [...siteGraph(CANONICAL_ORIGIN), webPageNode(CANONICAL_ORIGIN, '/start', START_TITLE, START_DESCRIPTION)],
     );
   }
+  if (route.path === '/advertise') {
+    const html = replaceJsonLd(
+      applyDocumentHead(template, {
+        title: ADVERTISE_TITLE,
+        description: ADVERTISE_DESCRIPTION,
+        canonical: route.loc,
+      }),
+      [...siteGraph(CANONICAL_ORIGIN), contactPageNode(CANONICAL_ORIGIN)],
+    );
+    return html.replace(
+      '<h1>Weekly Meal Planner</h1>',
+      '<p style="font-size:2rem;font-weight:800;margin:0 0 1rem;">Weekly Meal Planner</p>',
+    );
+  }
   return replaceJsonLd(
     applyDocumentHead(template, {
       title: HOME_TITLE,
@@ -311,6 +336,8 @@ if (ADS_ENABLED) {
 }
 assert.match(notFoundHtml, /<h1[^>]*>Page not found<\/h1>/);
 assert.match(notFoundHtml, /Back to the weekly planner/);
+assert.match(notFoundHtml, /href="\/advertise"/);
+assert.match(notFoundHtml, /Partner \/ Advertise with us/);
 assert.match(notFoundHtml, /<meta name="robots" content="noindex" data-route-robots="not-found" \/>/);
 assert.equal(notFoundHtml.includes('rel="canonical"'), false);
 assert.equal(notFoundHtml.includes('property="og:url"'), false);
@@ -342,6 +369,9 @@ assert.equal((home.match(/Explore our other sites/g) || []).length, 1);
 assert.match(home, /href="\/privacy"/);
 assert.match(home, /href="\/terms"/);
 assert.match(home, /href="\/cookies"/);
+assert.match(home, /href="\/advertise"/);
+assert.match(home, /Partner \/ Advertise with us/);
+assert.match(home, /hidden lg:inline-flex[^"]*"[^>]*>Partner with us</);
 assert.equal(home.includes('frame-ancestors'), false);
 
 const otherSiteHrefs = [
@@ -375,6 +405,33 @@ assert.match(start, /Explore our other sites/);
 assert.deepEqual(otherSiteLinks(start), otherSiteHrefs);
 assert.equal(/registerprep/i.test(start), false);
 assert.equal(start.includes('Meal planning guides'), false);
+assert.match(start, /href="\/advertise"/);
+assert.match(start, /Partner \/ Advertise with us/);
+
+const advertise = rendered.get('/advertise');
+assert.ok(advertise, '/advertise');
+assert.equal((advertise.match(/<h1[\s>]/g) || []).length, 1);
+assert.match(advertise, new RegExp(`<h1[^>]*>\\s*${escapeRegex(ADVERTISE_HEADING)}\\s*</h1>`));
+assert.match(advertise, new RegExp(`<title>${escapeRegex(ADVERTISE_TITLE)}</title>`));
+assert.match(advertise, new RegExp(`<meta name="description" content="${escapeRegex(ADVERTISE_DESCRIPTION)}" />`));
+assert.match(advertise, new RegExp(`<link rel="canonical" href="${CANONICAL_ORIGIN}/advertise" />`));
+assert.match(advertise, /mailto:advertisers@weeklymealplan\.space\?subject=Partnership%20enquiry/);
+assert.match(advertise, />\s*Contact us\s*</);
+assert.match(advertise, />\s*advertisers@weeklymealplan\.space\s*</);
+assert.match(advertise, /Food and cooking brands/);
+assert.match(advertise, /Caterers/);
+assert.match(advertise, /Restaurants/);
+assert.match(advertise, /Affiliate partners/);
+assert.match(advertise, /Sponsorship partners/);
+assert.match(advertise, /Partner \/ Advertise with us/);
+assert.match(advertise, /hidden lg:inline-flex/);
+assert.equal(advertise.includes('data-ad-slot'), false);
+assert.equal(advertise.includes('Advertisement'), false);
+assert.equal(/<script[^>]*src="https:\/\/bicea\.org/.test(advertise), false);
+assert.equal(/100K|sponsored recipes|ad performance/i.test(advertise), false);
+assert.equal(advertise.includes('data-route-robots="shell"'), false);
+assert.equal(/noindex/i.test(advertise), false);
+assert.equal(/gmail\.com/i.test(advertise), false);
 
 for (const legal of LEGAL_PAGES) {
   const pageHtml = rendered.get(legal.path);
@@ -392,6 +449,8 @@ for (const legal of LEGAL_PAGES) {
   assert.match(pageHtml, /href="\/privacy"/);
   assert.match(pageHtml, /href="\/terms"/);
   assert.match(pageHtml, /href="\/cookies"/);
+  assert.match(pageHtml, /href="\/advertise"/);
+  assert.match(pageHtml, /Partner \/ Advertise with us/);
 }
 
 assert.match(rendered.get('/privacy'), /Adsterra/);
@@ -591,7 +650,7 @@ function assertAlignedHead(html, { title, description, canonical, keywords }) {
   assert.equal(html.includes('https://weeklymealplan.space"'), false);
 }
 
-function assertGraph(data, { article = false, faq = false, howTo = false, webPage = false, webApp = false } = {}) {
+function assertGraph(data, { article = false, faq = false, howTo = false, webPage = false, webApp = false, contactPage = false } = {}) {
   assert.equal(data['@context'], 'https://schema.org');
   const types = data['@graph'].map((node) => node['@type']);
   assert.deepEqual(types.filter((type) => type === 'Organization').length, 1);
@@ -612,6 +671,21 @@ function assertGraph(data, { article = false, faq = false, howTo = false, webPag
   assert.equal(types.includes('HowTo'), howTo);
   assert.equal(types.includes('WebPage'), webPage);
   assert.equal(types.includes('WebApplication'), webApp);
+  assert.equal(types.includes('ContactPage'), contactPage);
+  if (contactPage) {
+    const node = data['@graph'].find((item) => item['@type'] === 'ContactPage');
+    assert.equal(node.name, ADVERTISE_TITLE);
+    assert.equal(node.description, ADVERTISE_DESCRIPTION);
+    assert.equal(node.url, `${CANONICAL_ORIGIN}/advertise`);
+    assert.equal(node.mainEntity['@type'], 'ContactPoint');
+    assert.equal(node.mainEntity.contactType, 'partnerships');
+    assert.equal(node.mainEntity.email, ADVERTISE_EMAIL);
+    assert.equal(node.mainEntity.url, `${CANONICAL_ORIGIN}/advertise`);
+    for (const key of ['telephone', 'address', 'areaServed', 'hoursAvailable']) {
+      assert.equal(Object.hasOwn(node, key), false, key);
+      assert.equal(Object.hasOwn(node.mainEntity, key), false, key);
+    }
+  }
   if (article) {
     const node = data['@graph'].find((item) => item['@type'] === 'Article');
     assert.ok(node.headline);
@@ -683,14 +757,18 @@ for (const route of PUBLIC_ROUTES) {
       ? route.guide.title
       : route.path === '/start'
         ? START_TITLE
-        : HOME_TITLE;
+        : route.path === '/advertise'
+          ? ADVERTISE_TITLE
+          : HOME_TITLE;
   const description = route.legal
     ? route.legal.description
     : route.guide
       ? route.guide.description
       : route.path === '/start'
         ? START_DESCRIPTION
-        : HOME_DESCRIPTION;
+        : route.path === '/advertise'
+          ? ADVERTISE_DESCRIPTION
+          : HOME_DESCRIPTION;
   assert.equal(seenTitles.has(title), false, title);
   assert.equal(seenDescriptions.has(description), false, description);
   seenTitles.add(title);
@@ -702,6 +780,12 @@ for (const route of PUBLIC_ROUTES) {
     const article = data['@graph'].find((node) => node['@type'] === 'Article');
     assert.equal(article.headline, route.guide.h1);
     assert.equal(article.description, route.guide.description);
+  } else if (route.path === '/advertise') {
+    assertGraph(data, { contactPage: true });
+    assert.deepEqual(data, {
+      '@context': 'https://schema.org',
+      '@graph': [...siteGraph(CANONICAL_ORIGIN), contactPageNode(CANONICAL_ORIGIN)],
+    });
   } else if (route.legal || route.path === '/start') {
     assertGraph(data, { webPage: true });
   } else {

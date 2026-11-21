@@ -9,6 +9,7 @@ import {
   type LegalPageSpec,
 } from '../content/legal';
 import { setAdConsent } from '../lib/consent';
+import { PartnerHeaderLink } from './PartnerHeaderLink';
 import { SiteFooter } from './SiteFooter';
 
 interface LegalPageProps {
@@ -35,14 +36,17 @@ function Shell({
             </span>
             <span className="text-sm font-semibold">{PRODUCT_NAME}</span>
           </a>
-          <button
-            type="button"
-            onClick={onToggleDark}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-stone-600 hover:bg-amber-50 dark:text-stone-300 dark:hover:bg-stone-800"
-            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <PartnerHeaderLink />
+            <button
+              type="button"
+              onClick={onToggleDark}
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-stone-600 hover:bg-amber-50 dark:text-stone-300 dark:hover:bg-stone-800"
+              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-3xl px-4 py-10 text-stone-700 dark:text-stone-300">

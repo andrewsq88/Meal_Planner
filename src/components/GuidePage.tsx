@@ -3,6 +3,7 @@ import { Moon, Sun, UtensilsCrossed } from 'lucide-react';
 import type { GuidePageCopy } from '../content/guides';
 import { parseBlocks, type Block } from '../content/guide-model';
 import { GuideBanner, useGuideBanners } from './GuideBanners';
+import { PartnerHeaderLink } from './PartnerHeaderLink';
 import { SiteFooter } from './SiteFooter';
 
 interface GuidePageProps {
@@ -162,14 +163,17 @@ export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps
               <span className="block text-xs text-stone-400 dark:text-stone-500 font-medium">Weekly meal planner</span>
             </span>
           </a>
-          <button
-            type="button"
-            onClick={onToggleDark}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-stone-500 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-stone-700 border border-amber-100 dark:border-stone-700 bg-amber-50 dark:bg-stone-800 transition-all duration-200"
-            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <PartnerHeaderLink />
+            <button
+              type="button"
+              onClick={onToggleDark}
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-stone-500 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-stone-700 border border-amber-100 dark:border-stone-700 bg-amber-50 dark:bg-stone-800 transition-all duration-200"
+              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          </div>
         </div>
       </header>
 
