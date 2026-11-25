@@ -475,7 +475,35 @@ for (const guide of GUIDE_PAGES) {
       assert.equal(node.itemListElement[1].item, `https://www.weeklymealplan.space${guide.path}`);
     }
   }
-  assert.equal(/affiliate/i.test(pageHtml), false, guide.path);
+  const affiliateGuide = {
+    '/cheap-weekly-meal-plan': { vendor: 'plantbc', tid: 'cheap-plan' },
+    '/meal-prep-shopping-list': { vendor: 'jmrosa2', tid: 'meal-prep' },
+    '/printable-weekly-meal-planner': { vendor: 'jmrosa2', tid: 'printable' },
+    '/7-day-dinner-plan': { vendor: 'jmrosa2', tid: 'dinner-plan' },
+  }[guide.path];
+  if (affiliateGuide) {
+    const hop = `https://hop.clickbank.net/?affiliate=asq88&amp;vendor=${affiliateGuide.vendor}&amp;tid=${affiliateGuide.tid}`;
+    assert.equal((pageHtml.match(/data-affiliate-unit=/g) || []).length, 1, guide.path);
+    assert.equal((pageHtml.match(/hop\.clickbank\.net/g) || []).length, 1, guide.path);
+    const image = affiliateGuide.vendor === 'jmrosa2'
+      ? '/affiliates/simple-slim-kitchen.webp'
+      : '/affiliates/plant-based-recipe-cookbook.webp';
+    const other = affiliateGuide.vendor === 'jmrosa2' ? 'plantbc' : 'jmrosa2';
+    assert.ok(pageHtml.includes(`href="${hop}"`), `${guide.path} hop link`);
+    assert.ok(pageHtml.includes(`src="${image}"`), `${guide.path} image`);
+    assert.equal(pageHtml.includes(`vendor=${other}`), false, `${guide.path} single offer`);
+    assert.match(pageHtml, /rel="sponsored nofollow noopener"/);
+    assert.match(pageHtml, /target="_blank"/);
+    assert.match(pageHtml, /Partner pick · affiliate link/);
+    assert.match(pageHtml, /may earn a commission/);
+    assert.match(pageHtml, /loading="lazy"/);
+    assert.equal(pageHtml.includes('simpleslimkitchen.com'), false, guide.path);
+    assert.equal(pageHtml.includes('plantbasedresource.com'), false, guide.path);
+  } else {
+    assert.equal(/affiliate/i.test(pageHtml), false, guide.path);
+    assert.equal(pageHtml.includes('hop.clickbank.net'), false, guide.path);
+  }
+  assert.equal(/weight[- ]loss|slimming|fat[- ]burn|healthy weight/i.test(pageHtml), false, guide.path);
   assert.ok(pageHtml.includes(lead), guide.path);
   const buttonAt = pageHtml.search(new RegExp(`>${flexText(guide.buttonLabel)}</a>`));
   const footerAt = pageHtml.lastIndexOf('<footer');
@@ -505,8 +533,42 @@ for (const guide of GUIDE_PAGES) {
   assert.equal(pageHtml.includes('Meal planning guides'), false, guide.path);
 }
 
+function hopHref(vendor, tid) {
+  return `https://hop.clickbank.net/?affiliate=asq88&amp;vendor=${vendor}&amp;tid=${tid}`;
+}
+
+assert.equal((home.match(/data-affiliate-unit=/g) || []).length, 1);
+assert.ok(home.includes(hopHref('jmrosa2', 'planner')));
+assert.equal(home.includes('vendor=plantbc'), false);
+assert.match(home, /src="\/affiliates\/simple-slim-kitchen\.webp"/);
+assert.match(home, /width="1122"/);
+assert.match(home, /height="1402"/);
+assert.match(home, /loading="lazy"/);
+assert.equal(home.includes('simpleslimkitchen.com'), false);
+assert.equal(/weight[- ]loss|slimming|fat[- ]burn|healthy weight/i.test(home), false);
+
+assert.equal((start.match(/data-affiliate-unit=/g) || []).length, 1);
+assert.ok(start.includes(hopHref('jmrosa2', 'start')));
+assert.equal(start.includes('vendor=plantbc'), false);
+assert.match(start, /Partner pick · affiliate link/);
+assert.match(start, /src="\/affiliates\/simple-slim-kitchen\.webp"/);
+assert.equal(/weight[- ]loss|slimming|fat[- ]burn|healthy weight/i.test(start), false);
+
+for (const legalPath of ['/privacy', '/terms']) {
+  const legalHtml = rendered.get(legalPath);
+  assert.match(legalHtml, /<h2[^>]*>Affiliate links<\/h2>/);
+  assert.match(legalHtml, /may earn a commission/);
+  assert.equal(legalHtml.includes('hop.clickbank.net'), false, legalPath);
+  assert.equal(legalHtml.includes('data-affiliate-unit'), false, legalPath);
+}
+assert.equal(rendered.get('/cookies').includes('hop.clickbank.net'), false);
+assert.equal(rendered.get('/cookies').includes('data-affiliate-unit'), false);
+
 for (const html of [signup, checkout, billing]) {
   assert.match(html, /<div id="root"><\/div>/);
+  assert.equal(html.includes('hop.clickbank.net'), false);
+  assert.equal(html.includes('data-affiliate-unit'), false);
+  assert.equal(html.includes('Partner pick'), false);
   assert.equal(html.includes('data-ad-slot'), false);
   assert.equal(html.includes('Advertisement'), false);
   assert.equal(html.includes('Explore our other sites'), false);

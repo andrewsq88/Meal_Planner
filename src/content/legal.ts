@@ -4,7 +4,7 @@ export const OPERATOR_NAME = 'SQ Consulting';
 export const PRODUCT_NAME = 'Weekly Meal Planner';
 export const SITE_HOST = 'www.weeklymealplan.space';
 export const SITE_URL = 'https://www.weeklymealplan.space/';
-export const LEGAL_UPDATED = '11 November 2026';
+export const LEGAL_UPDATED = '25 November 2026';
 
 /** Operator contact, for page source only. */
 export const OPERATOR_CONTACT = 'andrewsq88@gmail.com';

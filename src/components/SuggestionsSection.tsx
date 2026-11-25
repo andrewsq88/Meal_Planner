@@ -1,11 +1,14 @@
 import { Search, Sparkles, Plus, Loader2, Rss, ExternalLink, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
+import { isVeganSuggestionQuery } from '../config/affiliates';
 import type { MealSuggestion, MealType, RssRecipe } from '../types';
+import { AffiliateUnit } from './AffiliateUnit';
 import { MEAL_TYPE_CONFIG } from '../types';
 import { useSuggestions } from '../hooks/useSuggestions';
 import { useRssRecipes } from '../hooks/useRssRecipes';
 
 interface SuggestionsSectionProps {
+  pathname: string;
   onUseInMenu: (suggestion: MealSuggestion | RssRecipe) => void;
   onAddToFavorites: (suggestion: MealSuggestion | RssRecipe) => void;
 }
@@ -34,7 +37,7 @@ function formatRelativeDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: SuggestionsSectionProps) {
+export function SuggestionsSection({ pathname, onUseInMenu, onAddToFavorites }: SuggestionsSectionProps) {
   const [activeTab, setActiveTab] = useState<TabId>('library');
   const [query, setQuery] = useState('');
   const [mealFilter, setMealFilter] = useState<MealType | 'all'>('all');
@@ -155,6 +158,14 @@ export function SuggestionsSection({ onUseInMenu, onAddToFavorites }: Suggestion
 
       {/* Results */}
       <div className="p-5">
+        {isVeganSuggestionQuery(query) ? (
+          <AffiliateUnit
+            offerId="plantbc"
+            placement="suggestions-vegan"
+            pathname={pathname}
+            className="mb-5"
+          />
+        ) : null}
         {/* ── LIBRARY TAB ── */}
         {activeTab === 'library' && (
           <>

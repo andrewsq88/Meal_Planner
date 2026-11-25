@@ -97,6 +97,13 @@ function PrivacyBody() {
         collect technical data about the request in order to serve and measure ads. We do not control the
         individual creatives. Advertising scripts are not mounted on sign-in, sign-up, or checkout routes.
       </p>
+      <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Affiliate links</h2>
+      <p>
+        Some guides and planner pages link to partner recipe books and meal plans. Each link is labelled
+        as an affiliate link. If you buy through one, {OPERATOR_NAME} may earn a commission from the
+        retailer. The price you pay does not change. Purchases are completed on the partner site, which we
+        do not control. These links are not placed on sign-in, account, or checkout pages.
+      </p>
       <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Analytics</h2>
       <p>
         This site does not run analytics unless a GoatCounter site code is configured at build time. When
@@ -149,6 +156,12 @@ function TermsBody() {
         The site is provided as is, and we may change or withdraw features. To the extent permitted by law,{' '}
         {OPERATOR_NAME} is not liable for loss arising from your use of meal plans, recipes, or third-party
         ads or links, except where liability cannot be excluded.
+      </p>
+      <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Affiliate links</h2>
+      <p>
+        The site may link to third-party recipe books and meal plans. Those links are labelled as affiliate
+        links, and {OPERATOR_NAME} may earn a commission if you buy through them. The planner stays free.
+        Partner sites have their own terms, and we are not a party to those purchases.
       </p>
       <h2 className="pt-4 text-xl font-bold text-stone-800 dark:text-stone-100">Contact</h2>
       <ContactLine />
