@@ -1,4 +1,5 @@
 import { CalendarDays, Heart, List, Sun, Moon, UtensilsCrossed } from 'lucide-react';
+import { AffiliateUnit } from './AffiliateUnit';
 import { SiteFooter } from './SiteFooter';
 
 interface StartPageProps {
@@ -66,6 +67,7 @@ export function StartPage({ dark, onToggleDark, pathname }: StartPageProps) {
           >
             Create your free account
           </a>
+          <AffiliateUnit offerId="jmrosa2" placement="start" pathname={pathname} className="mt-10" />
         </div>
       </main>
 

@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
 import { Moon, Sun, UtensilsCrossed } from 'lucide-react';
+import { GUIDE_AFFILIATE_PLACEMENTS } from '../config/affiliates';
 import type { GuidePageCopy } from '../content/guides';
 import { parseBlocks, type Block } from '../content/guide-model';
+import { AffiliateUnit } from './AffiliateUnit';
 import { GuideBanner, useGuideBanners } from './GuideBanners';
 import { SiteFooter } from './SiteFooter';
 
@@ -147,6 +149,13 @@ function placeGuideAds(blocks: Block[]): Array<Block | { type: 'ad'; index: 1 }>
 
 export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps) {
   const blocks = placeGuideAds(parseBlocks(page.body));
+  const affiliateSpec = GUIDE_AFFILIATE_PLACEMENTS[page.path];
+  if (
+    affiliateSpec &&
+    !blocks.some((block) => block.type === 'h2' && block.text === affiliateSpec.beforeHeading)
+  ) {
+    throw new Error(`Affiliate placement heading not found on ${page.path}`);
+  }
   const narrow = useGuideBanners(pathname);
 
   return (
@@ -195,13 +204,25 @@ export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps
           <p className="mt-4 text-base leading-relaxed text-stone-700 dark:text-stone-300">
             <strong>Short answer:</strong> {page.shortAnswer}
           </p>
-          {blocks.map((block, index) => (
-            'type' in block && block.type === 'ad' ? (
-              <GuideBanner key={index} index={1} narrow={narrow} pathname={page.path} />
-            ) : (
-              <BlockView key={index} block={block as Block} page={page} narrow={narrow} />
-            )
-          ))}
+          {blocks.map((block, index) => {
+            if (block.type === 'ad') {
+              return <GuideBanner key={index} index={1} narrow={narrow} pathname={page.path} />;
+            }
+            if (affiliateSpec && block.type === 'h2' && block.text === affiliateSpec.beforeHeading) {
+              return (
+                <div key={index}>
+                  <AffiliateUnit
+                    offerId={affiliateSpec.offerId}
+                    placement={affiliateSpec.placement}
+                    pathname={pathname}
+                    className="mt-8"
+                  />
+                  <BlockView block={block} page={page} narrow={narrow} />
+                </div>
+              );
+            }
+            return <BlockView key={index} block={block} page={page} narrow={narrow} />;
+          })}
         </article>
       </main>
 

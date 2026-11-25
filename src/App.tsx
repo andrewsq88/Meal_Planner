@@ -17,6 +17,7 @@ import { getWeekStart, addDays } from './types';
 import type { MenuItem, MealType, MealSuggestion, Favorite, RssRecipe } from './types';
 import { UtensilsCrossed } from 'lucide-react';
 import { AdSlots } from './components/AdSlots';
+import { AffiliateUnit } from './components/AffiliateUnit';
 import { StartPage } from './components/StartPage';
 import { SiteFooter } from './components/SiteFooter';
 import { GuidePage } from './components/GuidePage';
@@ -329,6 +330,8 @@ function Planner({ onAuthRequired, dark, toggleDark, pathname }: PlannerProps) {
           )}
         </div>
 
+        <AffiliateUnit offerId="jmrosa2" placement="planner" pathname={pathname} />
+
         <FavoritesSection
           favorites={favorites}
           onRemove={handleFavoriteRemove}
@@ -337,6 +340,7 @@ function Planner({ onAuthRequired, dark, toggleDark, pathname }: PlannerProps) {
         />
 
         <SuggestionsSection
+          pathname={pathname}
           onUseInMenu={handleSuggestionUseInMenu}
           onAddToFavorites={handleSuggestionAddToFavorites}
         />
