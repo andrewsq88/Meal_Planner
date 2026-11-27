@@ -3,6 +3,7 @@ import { formatWeekRange } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { clearGuestItems } from '../hooks/useMenuItems';
+import { accountLabel } from '../lib/google-auth';
 
 interface HeaderProps {
   weekStart: string;
@@ -58,7 +59,8 @@ function WeekSwitcher({
 
 export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guestMealCount, dark, onToggleDark }: HeaderProps) {
   const { user } = useAuth();
-  const initial = user?.email?.[0]?.toUpperCase() ?? '?';
+  const label = user ? accountLabel(user) : '';
+  const initial = label[0]?.toUpperCase() ?? '?';
 
   async function handleSignOut() {
     clearGuestItems();
@@ -102,7 +104,7 @@ export function Header({ weekStart, onPrevWeek, onNextWeek, onSignInClick, guest
               <div className="flex items-center gap-2">
                 <div
                   className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shadow-sm"
-                  title={user.email ?? ''}
+                  title={label}
                 >
                   {initial}
                 </div>

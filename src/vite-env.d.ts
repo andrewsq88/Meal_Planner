@@ -14,8 +14,6 @@ interface Window {
 interface ImportMetaEnv {
   readonly VITE_GOATCOUNTER_CODE?: string;
   readonly VITE_ADS_ENABLED?: string;
-  /** Default off. Set to `true` to show Continue with Google. */
-  readonly VITE_GOOGLE_AUTH_ENABLED?: string;
   /** Default off. Set to `true` to call the suggest-meal-details function. */
   readonly VITE_AI_SUGGESTIONS_ENABLED?: string;
 }

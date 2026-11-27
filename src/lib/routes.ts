@@ -26,6 +26,13 @@ export function isSignInPath(pathname: string): boolean {
   return path === '/login' || path === '/signin' || path === '/sign-in';
 }
 
+/** OAuth returns here. The shell is already a 200 auth route, and ads stay off. */
+export const AUTH_CALLBACK_PATH = '/auth/callback';
+
+export function isAuthCallbackPath(pathname: string): boolean {
+  return normalizePath(pathname) === AUTH_CALLBACK_PATH;
+}
+
 /**
  * Auth, payment, and checkout paths. The public planner and /start are not included.
  * Mirrors the ad-route list without /start.
