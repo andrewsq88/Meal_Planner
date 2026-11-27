@@ -28,7 +28,13 @@ import { CookielessAnalytics } from './components/CookielessAnalytics';
 import { LegalPage } from './components/LegalPage';
 import { NotFoundPage } from './components/NotFoundPage';
 import { isAdRouteBlocked, locationKey } from './lib/adsterra';
-import { CANONICAL_ORIGIN, isKnownPath, isSignInPath, isSignupPath, isStartPath } from './lib/routes';
+import { CANONICAL_ORIGIN, isAuthCallbackPath, isKnownPath, isSignInPath, isSignupPath, isStartPath } from './lib/routes';
+import {
+  OAUTH_MODE_KEY,
+  OAUTH_SEARCH_KEY,
+  postLoginLocation,
+  readOAuthReturn,
+} from './lib/google-auth';
 
 const SHELL_ROBOTS_SELECTOR = 'meta[name="robots"][data-route-robots="shell"]';
 
@@ -92,23 +98,52 @@ function useShellNoIndex(pathname: string) {
   }, [pathname]);
 }
 
-function LoadingScreen() {
+function LoadingScreen({ label }: { label?: string }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 flex items-center justify-center">
-      <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-pulse">
-        <UtensilsCrossed className="w-7 h-7 text-white" />
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg animate-pulse">
+          <UtensilsCrossed className="w-7 h-7 text-white" />
+        </div>
+        {label ? <p className="text-sm font-semibold text-stone-600 dark:text-stone-300">{label}</p> : null}
       </div>
     </div>
   );
 }
 
+function storedOAuthMode(): string | null {
+  try {
+    return sessionStorage.getItem(OAUTH_MODE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function storedOAuthSearch(): string {
+  try {
+    return sessionStorage.getItem(OAUTH_SEARCH_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+function clearStoredOAuth(): void {
+  try {
+    sessionStorage.removeItem(OAUTH_MODE_KEY);
+    sessionStorage.removeItem(OAUTH_SEARCH_KEY);
+  } catch {
+    // Ignore storage failures. The address bar is still replaced.
+  }
+}
+
 function AppContent({ initialPath }: { initialPath?: string }) {
-  const { loading, passwordRecovery, clearPasswordRecovery } = useAuth();
+  const { user, loading, sessionChecked, passwordRecovery, clearPasswordRecovery } = useAuth();
   const { dark, toggle: toggleDark } = useDarkMode();
   const [pathname, setPathname] = useState(() => readPathname(initialPath));
   useShellNoIndex(pathname);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authPrompt, setAuthPrompt] = useState<string | undefined>(undefined);
+  const [oauthNotice, setOauthNotice] = useState<string | null>(null);
   const legal = findLegalPage(pathname);
   const guide = findGuidePage(pathname);
   const onStart = isStartPath(pathname);
@@ -126,6 +161,35 @@ function AppContent({ initialPath }: { initialPath?: string }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isAuthCallbackPath(pathname) || !sessionChecked) return;
+
+    const returned = readOAuthReturn(window.location.search, window.location.hash);
+    const started = storedOAuthMode();
+    const attempted = started != null || returned.status !== 'none';
+    if (!attempted) return;
+
+    if (returned.status === 'error' || !user) {
+      const message = returned.status === 'error'
+        ? returned.message
+        : 'Google sign-in did not finish. Please try again, or continue with email.';
+      const dest = started === 'signup' ? '/signup' : '/login';
+      clearStoredOAuth();
+      setOauthNotice(message);
+      window.history.replaceState(null, '', dest);
+      setPathname(dest);
+      window.dispatchEvent(new Event('mealplan-ad-route'));
+      return;
+    }
+
+    const search = storedOAuthSearch() || window.location.search;
+    const dest = postLoginLocation(search);
+    clearStoredOAuth();
+    window.history.replaceState(null, '', dest);
+    setPathname(dest.split('?')[0].split('#')[0] || '/');
+    window.dispatchEvent(new Event('mealplan-ad-route'));
+  }, [pathname, sessionChecked, user]);
+
   function requireAuth(prompt?: string) {
     setAuthPrompt(prompt);
     setAuthModalOpen(true);
@@ -133,6 +197,7 @@ function AppContent({ initialPath }: { initialPath?: string }) {
 
   function closeAuth() {
     setAuthModalOpen(false);
+    setOauthNotice(null);
     clearPasswordRecovery();
     const path = window.location.pathname;
     if (!isSignupPath(path) && !isSignInPath(path)) return;
@@ -157,21 +222,33 @@ function AppContent({ initialPath }: { initialPath?: string }) {
     return <NotFoundPage dark={dark} onToggleDark={toggleDark} pathname={pathname} />;
   }
 
-  if (loading && !onSignup && !onSignIn && !passwordRecovery) {
+  const onCallback = isAuthCallbackPath(pathname);
+  const callbackReturn = onCallback && typeof window !== 'undefined'
+    ? readOAuthReturn(window.location.search, window.location.hash)
+    : { status: 'none' as const };
+  const callbackError = callbackReturn.status === 'error' ? callbackReturn.message : null;
+
+  if (onCallback && !sessionChecked && callbackReturn.status !== 'error') {
+    return <LoadingScreen label="Signing you in…" />;
+  }
+
+  if (loading && !onSignup && !onSignIn && !passwordRecovery && !onCallback) {
     return <LoadingScreen />;
   }
 
   return (
     <>
-      {loading ? <LoadingScreen /> : (
+      {loading && !onSignup && !onSignIn && !onCallback ? <LoadingScreen /> : (
         <Planner onAuthRequired={requireAuth} dark={dark} toggleDark={toggleDark} pathname={pathname} />
       )}
       <AuthModal
-        open={authModalOpen || onSignup || onSignIn || passwordRecovery}
+        open={authModalOpen || onSignup || onSignIn || passwordRecovery || (onCallback && callbackError != null)}
         onClose={closeAuth}
         prompt={authPrompt}
-        initialMode={onSignup ? 'signup' : 'signin'}
+        initialMode={onSignup || (onCallback && storedOAuthMode() === 'signup') ? 'signup' : 'signin'}
         passwordRecovery={passwordRecovery}
+        externalError={oauthNotice ?? (onCallback ? callbackError : null)}
+        onClearExternalError={() => setOauthNotice(null)}
       />
     </>
   );
