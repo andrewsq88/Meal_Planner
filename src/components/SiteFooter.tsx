@@ -1,3 +1,4 @@
+import { AFFILIATE_FOOTER_DISCLOSURE } from '../config/affiliates';
 import { GUIDE_PAGES } from '../content/guides';
 import { isAuthOrPaymentPath } from '../lib/routes';
 
@@ -88,7 +89,10 @@ export function SiteFooter({ pathname, className }: SiteFooterProps) {
           ))}
         </ul>
       </nav>
-      <p className="text-center text-xs text-stone-600 dark:text-stone-300">
+      <p className="mx-auto max-w-3xl px-4 text-center text-xs leading-relaxed text-stone-600 dark:text-stone-300">
+        {AFFILIATE_FOOTER_DISCLOSURE}
+      </p>
+      <p className="mt-3 text-center text-xs text-stone-600 dark:text-stone-300">
         &copy; {new Date().getFullYear()} SQ Consultancy. All rights reserved.
       </p>
     </footer>

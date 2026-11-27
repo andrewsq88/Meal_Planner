@@ -13,6 +13,19 @@ export const AFFILIATE_LABEL = 'Partner pick · affiliate link';
 export const AFFILIATE_DISCLOSURE =
   'Partner link. If you buy through it, we may earn a commission. The price you pay does not change.';
 
+/** Shown on the shared footer of pages that can render an affiliate unit. */
+export const AFFILIATE_FOOTER_DISCLOSURE =
+  'Some links and boxes on this site are advertisements. If you follow a labelled affiliate link and buy, we may earn a commission, at no extra cost to you.';
+
+/** Exact inline label for the cheap-plan card. Sentence case, not the short badge. */
+export const CHEAP_PLAN_AFFILIATE_LABEL =
+  'Advertisement — affiliate link. We may earn a commission if you buy.';
+
+export const CHEAP_PLAN_AFFILIATE_BLURB =
+  'Recipes, a 30-day meal plan and shopping lists, as a paid digital download.';
+
+export const CHEAP_PLAN_AFFILIATE_CTA = 'See the cookbook';
+
 export type AffiliateId = 'jmrosa2' | 'plantbc';
 
 export type AffiliatePlacement =
@@ -21,7 +34,7 @@ export type AffiliatePlacement =
   | 'meal-prep'
   | 'printable'
   | 'dinner-plan'
-  | 'cheap-plan'
+  | 'wmp-cheap'
   | 'suggestions-vegan';
 
 export interface AffiliateImage {
@@ -69,10 +82,29 @@ export const AFFILIATE_OFFERS: Record<AffiliateId, AffiliateOffer> = {
   },
 };
 
-/** One in-content unit, inserted before this heading so it stays out of the ad slots. */
-export const GUIDE_AFFILIATE_PLACEMENTS: Partial<
-  Record<string, { offerId: AffiliateId; placement: AffiliatePlacement; beforeHeading: string }>
-> = {
+export interface GuideAffiliatePlacement {
+  offerId: AffiliateId;
+  placement: AffiliatePlacement;
+  /** Insert the card immediately before this heading. */
+  beforeHeading?: string;
+  /** Insert the card after this section's content and before the next heading. */
+  afterHeading?: string;
+  label?: string;
+  blurb?: string;
+  cta?: string;
+  showImage?: boolean;
+  showDisclosure?: boolean;
+  /** Keep the label in sentence case. The short badge stays uppercase. */
+  exactLabel?: boolean;
+  rel?: string;
+}
+
+/**
+ * One in-content unit per guide, outside the ad slots.
+ * The cheap-plan card sits after "Budget-friendly shopping habits" and before
+ * the FAQ, which is also below the mid-article banner (data-guide-ad="2").
+ */
+export const GUIDE_AFFILIATE_PLACEMENTS: Partial<Record<string, GuideAffiliatePlacement>> = {
   '/meal-prep-shopping-list': {
     offerId: 'jmrosa2',
     placement: 'meal-prep',
@@ -90,8 +122,15 @@ export const GUIDE_AFFILIATE_PLACEMENTS: Partial<
   },
   '/cheap-weekly-meal-plan': {
     offerId: 'plantbc',
-    placement: 'cheap-plan',
-    beforeHeading: 'Budget-friendly shopping habits',
+    placement: 'wmp-cheap',
+    afterHeading: 'Budget-friendly shopping habits',
+    label: CHEAP_PLAN_AFFILIATE_LABEL,
+    blurb: CHEAP_PLAN_AFFILIATE_BLURB,
+    cta: CHEAP_PLAN_AFFILIATE_CTA,
+    showImage: false,
+    showDisclosure: false,
+    exactLabel: true,
+    rel: 'sponsored nofollow',
   },
 };
 

@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { Moon, Sun, UtensilsCrossed } from 'lucide-react';
-import { GUIDE_AFFILIATE_PLACEMENTS } from '../config/affiliates';
+import { GUIDE_AFFILIATE_PLACEMENTS, type GuideAffiliatePlacement } from '../config/affiliates';
 import type { GuidePageCopy } from '../content/guides';
 import { parseBlocks, type Block } from '../content/guide-model';
 import { AffiliateUnit } from './AffiliateUnit';
@@ -121,12 +121,27 @@ function BlockView({
   );
 }
 
+type LaidBlock = Block | { type: 'ad'; index: 1 };
+
 function isLateAd(block: Block): boolean {
   return block.type === 'p' && block.text.startsWith('**[AD SLOT 2');
 }
 
+/** Index of the block the card should precede. `blocks.length` means after the last block. */
+function affiliateInsertIndex(blocks: LaidBlock[], spec: GuideAffiliatePlacement | undefined): number | null {
+  if (!spec) return null;
+  const heading = spec.afterHeading ?? spec.beforeHeading;
+  if (!heading) throw new Error('Affiliate placement is missing a heading');
+  const start = blocks.findIndex((block) => block.type === 'h2' && block.text === heading);
+  if (start < 0) throw new Error(`Affiliate placement heading not found: ${heading}`);
+  if (!spec.afterHeading) return start;
+  let end = start + 1;
+  while (end < blocks.length && blocks[end].type !== 'h2') end += 1;
+  return end;
+}
+
 /** Keep both ads in the upper article: one after the button, one after the second section. */
-function placeGuideAds(blocks: Block[]): Array<Block | { type: 'ad'; index: 1 }> {
+function placeGuideAds(blocks: Block[]): LaidBlock[] {
   const source = blocks.filter((block) => !isLateAd(block));
   const headings: number[] = [];
   source.forEach((block, index) => {
@@ -138,7 +153,7 @@ function placeGuideAds(blocks: Block[]): Array<Block | { type: 'ad'; index: 1 }>
     insertAt = sectionStart + 1;
     while (insertAt < source.length && source[insertAt].type !== 'h2') insertAt += 1;
   }
-  const laid: Array<Block | { type: 'ad'; index: 1 }> = [];
+  const laid: LaidBlock[] = [];
   source.forEach((block, index) => {
     if (index === insertAt) laid.push({ type: 'ad', index: 1 });
     laid.push(block);
@@ -150,13 +165,27 @@ function placeGuideAds(blocks: Block[]): Array<Block | { type: 'ad'; index: 1 }>
 export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps) {
   const blocks = placeGuideAds(parseBlocks(page.body));
   const affiliateSpec = GUIDE_AFFILIATE_PLACEMENTS[page.path];
-  if (
-    affiliateSpec &&
-    !blocks.some((block) => block.type === 'h2' && block.text === affiliateSpec.beforeHeading)
-  ) {
-    throw new Error(`Affiliate placement heading not found on ${page.path}`);
-  }
+  const affiliateAt = affiliateInsertIndex(blocks, affiliateSpec);
   const narrow = useGuideBanners(pathname);
+
+  function affiliateCard() {
+    if (!affiliateSpec) return null;
+    return (
+      <AffiliateUnit
+        offerId={affiliateSpec.offerId}
+        placement={affiliateSpec.placement}
+        pathname={pathname}
+        className="mt-8"
+        label={affiliateSpec.label}
+        blurb={affiliateSpec.blurb}
+        cta={affiliateSpec.cta}
+        showImage={affiliateSpec.showImage}
+        showDisclosure={affiliateSpec.showDisclosure}
+        exactLabel={affiliateSpec.exactLabel}
+        rel={affiliateSpec.rel}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50/30 to-rose-50/20 dark:from-stone-900 dark:via-stone-900 dark:to-stone-900 transition-colors duration-300 flex flex-col">
@@ -205,24 +234,23 @@ export function GuidePage({ page, pathname, dark, onToggleDark }: GuidePageProps
             <strong>Short answer:</strong> {page.shortAnswer}
           </p>
           {blocks.map((block, index) => {
+            const card = affiliateAt === index ? affiliateCard() : null;
             if (block.type === 'ad') {
-              return <GuideBanner key={index} index={1} narrow={narrow} pathname={page.path} />;
-            }
-            if (affiliateSpec && block.type === 'h2' && block.text === affiliateSpec.beforeHeading) {
               return (
-                <div key={index}>
-                  <AffiliateUnit
-                    offerId={affiliateSpec.offerId}
-                    placement={affiliateSpec.placement}
-                    pathname={pathname}
-                    className="mt-8"
-                  />
-                  <BlockView block={block} page={page} narrow={narrow} />
-                </div>
+                <Fragment key={index}>
+                  {card}
+                  <GuideBanner index={1} narrow={narrow} pathname={page.path} />
+                </Fragment>
               );
             }
-            return <BlockView key={index} block={block} page={page} narrow={narrow} />;
+            return (
+              <Fragment key={index}>
+                {card}
+                <BlockView block={block} page={page} narrow={narrow} />
+              </Fragment>
+            );
           })}
+          {affiliateAt === blocks.length ? affiliateCard() : null}
         </article>
       </main>
 
