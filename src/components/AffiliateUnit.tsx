@@ -1,9 +1,9 @@
 import {
   AFFILIATE_DISCLOSURE,
   AFFILIATE_LABEL,
-  AFFILIATE_OFFERS,
   affiliateHopLink,
   affiliateUnitsAllowed,
+  resolveAffiliateOffer,
   type AffiliateId,
   type AffiliatePlacement,
 } from '../config/affiliates';
@@ -40,7 +40,7 @@ export function AffiliateUnit({
   rel = 'sponsored nofollow noopener',
 }: AffiliateUnitProps) {
   if (!affiliateUnitsAllowed(pathname)) return null;
-  const offer = AFFILIATE_OFFERS[offerId];
+  const offer = resolveAffiliateOffer(offerId);
   const href = affiliateHopLink(offer.vendorId, placement);
   const landscape = offer.image.width >= offer.image.height;
   const summary = blurb ?? offer.blurb;

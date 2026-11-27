@@ -17,16 +17,18 @@ export const AFFILIATE_DISCLOSURE =
 export const AFFILIATE_FOOTER_DISCLOSURE =
   'Some links and boxes on this site are advertisements. If you follow a labelled affiliate link and buy, we may earn a commission, at no extra cost to you.';
 
-/** Exact inline label for the cheap-plan card. Sentence case, not the short badge. */
-export const CHEAP_PLAN_AFFILIATE_LABEL =
-  'Advertisement — affiliate link. We may earn a commission if you buy.';
-
-export const CHEAP_PLAN_AFFILIATE_BLURB =
-  'Recipes, a 30-day meal plan and shopping lists, as a paid digital download.';
-
-export const CHEAP_PLAN_AFFILIATE_CTA = 'See the cookbook';
-
 export type AffiliateId = 'jmrosa2' | 'plantbc';
+
+/**
+ * Vendor for every placement configured as jmrosa2.
+ * Change this one value to 'plantbc' to point those cards at the cookbook.
+ * Each page keeps its existing tid. The default leaves production on jmrosa2.
+ */
+export const JMROSA2_PLACEMENT_VENDOR: AffiliateId = 'jmrosa2';
+
+/** Our wording for new plantbc guide cards. Not the vendor's sales copy. */
+export const PLANTBC_GUIDE_BLURB =
+  'Recipes, a 30-day meal plan and shopping lists, as a paid digital download.';
 
 export type AffiliatePlacement =
   | 'planner'
@@ -34,7 +36,9 @@ export type AffiliatePlacement =
   | 'meal-prep'
   | 'printable'
   | 'dinner-plan'
-  | 'wmp-cheap'
+  | 'cheap-plan'
+  | 'wmp-family4'
+  | 'wmp-breakfast'
   | 'suggestions-vegan';
 
 export interface AffiliateImage {
@@ -101,8 +105,9 @@ export interface GuideAffiliatePlacement {
 
 /**
  * One in-content unit per guide, outside the ad slots.
- * The cheap-plan card sits after "Budget-friendly shopping habits" and before
- * the FAQ, which is also below the mid-article banner (data-guide-ad="2").
+ * The cheap-plan card is the existing production unit (tid cheap-plan).
+ * Family and breakfast cards sit after the sample-plan section, which is
+ * below the mid-article banner and clear of both ad slots.
  */
 export const GUIDE_AFFILIATE_PLACEMENTS: Partial<Record<string, GuideAffiliatePlacement>> = {
   '/meal-prep-shopping-list': {
@@ -122,17 +127,28 @@ export const GUIDE_AFFILIATE_PLACEMENTS: Partial<Record<string, GuideAffiliatePl
   },
   '/cheap-weekly-meal-plan': {
     offerId: 'plantbc',
-    placement: 'wmp-cheap',
-    afterHeading: 'Budget-friendly shopping habits',
-    label: CHEAP_PLAN_AFFILIATE_LABEL,
-    blurb: CHEAP_PLAN_AFFILIATE_BLURB,
-    cta: CHEAP_PLAN_AFFILIATE_CTA,
-    showImage: false,
-    showDisclosure: false,
-    exactLabel: true,
-    rel: 'sponsored nofollow',
+    placement: 'cheap-plan',
+    beforeHeading: 'Budget-friendly shopping habits',
+  },
+  '/family-of-4-meal-plan': {
+    offerId: 'plantbc',
+    placement: 'wmp-family4',
+    afterHeading: 'Sample weekly meal plan for a family of four',
+    blurb: PLANTBC_GUIDE_BLURB,
+  },
+  '/weekly-breakfast-ideas': {
+    offerId: 'plantbc',
+    placement: 'wmp-breakfast',
+    afterHeading: 'A sample weekly breakfast plan',
+    blurb: PLANTBC_GUIDE_BLURB,
   },
 };
+
+/** Offer to render. jmrosa2 placements follow JMROSA2_PLACEMENT_VENDOR; tids do not change. */
+export function resolveAffiliateOffer(offerId: AffiliateId): AffiliateOffer {
+  const vendorId = offerId === 'jmrosa2' ? JMROSA2_PLACEMENT_VENDOR : offerId;
+  return AFFILIATE_OFFERS[vendorId];
+}
 
 const UPGRADE_ROUTE = /\/upgrade(?:\/|$|\?|#)/i;
 
